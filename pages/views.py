@@ -11,15 +11,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
-from note.models import Note
 from pages.serializers import ProfileViewSerializer
 
 
 class ServiceServerView(LoginRequiredMixin, APIView):
     def get(self, request):
-        context = {
-            'count_notes': Note.objects.count()
-        }
+        context = {}
         return render(request, 'pages/service_server.html', context)
 
     def post(self, request):
@@ -71,7 +68,7 @@ class ProfileView(LoginRequiredMixin, APIView):
         serializer = ProfileViewSerializer(data=request.POST)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
-        
+
         user = request.user
         update_fields = []
         if user.first_name != data['first_name']:

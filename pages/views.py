@@ -1,11 +1,6 @@
-import json
-import sys
-from io import StringIO
 from subprocess import check_output
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User
-from django.core import management
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -21,42 +16,20 @@ class ServiceServerView(LoginRequiredMixin, APIView):
 
     def post(self, request):
         command = request.POST.get('command')
-        message = None
-        if command == 'update_db':
-            file_stdout = StringIO()
-            sys.stderr = file_stdout
-            sys.stdout = file_stdout
-            management.call_command('note_load', stdout=file_stdout, stderr=file_stdout)
-            message = file_stdout.getvalue()
-        elif command == 'deploy_server':
+        message = 'unknown command'
+        if command == 'deploy_server':
             message = check_output('cd .. ; git pull origin main', shell=True)
         elif command == 'restart_server':
-            restart_batcmd = 'touch tmp/restart.txt'
-            check_output(restart_batcmd, shell=True)
-        else:
-            message = 'unknown command'
+            message = check_output('touch tmp/restart.txt', shell=True)
 
         data = {'message': message}
         return Response(status=status.HTTP_200_OK, data=data)
 
 
-class MapInfoResourcesView(APIView):
-    def get(self, request):
-        context = {
-        }
-        return render(request, 'pages/map_info_resources.html', context)
-
-
-class MapMaterialResourcesView(APIView):
+class IntroView(APIView):
     def get(self, request):
         context = {}
-        return render(request, 'pages/map_material_resources.html', context)
-
-
-class AboutProjectView(APIView):
-    def get(self, request):
-        context = {}
-        return render(request, 'pages/about_project.html', context)
+        return render(request, 'pages/intro.html', context)
 
 
 class ProfileView(LoginRequiredMixin, APIView):

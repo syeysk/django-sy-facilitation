@@ -39,20 +39,7 @@
         <ul class="nav nav-tabs">
             {% url 'index' as url %}
             <li class="nav-item">
-                <a href="{{ url }}" class="nav-link{% if request.path == url %} active{% endif %}">О проекте</a>
-            </li>
-            <li class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Карта ресурсов</a>
-                <ul class="dropdown-menu">
-                    {% url 'map_info_resources' as url %}
-                    <li>
-                        <a class="dropdown-item{% if request.path == url %} active{% endif %}" href="{{ url }}">Информационные</a>
-                    </li>
-                    {% url 'map_material_resources' as url %}
-                    <li>
-                        <a class="dropdown-item{% if request.path == url %} active{% endif %}" href="{{ url }}">Материальные</a>
-                    </li>
-                </ul>
+                <a href="{{ url }}" class="nav-link{% if request.path == url %} active{% endif %}">Главная</a>
             </li>
             <li class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Модули</a>

@@ -1,15 +1,15 @@
-import os
+from pathlib import Path
 
 import environ
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(
     DEBUG=(bool, True),
     ALLOWED_HOSTS=(list, ['*']),
     SITE_URL=(str, 'http://127.0.0.1'),
 )
-environ.Env.read_env(env_file=os.path.join(BASE_DIR, '.env'))
+environ.Env.read_env(env_file=BASE_DIR / '.env')
 
 ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 DEBUG = env('DEBUG')
@@ -67,7 +67,7 @@ SECRET_KEY = env('SECRET_KEY')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'sqlite3.db'),
+        'NAME': BASE_DIR / 'sqlite3.db',
     }
 }
 
@@ -78,7 +78,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'debug.log'),
+            'filename': BASE_DIR / 'debug.log',
         },
     },
     'loggers': {
@@ -91,7 +91,7 @@ LOGGING = {
 }
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
+    BASE_DIR / 'static',
 ]
 
 REST_FRAMEWORK = {
@@ -118,3 +118,11 @@ EXTERN_AUTH = {
         'client_secret': env('EXTERN_AUTH_GOOGLE_CLIENT_SECRET'),
     }
 }
+
+# Internationalization
+# https://docs.djangoproject.com/en/4.2/topics/i18n/
+
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'UTC'
+USE_I18N = True
+USE_TZ = True

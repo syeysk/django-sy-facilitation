@@ -1,8 +1,4 @@
-import pytest
-from django.contrib.auth.models import User
 from django.shortcuts import resolve_url
-
-# DJANGO_SETTINGS_MODULE
 
 
 def test_create_faci_by_unauthed_user(client):

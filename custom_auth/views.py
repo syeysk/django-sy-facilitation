@@ -44,6 +44,7 @@ class LogoutView(APIView):
         logout(request)
         return Response(status=status.HTTP_307_TEMPORARY_REDIRECT, headers={'location': reverse('index')})
 
+
 class RegistrationView(APIView):
     def post(self, request):
         serializer = RegistrationSerializer(data=request.POST)
@@ -82,7 +83,7 @@ class ExternAuthGoogleView(APIView):
                     data['error'],
                     data['error_description'],
                     ),
-                
+
             }
             return render(request, 'pages/message.html', context)
 
@@ -175,14 +176,14 @@ class AddTokenView(LoginRequiredMixin, APIView):
             'token': token_str_source,
         }
         return Response(status=status.HTTP_200_OK, data=data_for_response)
-        
+
 
 class EditTokenView(LoginRequiredMixin, APIView):
     def post(self, request):
         serializer = EditTokenSerializer(data=request.POST)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
-        
+
         token = Token.objects.get(user=request.user, pk=data['token_id'])
         token.app_name = data['app_name']
         token.save()

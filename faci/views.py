@@ -53,7 +53,7 @@ class FaciEditorView(APIView):
             form_preparing = FaciCanvasPreparingForm()
             form_key_thoughts = FaciCanvasKeyThoughtsForm()
             form_agreements = FaciCanvasAgreementsForm()
-            creator_username = request.user.username 
+            creator_username = request.user.username
             members = []
             agendas = []
 
@@ -110,6 +110,7 @@ class FaciEditAimView(APIView):
 
 class FaciEditMembersView(LoginRequiredMixin, APIView):
     def post(self, request, canvas_id, invited_username):
+        # TODO: invited_username передавать через json в теле запроса
         serializer = FaciEditMembersSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
@@ -132,6 +133,9 @@ class FaciEditMembersView(LoginRequiredMixin, APIView):
         data_for_return['open_block'] = 'agenda'
         data_for_return['success'] = True
         return Response(status=status.HTTP_200_OK, data=data_for_return)
+
+    def delete(self, canvas_id):
+        ...
 
 
 class FaciEditAgendaView(LoginRequiredMixin, APIView):
@@ -163,7 +167,7 @@ class FaciEditPreparingView(LoginRequiredMixin, APIView):
 
         faci = FaciCanvas.objects.get(pk=canvas_id)
         updated = []
-        
+
         if faci.dt_meeting != data['dt_meeting']:
             faci.dt_meeting = data['dt_meeting']
             updated.append('dt_meeting')
@@ -214,7 +218,7 @@ class FaciEditKeyThoughtsView(LoginRequiredMixin, APIView):
         data_for_return = {}
         data_for_return['success'] = True
         return Response(status=status.HTTP_200_OK, data=data_for_return)
-        
+
 
 class FaciEditAgreementsView(LoginRequiredMixin, APIView):
     def post(self, request, canvas_id):
@@ -258,7 +262,7 @@ class AddFaciView(APIView):
         serializer = AddFaciViewSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
-        
+
         faci = FaciCanvas(
             aim=data['aim'],
             if_not_reached=data['if_not_reached'],
@@ -280,7 +284,7 @@ class GetListFaciView(APIView):
             .values('id', 'aim', 'if_not_reached', 'aim_type')
         )
         facis = facis[(data['page_number']-1)*data['count_on_page']:data['count_on_page']]
-        
+
         data_for_return = {
             'facis': facis,
             'total': FaciCanvas.objects.count(),

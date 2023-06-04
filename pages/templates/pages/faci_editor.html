@@ -404,12 +404,12 @@
                 save_member(component) {
                     let self = this;
                     $.ajax({
-                        url: URL_FACI_EDITOR_MEMBER + self.member.invited + '/',
+                        url: URL_FACI_EDITOR_MEMBER,
                         headers: {
                             "X-CSRFToken": CSRF_TOKEN,
                         },
                         dataType: 'json',
-                        data: {for_what: component.mvalue},
+                        data: {for_what: component.mvalue, invited_user: self.member.invited},
                         success: function(result) {
                             open_block(result['open_block']);
                             agenda_list.agendas.push({invited: self.member.invited, themes: '', themes_duration: 5, questions: '', self: self.member.invited == '{{request.user.username}}' });

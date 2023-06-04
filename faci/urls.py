@@ -17,7 +17,7 @@ from faci.views import (
 urlpatterns = [
     re_path(r'new/aim/$', FaciEditAimView.as_view(), name='faci_editor_create'),
     re_path(r'(?P<canvas_id>[0-9]+)/aim/$', FaciEditAimView.as_view(), name='faci_editor_aim'),
-    re_path(r'(?P<canvas_id>[0-9]+)/member/(?P<invited_username>[0-9a-zA-Zа-яА-ЯёЁ_-]+)/$', FaciEditMembersView.as_view(), name='faci_editor_member'),
+    re_path(r'(?P<canvas_id>[0-9]+)/member/$', FaciEditMembersView.as_view(), name='faci_editor_member'),
     re_path(r'(?P<canvas_id>[0-9]+)/agenda/$', FaciEditAgendaView.as_view(), name='faci_editor_agenda'),
     re_path(r'(?P<canvas_id>[0-9]+)/preparing/$', FaciEditPreparingView.as_view(), name='faci_editor_preparing'),
     re_path(r'(?P<canvas_id>[0-9]+)/start_meeting/$', FaciStartView.as_view(), name='faci_start_meeting'),

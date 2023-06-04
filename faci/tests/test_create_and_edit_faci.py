@@ -56,7 +56,7 @@ def test_editing_members(client):
     assert response_editing.data['success'] is True
     assert response_editing.data['id'] == response_creating.data['id']
 
-    data = {'for_what': 'for test'}
-    response_member = client.post(resolve_url('faci_editor_member', response_creating.data['id'], 'testuser2'), data=data)
+    data = {'for_what': 'for test', 'invited_user': 'testuser2'}
+    response_member = client.post(resolve_url('faci_editor_member', response_creating.data['id']), data=data)
     assert response_member.status_code == 200
     assert response_member.data['success'] is True

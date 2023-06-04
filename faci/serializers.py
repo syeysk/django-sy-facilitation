@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from rest_framework import serializers
 
 
@@ -16,6 +17,15 @@ class GetListFaciSerializer(serializers.Serializer):
 
 class FaciEditMembersSerializer(serializers.Serializer):
     for_what = serializers.CharField(max_length=100)
+    invited_user = serializers.CharField(max_length=100)
+
+    @staticmethod
+    def validate_invited_user(value):
+        value = User.objects.filter(username=value).first()
+        if not value:
+            raise serializers.ValidationError('Пользователя не существует')
+
+        return value
 
 
 class FaciEditAgendaSerializer(serializers.Serializer):

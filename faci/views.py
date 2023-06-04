@@ -25,6 +25,8 @@ from faci.serializers import (
     FaciEditAgreementsSerializer,
 )
 
+FACI_CREATOR_FOR_WHAT = 'Инициатор встречи'
+
 
 class FaciEditorView(APIView):
     def get(self, request, canvas_id=None):
@@ -38,7 +40,6 @@ class FaciEditorView(APIView):
             form_preparing = FaciCanvasPreparingForm(instance=faci)
             form_key_thoughts = FaciCanvasKeyThoughtsForm(instance=faci)
             form_agreements = FaciCanvasAgreementsForm(instance=faci)
-            creator_username = faci.user_creator.username
             members = [{'invited': member.invited.username, 'for_what': member.for_what, 'inviting': member.inviting.username} for member in faci.member_set.all()]
             agendas = [{'invited': member.invited.username, 'themes': member.themes, 'themes_duration': member.themes_duration, 'questions': member.questions, 'self': member.invited.username == request.user.username} for member in faci.member_set.all()]
         else:
@@ -53,9 +54,9 @@ class FaciEditorView(APIView):
             form_preparing = FaciCanvasPreparingForm()
             form_key_thoughts = FaciCanvasKeyThoughtsForm()
             form_agreements = FaciCanvasAgreementsForm()
-            creator_username = request.user.username
-            members = []
-            agendas = []
+            username = request.user.username
+            members = [{'invited': username, 'for_what': FACI_CREATOR_FOR_WHAT, 'inviting': username}]
+            agendas = [{'invited': username, 'themes': '', 'themes_duration': 0, 'questions': '', 'self': True}]
 
         context = {
             'step': step,
@@ -97,7 +98,12 @@ class FaciEditAimView(APIView):
                 faci_form.save()
                 data_for_return['id'] = faci_form.instance.pk
                 if not canvas_id:
-                    member = Member(invited=request.user, inviting=request.user, for_what='Инициатор встречи', faci_canvas=faci_form.instance)
+                    member = Member(
+                        invited=request.user,
+                        inviting=request.user,
+                        for_what=FACI_CREATOR_FOR_WHAT,
+                        faci_canvas=faci_form.instance,
+                    )
                     member.save()
 
                 data_for_return['open_block'] = 'members'
@@ -109,13 +115,12 @@ class FaciEditAimView(APIView):
 
 
 class FaciEditMembersView(LoginRequiredMixin, APIView):
-    def post(self, request, canvas_id, invited_username):
-        # TODO: invited_username передавать через json в теле запроса
+    def post(self, request, canvas_id):
         serializer = FaciEditMembersSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
 
-        invited = User.objects.get(username=invited_username)
+        invited = data['invited_user']  # TODO: обработать на фронте 400 {'unvited_username': ['пользователь не найден']}
         faci_canvas = FaciCanvas.objects.get(pk=canvas_id)
         member_queryset = Member.objects.filter(invited=invited, faci_canvas=faci_canvas)
         if member_queryset.count():

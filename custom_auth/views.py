@@ -33,8 +33,6 @@ class LoginView(APIView):
         if user:
             login(request, user)
             data['success'] = True
-        else:
-            pass
 
         return Response(status=status.HTTP_200_OK, data=data)
 

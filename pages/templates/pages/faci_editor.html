@@ -37,7 +37,7 @@
         .form_sheet span {
             vertical-align: middle;
         }
-        
+
         /* ListDown */
         .form_listdown {
             position: relative;
@@ -93,7 +93,7 @@
                 </div>
                 <form id="members_form" class="card-body accordion-collapse collapse show">
                     <div id="app"></div>
-                    <input type="button" value="Добавить" id="add_member_button" class="form-control">              
+                    <input type="button" value="Добавить" id="add_member_button" class="form-control">
                     <div class="{% if step > 1 %}d-none {% endif %}form_sheet">Для открытия выполните 1-й шаг</div>
                 </form>
             </div>
@@ -113,7 +113,7 @@
             </div>
 
             <br/>
-            
+
             <div class="card accordion-item">
                 <div class="accordion-header card-header accordion-button" data-bs-toggle="collapse" data-bs-target="#preparing_form" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
                     4. Подготовка
@@ -244,7 +244,7 @@
         var app_agenda = createApp({
             props: [],
             data() {
-                return {agendas: JSON.parse(document.getElementById('agendas_json').textContent)} 
+                return {agendas: JSON.parse(document.getElementById('agendas_json').textContent)}
             },
             template: `
 <template v-for="agenda in agendas">
@@ -291,7 +291,7 @@
             },
             components: {AgendaItem, AgendaSelfItem},
         });
-        
+
         app_agenda.config.compilerOptions.delimiters = [ '[[', ']]' ];
         var agenda_list = app_agenda.mount('#app_agenda');
     </script>
@@ -302,7 +302,7 @@
             emits: ['change'],
             template: `<div v-on:click="$emit('change', id, value)">[[ value ]]</div>`,
         }
-    
+
         const ListdownField = {
             props: ["id", "value", "name", "edit"],
             emits: ['search-item', 'change', 'blur', 'focus', 'update:value', 'update:id'],
@@ -508,7 +508,7 @@
                 $('#'+block_name+'_form .form_sheet')[0].classList.add('d-none');
             }
         }
-    
+
         function save_form_aim(event) {
             $.ajax({
                 url: URL_FACI_EDITOR_AIM,
@@ -521,7 +521,7 @@
                     if (result.success) {
                         set_valid_field(event.target.form, result.updated);
                     } else {
-                        set_invalid_field(event.target.form, result.errors);
+                        set_invalid_field(event.target.form, result.errors);  // TODO: такое должно быть только под кодом 400
                     }
                     if (result['id']) {
                         try {
@@ -555,7 +555,7 @@
                     if (result.success) {
                         set_valid_field(form, result.updated);
                     } else {
-                        set_invalid_field(form, result.errors);
+                        set_invalid_field(form, result.errors); // TODO: такое должно быть только под кодом 400
                     }
                     if (result['id']) {
                     }

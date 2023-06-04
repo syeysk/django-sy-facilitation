@@ -41,14 +41,9 @@
             <li class="nav-item">
                 <a href="{{ url }}" class="nav-link{% if request.path == url %} active{% endif %}">Главная</a>
             </li>
-            <li class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Модули</a>
-                <ul class="dropdown-menu">
-                    {% url 'faci_list' as url %}
-                    <li>
-                        <a href="{{ url }}" class="dropdown-item{% if request.path == url %} active{% endif %}">Встречи</a>
-                    </li>
-                </ul>
+					  {% url 'faci_list' as url %}
+            <li class="nav-item">
+							  <a href="{{ url }}" class="nav-link{% if request.path == url %} active{% endif %}">Встречи</a>
             </li>
             {# {% url 'service_server' as url %}#}
             {#<li class="nav-item">#}
@@ -90,7 +85,12 @@
                             </tr>
                         </table>
 
-                        <input class="form-control" type="button" value="Войти" id="login_button"/> или войти через <a href="{{ google_auth_url }}" target="_blank">Google</a>
+                        <input class="form-control d-inline-block" type="button" value="Войти" id="login_button"/>
+											  <a style="decoration: none;" href="{{ google_auth_url }}" target="_blank">
+													  <input class="form-control d-inline-block" type="button" value="Войти через Google"/>
+												</a>
+											  <br>
+											  <div id="login_bad_message" class="alert alert-danger d-none" role="alert"></div>
                     </form>
                 </div>
             </li>
@@ -137,9 +137,11 @@
         {% if not request.user.is_authenticated %}
             $('#btn_toggle_login_box').click(function(event) {
                 $('#login_box').toggle();
+                $('#registration_box').hide();
             });
             $('#btn_toggle_registration_box').click(function(event) {
                 $('#registration_box').toggle();
+                $('#login_box').hide();
             });
 
             $('#login_button').click(function(event) {
@@ -152,7 +154,12 @@
                     data: $(event.target.form).serialize(),
                     success: function(result) {
                         console.log(result);
-                        if (result.success) {window.location = window.location;}
+                        if (result.success) {
+                            window.location = window.location;
+                        } else {
+                            $('#login_bad_message').text('Неправильный пароль или пользователь не существует');
+                            $('#login_bad_message').removeClass('d-none');
+                        }
                     },
                     error: function(jqxhr, a, b) {
                         console.log('error');

@@ -49,15 +49,11 @@ class RegistrationView(APIView):
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         user_creation_form = UserCreationForm(data)
-        data_for_response = {}
-        if user_creation_form.is_valid():
-            user_creation_form.save()
-            data_for_response['success'] = True
-        else:
-            data_for_response['success'] = False
-            data_for_response['errors'] = user_creation_form.errors
+        if not user_creation_form.is_valid():
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=user_creation_form.errors)
 
-        return Response(status=status.HTTP_200_OK, data=data_for_response)
+        user_creation_form.save()
+        return Response(status=status.HTTP_200_OK, data={})
 
 
 class ExternAuthGoogleView(APIView):

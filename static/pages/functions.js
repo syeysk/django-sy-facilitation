@@ -6,13 +6,13 @@ You can use this code for everything! But be very carefull :)
 */
 
 function Request(method, url, post, async_func) {
-	if (url === undefined) url = WB_URL+'/modules/wbs_core/api.php'; 
+	if (url === undefined) url = WB_URL+'/modules/wbs_core/api.php';
 
 	post = post || '';
 	async_func = async_func || null;
 
 	if (async_func === null) {var is_async = false;} else {var is_async = true;}
-	
+
     var req = new XMLHttpRequest();
     req.open(method, url, is_async);
     req.send(post);
@@ -37,11 +37,11 @@ function RequestAction(action_name, url, arr, async_func) {
 
 function RA_raw(action, data, options) {
     options['func_after'] = options['func_after'] || options['func_after_load'];
-    
+
     RequestAction(action, options['url'], data, function() {
         if (this.readyState != 4) return;
         if (this.status==200) {
-                    
+
 
             var res = del_casper(this.responseText);
             if (options['not_json']) {
@@ -49,16 +49,16 @@ function RA_raw(action, data, options) {
             } else res = JSON.parse(res);
 
             if (options['func_after']) options['func_after'](res);
-                 
+
             if (res['success'] == 1) {
                 if (options['func_success']) options['func_success'](res, options['arg_func_success']);
             } else {
                 if (options['func_error']) options['func_error'](res, options['arg_func_error']);
             }
-                  
+
             if (res['location']) window.location = res['location'];
             if (res['content']) options['content_tag'].innerHTML = res['content'];
-                  
+
         } else if (!navigator.onLine) {
             if (options['func_fatal']) options['func_fatal']('Нет соединения с Интернет');
         } else {
@@ -95,7 +95,7 @@ function light_absent_fields(form, absent_fields) {
         if (form.form) form = form.form;
         else from = form.closest(form);
     }
-        
+
 	var i, field;
 /*	for (i = 0; i<absent_fields.length; i++) {
 		field = absent_fields[i];
@@ -217,7 +217,7 @@ function proccess_value(value, name, form, direction) {
     var results = [];
 
     if (direction == 'fromForm') {
-    
+
 		if (pff['filterBeforeTransform'] !== undefined) {
 			var result1 = pff['filterBeforeTransform'](value);
 			if (result1 !== undefined || result1 !== true) return [value, result1];
@@ -229,9 +229,9 @@ function proccess_value(value, name, form, direction) {
 		}
 
     }
-	
+
 	return [value, undefined];
-	
+
 }
 
 // можно передавать массивы в качестве значения
@@ -284,9 +284,9 @@ function set_form_fields(data, form) {
 	function normalize_boolean(value) {
 	    if (value == 'true') return true;
 	    else if (value == 'false') return  false;
-	    else return value;		
+	    else return value;
 	}
-	
+
 	var name, value, el;
 	for (name in data) {
 		//if (data.hasOwnProperty(name)) continue;
@@ -294,7 +294,7 @@ function set_form_fields(data, form) {
 		value = data[name];
 		el = form[name];
 		if (el.tagName !== undefined) {
-			if (el.type == 'checkbox' || el.type == 'radio') 
+			if (el.type == 'checkbox' || el.type == 'radio')
 			    el.checked = normalize_boolean(data[name]);
 			else { el.value = data[name]; }
 		} else {
@@ -431,9 +431,9 @@ function sendform(button, action, options) {
 function ZIndex(start_index) {
 	var self = this;
 	start_index = start_index || 1;
-	
+
 	this.els = [];
-	
+
 	this.lift = function(el, level) {
 		if (level == 'top') {
 			self.remove(el);
@@ -482,7 +482,7 @@ function ContextMenu(id, items) {
         if (!cm) {
 	        cm = document.createElement('ul');
 	        cm.className = 'context_menu'; cm.id = 'context_menu';
-	        
+
 	        var li;
 	        for(var i=0; i<items.length; i++) {
 	            var li = document.createElement('li');
@@ -516,7 +516,7 @@ function ContextMenu(id, items) {
     	self.target_el = e.currentTarget;
     	return false;
     }
-    
+
     init();
 }
 
@@ -544,7 +544,7 @@ function get_tab_content(tab_name, content_name, args, options) {
 	options = options || [];
 	options['tag_content'] = options['tag_content'] || document.getElementById("tab_content");
 	options['backup'] = options['backup'] === undefined ? true : options['backup'];
-	
+
 	if (typeof clear_pager !== 'undefined') clear_pager();
 
 	args = args || {}
@@ -581,7 +581,7 @@ function get_tab_content(tab_name, content_name, args, options) {
 function show_tab(tab_name, args, content_name) {
 	if ((typeof tab_name) == 'object') {tab_name = tab_name.id.slice(8);}
 	content_name = content_name || 'index'
-	
+
 	var headers = document.getElementById("tabhead_"+tab_name)
 	if (headers === null) {console.log('головы с именем "'+tab_name+'" не найдены!'); return}
 	headers = headers.parentElement;
@@ -615,7 +615,7 @@ function clear_pager(offset, count, nav) {
     }
 
     for(var i = 0; i < for_del.length; i += 1) for_del[i].remove();
-	
+
 };
 
 /* конец паджинатора */
@@ -650,8 +650,8 @@ function show_image(input, img) {
 
 function content_by_api(api, tag, options) {
     options['is_escape_content'] = options['is_escape_content'] === undefined ? false : options['is_escape_content'];
-    options['func_after_insert'] = options['func_after_insert'] === undefined ? function() {} : options['func_after_insert']; 
-    
+    options['func_after_insert'] = options['func_after_insert'] === undefined ? function() {} : options['func_after_insert'];
+
     RA_raw(api, options['data'], {
         func_after_load: function(res) {
             if (!options['not_insert_empty']) {
@@ -678,7 +678,7 @@ function DND(element, options) {
         document.body.onmousedown = function() {return true;}; // включаем  выделение текста
         if (options['up']) options['up'](e, options['data']);
     }
-    
+
     function move(e) {
         if (options['move']) options['move'](e, options['data']);
     }
@@ -688,15 +688,15 @@ function DND(element, options) {
         document.body.onmousedown = function() {return false;}; // выключаем  выделение текста
         options['data'] = options['data'] || {};
         options['data']['isSensorDisplay'] = e.touches === undefined ? false : true
-        
+
         if (options['down']) options['down'](e, options['data']);
-        
+
         document.addEventListener('mousemove', move);
         document.addEventListener('mouseup',  end);
         document.addEventListener('touchmove', move);
         document.addEventListener('touchend', end);
     }
-    
+
     element.addEventListener('mousedown', dnd); // для мыши
     element.addEventListener('touchstart', dnd, {passive:true}); // для сенсорного дисплея
 }
@@ -724,7 +724,14 @@ function toggle_password(img, field) {
     }
 }
 
-/* Изменения от 2023-03-06 */
+/* Изменения после 2023-03-06 */
+function clear_status_fields(form) {
+    for (let field of form.elements) {
+        $(form).find('#'+field.name+'-group .help-block').remove();
+        $(form[field.name]).removeClass("is-invalid");
+    }
+}
+
 function set_valid_field(form, field_names) {
     for (let field_name of field_names) {
         $(form).find('#'+field_name+'-group .help-block').remove();

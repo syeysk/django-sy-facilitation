@@ -22,6 +22,7 @@
             text-align: center;
         }
         .submenu_box {
+            width: max-content;
             position: absolute;
             background: white;
             z-index: 1000;
@@ -98,27 +99,30 @@
                 <input type="button" value="Регистрация" class="nav-link" id="btn_toggle_registration_box">
                 <div id="registration_box" class="submenu_box">
                     <form>
-                        <table>
-                            <tr>
-                              <td><label for="id_for_label_username">Пользователь:</label></td>
-                              <td><input required class="form-control" type="text" name="username" id="id_for_label_username"></td>
-                            </tr>
-
-                            <tr>
-                              <td><label for="id_for_label_email">E-mail:</label></td>
-                              <td><input required class="form-control" type="text" name="email" id="id_for_label_email"></td>
-                            </tr>
-
-                            <tr>
-                              <td><label for="id_for_label_password1">Пароль:</label></td>
-                              <td><input required class="form-control" type="password" name="password1" id="id_for_label_password1"></td>
-                            </tr>
-                            <tr>
-                              <td><label for="id_for_label_password2">Повторите пароль:</label></td>
-                              <td><input required class="form-control" type="password" name="password2" id="id_for_label_password2"></td>
-                            </tr>
-                        </table>
-
+											  <div class="mb-3 row" id="username-group">
+													  <label for="id_for_label_username" class="col-sm-4 form-label">Пользователь:</label>
+  													<div class="col-sm-6">
+                                <input required class="form-control" type="text" name="username" id="id_for_label_username">
+														</div>
+												</div>
+											  <div class="mb-3 row" id="email-group">
+  													<label for="id_for_label_email" class="col-sm-4 form-label">E-mail:</label>
+  													<div class="col-sm-6">
+															  <input required class="form-control" type="text" name="email" id="id_for_label_email">
+														</div>
+												</div>
+											  <div class="mb-3 row" id="password1-group">
+													  <label for="id_for_label_password1" class="col-sm-4 form-label">Пароль:</label>
+  													<div class="col-sm-6">
+															  <input required class="form-control" type="password" name="password1" id="id_for_label_password1">
+														</div>
+												</div>
+											  <div class="mb-3 row" id="password2-group">
+													  <label for="id_for_label_password2" class="col-sm-4 form-label">Повторите пароль:</label>
+  													<div class="col-sm-6">
+															  <input required class="form-control" type="password" name="password2" id="id_for_label_password2">
+														</div>
+												</div>
                         <input class="form-control" type="button" value="Зарегистрироваться" id="registrate_button"/>
                     </form>
                 </div>
@@ -169,20 +173,26 @@
                 });
             });
             $('#registrate_button').click(function(event) {
+                let form = event.target.form;
                 $.ajax({
                     url: "{% url 'custom_registration' %}",
                     headers: {
                         "X-CSRFToken": "{{ csrf_token }}",
                     },
                     dataType: 'json',
-                    data: $(event.target.form).serialize(),
+                    data: $(form).serialize(),
                     success: function(result) {
                         console.log(result);
-                        if (result.success) {window.location = window.location;}
+                        window.location = window.location;
                     },
-                    error: function(jqxhr, a, b) {
-                        console.log('error');
-                        console.log(jqxhr.responseText);
+                    //error: function(jqxhr, a, b) {
+                    //    console.log(jqxhr.responseText);
+                    //},
+                    statusCode: {
+                        400: function(xhr) {
+                            clear_status_fields(form);
+                            set_invalid_field(form, xhr.responseJSON);
+                        },
                     },
                     method: "post"
                 });

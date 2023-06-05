@@ -14,6 +14,9 @@
     <link rel="stylesheet" href="{% static 'pages/windows.css' %}">
     <script src="{% static 'pages/extern/vue.3.js' %}"></script>
     <script src="{% static 'pages/components.js' %}"></script>
+
+  	<link rel="stylesheet" href="{% static 'pages/sticky-footer.css' %}">
+    <!--<script src="https://getbootstrap.com/docs/3.4/assets/js/ie-emulation-modes-warning.js"></script>-->
 </head>
 
 <body>
@@ -136,11 +139,23 @@
         {% block content %}No content{% endblock %}
     </div>
 
-		<div class="container">
-			  &#8580; <a href="https://syeysk.ru">SYeysk</a> 2023
-    </div>
 
+		<footer class="footer">
+				<hr>
+  			<div style="display:flex; height: 99%; flex-direction: column; justify-content: center;">
+						<div class="container" style="height: fit-content; display: flex;justify-content: space-between;">
+							  <div>
+    								&#8580; <a href="https://syeysk.ru" target="_blank">SYeysk</a> 2023
+								</div>
+								<div>
+									  <a href="https://github.com/syeysk/django-sy-facilitation" target="_blank">GitHub</a>
+									   <!--<a href="https://telegra.ph/article-11-16-4" target="_blank">инструкция</a>-->
+								</div>
+						</div>
+   			</div>
+		</footer>
 
+    <!--<script src="https://getbootstrap.com/docs/3.4/assets/js/ie10-viewport-bug-workaround.js"></script>-->
     <script src="{% static 'pages/extern/bootstrap.bundle.min.js' %}" crossorigin="anonymous"></script>
     <script>
         {% if not request.user.is_authenticated %}

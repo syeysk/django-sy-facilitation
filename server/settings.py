@@ -12,10 +12,10 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
 SITE_URL = env.str('SITE_URL', default='http://127.0.0.1')
 API_TOKEN_SALT = env('API_TOKEN_SALT')
 SECRET_KEY = env('SECRET_KEY')
+METRIC_SYSTEM_CODE = env.str('METRIC_SYSTEM_CODE', default='', multiline=True)
 ROOT_URLCONF = 'server.urls'
 WSGI_APPLICATION = 'server.wsgi.application'
 STATIC_URL = '/static/'
-
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -24,10 +24,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'server',
-    'custom_auth',
     'rest_framework',
     'drf_spectacular',
+    'server',
+    'custom_auth',
     'pages',
     'faci',
 ]
@@ -54,6 +54,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'custom_auth.context_processors.extern_auth_services',
+                'pages.context_processors.additional_settings_options',
             ],
         },
     },

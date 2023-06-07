@@ -4,21 +4,18 @@ import environ
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-env = environ.Env(
-    DEBUG=(bool, True),
-    ALLOWED_HOSTS=(list, ['*']),
-    SITE_URL=(str, 'http://127.0.0.1'),
-)
+env = environ.Env(DEBUG=(bool, True))
 environ.Env.read_env(env_file=BASE_DIR / '.env')
 
-ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 DEBUG = env('DEBUG')
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
+SITE_URL = env.str('SITE_URL', default='http://127.0.0.1')
+API_TOKEN_SALT = env('API_TOKEN_SALT')
+SECRET_KEY = env('SECRET_KEY')
 ROOT_URLCONF = 'server.urls'
 WSGI_APPLICATION = 'server.wsgi.application'
 STATIC_URL = '/static/'
-SITE_URL = env('SITE_URL')
 
-API_TOKEN_SALT = env('API_TOKEN_SALT')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -61,8 +58,6 @@ TEMPLATES = [
         },
     },
 ]
-
-SECRET_KEY = env('SECRET_KEY')
 
 DATABASES = {
     'default': {

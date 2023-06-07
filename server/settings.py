@@ -16,6 +16,7 @@ METRIC_SYSTEM_CODE = env.str('METRIC_SYSTEM_CODE', default='', multiline=True)
 ROOT_URLCONF = 'server.urls'
 WSGI_APPLICATION = 'server.wsgi.application'
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'static'
 
 INSTALLED_APPS = [
     'django.contrib.admin',

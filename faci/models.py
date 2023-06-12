@@ -15,9 +15,50 @@ class Member(models.Model):
     inviting = models.ForeignKey(User, null=False, on_delete=models.CASCADE, related_name='faci_member_inviters')
     for_what = models.CharField(verbose_name='В каком вопросе компетентен', null=False, blank=False, max_length=200)
     faci_canvas = models.ForeignKey('faci.FaciCanvas', null=False, on_delete=models.CASCADE)
-    themes = models.CharField(verbose_name='Предлагаемые темы', null=False, default='', blank=True, max_length=1000)
+    themes = models.CharField(  # TODO: удалить поле
+        verbose_name='Тема выступления участника',
+        null=False,
+        default='',
+        blank=True,
+        max_length=1000,
+    )
     themes_duration = models.IntegerField(verbose_name='Длительность выступления, минуты', null=False, default=5)
-    questions = models.CharField(verbose_name='Мнения и вопросы', null=False, default='', blank=True, max_length=2000)
+    questions = models.CharField(
+        verbose_name='Вопросы',
+        help_text='вопросы, возникшие касательно темы встречи',
+        null=False,
+        default='',
+        blank=True,
+        max_length=2000,
+    )
+
+    fundamental_objections = models.CharField(
+        verbose_name='Принципиальные возражения',
+        help_text=(
+            'веские причины, отменяющие решения/предложения инициатора встречи,'
+            ' делающие поставленный вопрос ничтожным'
+        ),
+        null=False,
+        default='',
+        blank=True,
+        max_length=2000,
+    )
+    suggested_solutions = models.CharField(
+        verbose_name='Предлагаемые решения',
+        help_text='дополнительные предложения для решения проблемы, обозначенной инициатором встречи',
+        null=False,
+        default='',
+        blank=True,
+        max_length=2000,
+    )
+    counter_offer = models.CharField(
+        verbose_name='Встречные предложения',
+        help_text='предложение, которое заменит собой предложение инициатора встречи',
+        null=False,
+        default='',
+        blank=True,
+        max_length=2000,
+    )
 
     class Meta:
         db_table = 'app_faci_member'

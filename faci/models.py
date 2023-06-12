@@ -62,8 +62,8 @@ class Member(models.Model):
 
     class Meta:
         db_table = 'app_faci_member'
-        verbose_name = 'Участник встречи'
-        verbose_name_plural = 'Участники встречи'
+        verbose_name = 'Обязательный участник встречи'
+        verbose_name_plural = 'Обязательные участники встречи'
 
 
 class FaciCanvas(DatetimeMixin, models.Model):
@@ -92,6 +92,13 @@ class FaciCanvas(DatetimeMixin, models.Model):
     aim = models.CharField(verbose_name='Что мы пытаемся достичь?', max_length=255, null=False)
     if_not_reached = models.CharField(verbose_name='Что произойдёт, если цель не будет достигнута?', max_length=255, null=False)
     aim_type = models.IntegerField(verbose_name='Вид встречи', null=False, choices=AIM_TYPE_CHOICES, default=AIM_TYPE_SOLUTION)
+    solutions = models.CharField(
+        verbose_name='Первоначальные решения',
+        max_length=255,
+        null=False,
+        blank=True,
+        default='',
+    )
     # 4. Подготовка
     dt_meeting = models.DateTimeField(verbose_name='Дата и время', null=True)
     duration = models.IntegerField(verbose_name='Длительность', null=False, default=30)

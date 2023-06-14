@@ -36,8 +36,24 @@ class FaciEditorView(APIView):
             form_preparing = FaciCanvasPreparingForm(instance=faci)
             form_key_thoughts = FaciCanvasKeyThoughtsForm(instance=faci)
             form_agreements = FaciCanvasAgreementsForm(instance=faci)
-            members = [{'invited': member.invited.username, 'for_what': member.for_what, 'inviting': member.inviting.username} for member in faci.member_set.all()]
-            agendas = [{'invited': member.invited.username, 'themes': member.themes, 'themes_duration': member.themes_duration, 'questions': member.questions, 'self': member.invited.username == request.user.username} for member in faci.member_set.all()]
+            members = [
+                {
+                    'invited': member.invited.username,
+                    'for_what': member.for_what,
+                    'inviting': member.inviting.username,
+                }
+                for member in faci.member_set.all()
+            ]
+            agendas = [
+                {
+                    'invited': member.invited.username,
+                    'themes': member.themes,
+                    'themes_duration': member.themes_duration,
+                    'questions': member.questions,
+                    'self': member.invited.username == request.user.username,
+                }
+                for member in faci.member_set.all()
+            ]
         else:
             # Создание
             if not request.user.is_authenticated:

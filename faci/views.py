@@ -8,8 +8,6 @@ from rest_framework import status
 
 from faci.forms import (
     FaciCanvasAimForm,
-    FaciCanvasMembersForm,
-    FaciCanvasAgendaForm,
     FaciCanvasPreparingForm,
     FaciCanvasKeyThoughtsForm,
     FaciCanvasAgreementsForm,
@@ -35,8 +33,6 @@ class FaciEditorView(APIView):
             faci = get_object_or_404(FaciCanvas, pk=canvas_id)
             step = faci.step
             form_aim = FaciCanvasAimForm(instance=faci)
-            form_members = FaciCanvasMembersForm(instance=faci)
-            form_agenda = FaciCanvasAgendaForm(instance=faci)
             form_preparing = FaciCanvasPreparingForm(instance=faci)
             form_key_thoughts = FaciCanvasKeyThoughtsForm(instance=faci)
             form_agreements = FaciCanvasAgreementsForm(instance=faci)
@@ -49,8 +45,6 @@ class FaciEditorView(APIView):
 
             step = 1
             form_aim = FaciCanvasAimForm()
-            form_members = FaciCanvasMembersForm()
-            form_agenda = FaciCanvasAgendaForm()
             form_preparing = FaciCanvasPreparingForm()
             form_key_thoughts = FaciCanvasKeyThoughtsForm()
             form_agreements = FaciCanvasAgreementsForm()
@@ -61,8 +55,6 @@ class FaciEditorView(APIView):
         context = {
             'step': step,
             'form_aim': form_aim,
-            'form_members': form_members,
-            'form_agenda': form_agenda,
             'form_preparing': form_preparing,
             'form_key_thoughts': form_key_thoughts,
             'form_agreements': form_agreements,

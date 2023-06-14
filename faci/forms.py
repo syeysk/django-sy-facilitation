@@ -1,6 +1,6 @@
 from django.forms import ModelForm, DateTimeInput
 
-from faci.models import Member, FaciCanvas
+from faci.models import FaciCanvas
 
 
 class FaciCanvasAimForm(ModelForm):
@@ -19,28 +19,6 @@ class FaciCanvasAimForm(ModelForm):
             'if_not_reached',
             'aim_type',
             'solutions',
-        ]
-
-
-class FaciCanvasMembersForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    class Meta:
-        model = FaciCanvas
-        fields = [
-            'id',
-        ]
-
-
-class FaciCanvasAgendaForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    class Meta:
-        model = FaciCanvas
-        fields = [
-            'id',
         ]
 
 

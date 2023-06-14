@@ -50,6 +50,9 @@ class FaciEditorView(APIView):
                     'themes': member.themes,
                     'themes_duration': member.themes_duration,
                     'questions': member.questions,
+                    'fundamental_objections': member.fundamental_objections,
+                    'suggested_solutions': member.suggested_solutions,
+                    'counter_offer': member.counter_offer,
                     'self': member.invited.username == request.user.username,
                 }
                 for member in faci.member_set.all()
@@ -66,7 +69,18 @@ class FaciEditorView(APIView):
             form_agreements = FaciCanvasAgreementsForm()
             username = request.user.username
             members = [{'invited': username, 'for_what': FACI_CREATOR_FOR_WHAT, 'inviting': username}]
-            agendas = [{'invited': username, 'themes': '', 'themes_duration': 0, 'questions': '', 'self': True}]
+            agendas = [
+                {
+                    'invited': username,
+                    'themes': '',
+                    'themes_duration': 0,
+                    'questions': '',
+                    'fundamental_objections': '',
+                    'suggested_solutions': '',
+                    'counter_offer': '',
+                    'self': True,
+                },
+            ]
 
         context = {
             'step': step,
@@ -162,13 +176,14 @@ class FaciEditAgendaView(LoginRequiredMixin, APIView):
         member.themes = data['themes']
         member.themes_duration = data['themes_duration']
         member.questions = data['questions']
+        member.fundamental_objections = data['fundamental_objections']
+        member.suggested_solutions = data['suggested_solutions']
+        member.counter_offer = data['counter_offer']
         member.save()
         faci_canvas.step = 4
         faci_canvas.save()
 
-        data_for_return = {}
-        data_for_return['open_block'] = 'preparing'
-        data_for_return['success'] = True
+        data_for_return = {'open_block': 'preparing', 'success': True}
         return Response(status=status.HTTP_200_OK, data=data_for_return)
 
 

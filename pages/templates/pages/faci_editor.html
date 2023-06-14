@@ -193,7 +193,15 @@
         const { createApp } = Vue;
 
         const AgendaItem = {
-            props: ['invited', 'themes', 'themes_duration', 'questions'],
+            props: [
+                'invited',
+                'themes',
+                'themes_duration',
+                'questions',
+                'fundamental_objections',
+                'suggested_solutions',
+                'counter_offer',
+            ],
             emits: [],
             template: `
 <div style="background-color: var(--bs-card-border-color); padding: 5px; border-radius: 3px; display: flex; justify-content: space-between;">
@@ -204,23 +212,52 @@
 <br>
 
 <div v-if="themes">
-    <div style="font-style: italic;">Темы:</div>
+    <div style="font-style: italic;">Тема выступления участника:</div>
     <p style="padding-left: 15px;">[[ themes ]]</p>
 </div>
 
-
 <div v-if="questions">
-    <div style="font-style: italic;">Мнения/вопросы:</div>
+    <div style="font-style: italic;">Вопросы:</div>
     <p style="padding-left: 15px;">[[ questions ]]</p>
+</div>
+
+<div v-if="fundamental_objections">
+    <div style="font-style: italic;">Принципиальные возражения:</div>
+    <p style="padding-left: 15px;">[[ fundamental_objections ]]</p>
+</div>
+
+<div v-if="suggested_solutions">
+    <div style="font-style: italic;">Предлагаемые решения:</div>
+    <p style="padding-left: 15px;">[[ suggested_solutions ]]</p>
+</div>
+
+<div v-if="counter_offer">
+    <div style="font-style: italic;">Встречные предложения:</div>
+    <p style="padding-left: 15px;">[[ counter_offer ]]</p>
 </div>
 `,
         };
 
         const AgendaSelfItem = {
-            props: ['invited', 'themes', 'themes_duration', 'questions'],
+            props: [
+                'invited',
+                'themes',
+                'themes_duration',
+                'questions',
+                'fundamental_objections',
+                'suggested_solutions',
+                'counter_offer',
+            ],
             emits: ['blur'],
             data() {
-                return {m_themes: this.themes, m_themes_duration: this.themes_duration, m_questions: this.questions};
+                return {
+                    m_themes: this.themes,
+                    m_themes_duration: this.themes_duration,
+                    m_questions: this.questions,
+                    m_fundamental_objections: this.fundamental_objections,
+                    m_suggested_solutions: this.suggested_solutions,
+                    m_counter_offer: this.counter_offer,
+                };
             },
             template: `
 <div style="background-color: var(--bs-card-border-color); padding: 5px; border-radius: 3px; display: flex; justify-content: space-between;">
@@ -230,13 +267,28 @@
 
 <br>
 
-<div style="font-style: italic;">Темы:</div>
+<div style="font-style: italic;">Тема выступления участника:</div>
 <textarea v-model="m_themes" name="themes" @blur="blur" style="width: 100%;" rows="5" class="form-control"></textarea>
 
 <br>
 
-<div style="font-style: italic;">Мнения/вопросы:</div>
+<div style="font-style: italic;">Вопросы:</div>
 <textarea v-model="m_questions" name="questions" @blur="blur" style="width: 100%;" rows="5" class="form-control"></textarea>
+
+<br>
+
+<div style="font-style: italic;">Принципиальные возражения:</div>
+<textarea v-model="m_fundamental_objections" name="fundamental_objections" @blur="blur" style="width: 100%;" rows="5" class="form-control"></textarea>
+
+<br>
+
+<div style="font-style: italic;">Предлагаемые решения:</div>
+<textarea v-model="m_suggested_solutions" name="suggested_solutions" @blur="blur" style="width: 100%;" rows="5" class="form-control"></textarea>
+
+<br>
+
+<div style="font-style: italic;">Встречные предложения:</div>
+<textarea v-model="m_counter_offer" name="counter_offer" @blur="blur" style="width: 100%;" rows="5" class="form-control"></textarea>
 
 <br>
 `,
@@ -260,6 +312,9 @@
         :themes="agenda.themes"
         :themes_duration="agenda.themes_duration"
         :questions="agenda.questions"
+        :fundamental_objections="agenda.fundamental_objections"
+        :suggested_solutions="agenda.suggested_solutions"
+        :counter_offer="agenda.counter_offer"
         @blur="save_agenda"
     ></agenda-self-item>
     <div
@@ -271,6 +326,9 @@
             :themes="agenda.themes"
             :themes_duration="agenda.themes_duration"
             :questions="agenda.questions"
+						:fundamental_objections="agenda.fundamental_objections"
+						:suggested_solutions="agenda.suggested_solutions"
+						:counter_offer="agenda.counter_offer"
         ></agenda-item>
     </div>
 </template>
@@ -283,7 +341,14 @@
                             "X-CSRFToken": CSRF_TOKEN,
                         },
                         dataType: 'json',
-                        data: {themes: component.m_themes, themes_duration: component.m_themes_duration, questions: component.m_questions},
+                        data: {
+                            themes: component.m_themes,
+                            themes_duration: component.m_themes_duration,
+                            questions: component.m_questions,
+                            fundamental_objections: component.m_fundamental_objections,
+                            suggested_solutions: component.m_suggested_solutions,
+                            counter_offer: component.m_counter_offer,
+                        },
                         success: function(result) {
                             console.log(result);
                             open_block(result['open_block']);

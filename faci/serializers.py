@@ -33,6 +33,9 @@ class FaciEditAgendaSerializer(serializers.Serializer):
     themes = serializers.CharField(max_length=1000, allow_blank=True, allow_null=False)
     questions = serializers.CharField(max_length=2000, allow_blank=True, allow_null=False)
     themes_duration = serializers.IntegerField(min_value=1)
+    fundamental_objections = serializers.CharField(max_length=2000, allow_blank=True, allow_null=False)
+    suggested_solutions = serializers.CharField(max_length=2000, allow_blank=True, allow_null=False)
+    counter_offer = serializers.CharField(max_length=2000, allow_blank=True, allow_null=False)
 
 
 class FaciEditPreparingSerializer(serializers.Serializer):

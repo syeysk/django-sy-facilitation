@@ -8,8 +8,6 @@ from rest_framework import status
 
 from faci.forms import (
     FaciCanvasAimForm,
-    FaciCanvasMembersForm,
-    FaciCanvasAgendaForm,
     FaciCanvasPreparingForm,
     FaciCanvasKeyThoughtsForm,
     FaciCanvasAgreementsForm,
@@ -35,13 +33,30 @@ class FaciEditorView(APIView):
             faci = get_object_or_404(FaciCanvas, pk=canvas_id)
             step = faci.step
             form_aim = FaciCanvasAimForm(instance=faci)
-            form_members = FaciCanvasMembersForm(instance=faci)
-            form_agenda = FaciCanvasAgendaForm(instance=faci)
             form_preparing = FaciCanvasPreparingForm(instance=faci)
             form_key_thoughts = FaciCanvasKeyThoughtsForm(instance=faci)
             form_agreements = FaciCanvasAgreementsForm(instance=faci)
-            members = [{'invited': member.invited.username, 'for_what': member.for_what, 'inviting': member.inviting.username} for member in faci.member_set.all()]
-            agendas = [{'invited': member.invited.username, 'themes': member.themes, 'themes_duration': member.themes_duration, 'questions': member.questions, 'self': member.invited.username == request.user.username} for member in faci.member_set.all()]
+            members = [
+                {
+                    'invited': member.invited.username,
+                    'for_what': member.for_what,
+                    'inviting': member.inviting.username,
+                }
+                for member in faci.member_set.all()
+            ]
+            agendas = [
+                {
+                    'invited': member.invited.username,
+                    'themes': member.themes,
+                    'themes_duration': member.themes_duration,
+                    'questions': member.questions,
+                    'fundamental_objections': member.fundamental_objections,
+                    'suggested_solutions': member.suggested_solutions,
+                    'counter_offer': member.counter_offer,
+                    'self': member.invited.username == request.user.username,
+                }
+                for member in faci.member_set.all()
+            ]
         else:
             # Создание
             if not request.user.is_authenticated:
@@ -49,20 +64,27 @@ class FaciEditorView(APIView):
 
             step = 1
             form_aim = FaciCanvasAimForm()
-            form_members = FaciCanvasMembersForm()
-            form_agenda = FaciCanvasAgendaForm()
             form_preparing = FaciCanvasPreparingForm()
             form_key_thoughts = FaciCanvasKeyThoughtsForm()
             form_agreements = FaciCanvasAgreementsForm()
             username = request.user.username
             members = [{'invited': username, 'for_what': FACI_CREATOR_FOR_WHAT, 'inviting': username}]
-            agendas = [{'invited': username, 'themes': '', 'themes_duration': 0, 'questions': '', 'self': True}]
+            agendas = [
+                {
+                    'invited': username,
+                    'themes': '',
+                    'themes_duration': 0,
+                    'questions': '',
+                    'fundamental_objections': '',
+                    'suggested_solutions': '',
+                    'counter_offer': '',
+                    'self': True,
+                },
+            ]
 
         context = {
             'step': step,
             'form_aim': form_aim,
-            'form_members': form_members,
-            'form_agenda': form_agenda,
             'form_preparing': form_preparing,
             'form_key_thoughts': form_key_thoughts,
             'form_agreements': form_agreements,
@@ -154,13 +176,14 @@ class FaciEditAgendaView(LoginRequiredMixin, APIView):
         member.themes = data['themes']
         member.themes_duration = data['themes_duration']
         member.questions = data['questions']
+        member.fundamental_objections = data['fundamental_objections']
+        member.suggested_solutions = data['suggested_solutions']
+        member.counter_offer = data['counter_offer']
         member.save()
         faci_canvas.step = 4
         faci_canvas.save()
 
-        data_for_return = {}
-        data_for_return['open_block'] = 'preparing'
-        data_for_return['success'] = True
+        data_for_return = {'open_block': 'preparing', 'success': True}
         return Response(status=status.HTTP_200_OK, data=data_for_return)
 
 
@@ -271,7 +294,8 @@ class AddFaciView(APIView):
         faci = FaciCanvas(
             aim=data['aim'],
             if_not_reached=data['if_not_reached'],
-            aim_type=AIM_TYPES[data['aim_type']],
+            aim_type=self.AIM_TYPES[data['aim_type']],
+            solutions=data['solutions'],
         )
         faci.save()
         data_for_return = {'id': faci.id}

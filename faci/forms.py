@@ -9,6 +9,7 @@ class FaciCanvasAimForm(ModelForm):
         self.fields['aim'].widget.attrs.update({'class': 'form-control'})
         self.fields['if_not_reached'].widget.attrs.update({'class': 'form-control'})
         self.fields['aim_type'].widget.attrs.update({'class': 'form-control'})
+        self.fields['solutions'].widget.attrs.update({'class': 'form-control'})
 
     class Meta:
         model = FaciCanvas
@@ -17,13 +18,14 @@ class FaciCanvasAimForm(ModelForm):
             'aim',
             'if_not_reached',
             'aim_type',
+            'solutions',
         ]
-    
-    
+
+
 class FaciCanvasMembersForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
+
     class Meta:
         model = FaciCanvas
         fields = [
@@ -34,7 +36,7 @@ class FaciCanvasMembersForm(ModelForm):
 class FaciCanvasAgendaForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
+
     class Meta:
         model = FaciCanvas
         fields = [
@@ -80,7 +82,7 @@ class FaciCanvasAgreementsForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['other_agreements'].widget.attrs.update({'class': 'form-control'})
-        
+
     class Meta:
         model = FaciCanvas
         fields = [

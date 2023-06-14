@@ -271,7 +271,8 @@ class AddFaciView(APIView):
         faci = FaciCanvas(
             aim=data['aim'],
             if_not_reached=data['if_not_reached'],
-            aim_type=AIM_TYPES[data['aim_type']],
+            aim_type=self.AIM_TYPES[data['aim_type']],
+            solutions=data['solutions'],
         )
         faci.save()
         data_for_return = {'id': faci.id}

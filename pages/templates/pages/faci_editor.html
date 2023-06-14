@@ -80,6 +80,12 @@
                             <label for="{{ form_aim.if_not_reached.id_for_label }}" class="form-label">{{ form_aim.if_not_reached.label }}</label>
                         </div>
                     </div>
+                    <div class="mb-3 form-group" id="solutions-group">
+                        <div class="form-floating">
+                            {{ form_aim.solutions }}
+                            <label for="{{ form_aim.solutions.id_for_label }}" class="form-label">{{ form_aim.solutions.label }}</label>
+                        </div>
+                    </div>
 
                     <input type="button" value="Сохранить{% if step == 1 %} и перейти к заполнению участников{% endif %}" class="btn btn-secondary" id="btn_save_aim">
                 </form>

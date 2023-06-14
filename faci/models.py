@@ -31,7 +31,6 @@ class Member(models.Model):
         blank=True,
         max_length=2000,
     )
-
     fundamental_objections = models.CharField(
         verbose_name='Принципиальные возражения',
         help_text=(

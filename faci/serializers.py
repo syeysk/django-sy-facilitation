@@ -8,6 +8,7 @@ class AddFaciViewSerializer(serializers.Serializer):
     aim = serializers.CharField(max_length=255)
     if_not_reached = serializers.CharField(max_length=255)
     aim_type = serializers.ChoiceField(choices=AIM_TYPE_CHOICES)
+    solutions = serializers.CharField(max_length=255)
 
 
 class GetListFaciSerializer(serializers.Serializer):

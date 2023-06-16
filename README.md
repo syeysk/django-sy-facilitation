@@ -1,6 +1,6 @@
 # Микросервис фасилитации встреч
 
-<p align="center"><img src="static/logo.svg" align="middle" width="30%"></p>
+<p align="center"><img src="static/logo.svg" align="middle" width="25%"></p>
 
 ## Введение
 

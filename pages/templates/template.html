@@ -46,7 +46,9 @@
         <ul class="nav nav-tabs">
             {% url 'index' as url %}
             <li class="nav-item">
-                <a href="{{ url }}" class="nav-link{% if request.path == url %} active{% endif %}">Главная</a>
+                <a href="{{ url }}" class="nav-link{% if request.path == url %} active{% endif %}" style="padding:5px">
+									<img src="{% static 'logo.svg' %}" title="Главная страница" alt="логотип микросервиса" style="height:30px;">
+								</a>
             </li>
 					  {% url 'faci_list' as url %}
             <li class="nav-item">

@@ -1,13 +1,11 @@
 import time
 
 import pytest
-from django.contrib.auth.models import User
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
-USERNAME = 'testuser'
 PASSWORD = '1234'
 WRONG_LOGIN_MESSAGE = 'Неправильный пароль или пользователь не существует'
 
@@ -41,11 +39,11 @@ def login(selenium, username, password):
     time.sleep(2)
 
 
-def test_ui_login(live_server):
+def test_ui_login(live_server, user):
     selenium = webdriver.Chrome()
     selenium.get(live_server.url)
 
-    login(selenium, USERNAME, PASSWORD)
+    login(selenium, user.username, user.password)
     with pytest.raises(NoSuchElementException):
         selenium.find_element('id', 'login_bad_message')
 
@@ -66,16 +64,13 @@ def test_ui_login_absent_username(live_server):
     assert WRONG_LOGIN_MESSAGE in selenium.find_element('id', 'login_bad_message').text
 
 
-def test_ui(live_server):
-    username = 'testuser'
-    password = '1234'
-    User.objects.create_user(username=username, password=password)
+def test_ui(live_server, user):
     selenium = webdriver.Chrome()
 
     # Go to main page and login
 
     selenium.get(live_server.url)
-    login(selenium, username, password)
+    login(selenium, user.username, user.password)
 
     # Go to faci list page
 

@@ -1,15 +1,14 @@
 import time
 
 import pytest
-from django.test import LiveServerTestCase
+from django.contrib.auth.models import User
 from selenium import webdriver
-
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
-USERNAME = 'clever_cat'
-PASSWORD = '1234-clever_cat'
+USERNAME = 'testuser'
+PASSWORD = '1234'
 WRONG_LOGIN_MESSAGE = 'Неправильный пароль или пользователь не существует'
 
 
@@ -42,10 +41,9 @@ def login(selenium, username, password):
     time.sleep(2)
 
 
-def test_ui_login():
+def test_ui_login(live_server):
     selenium = webdriver.Chrome()
-
-    selenium.get('http://127.0.0.1:8002/')
+    selenium.get(live_server.url)
 
     login(selenium, USERNAME, PASSWORD)
     with pytest.raises(NoSuchElementException):
@@ -54,31 +52,34 @@ def test_ui_login():
     assert selenium.find_element('id', 'logout_button')
 
 
-def test_ui_login_wrong_username():
+def test_ui_login_wrong_username(live_server):
     selenium = webdriver.Chrome()
-    selenium.get('http://127.0.0.1:8002/')
+    selenium.get(live_server.url)
     login(selenium, 'unexisted user', PASSWORD)
     assert WRONG_LOGIN_MESSAGE in selenium.find_element('id', 'login_bad_message').text
 
 
-def test_ui_login_absent_username():
+def test_ui_login_absent_username(live_server):
     selenium = webdriver.Chrome()
-    selenium.get('http://127.0.0.1:8002/')
+    selenium.get(live_server.url)
     login(selenium, '', PASSWORD)
     assert WRONG_LOGIN_MESSAGE in selenium.find_element('id', 'login_bad_message').text
 
 
-def test_ui():
+def test_ui(live_server):
+    username = 'testuser'
+    password = '1234'
+    User.objects.create_user(username=username, password=password)
     selenium = webdriver.Chrome()
 
     # Go to main page and login
 
-    selenium.get('http://127.0.0.1:8002/')
-    login(selenium, USERNAME, PASSWORD)
+    selenium.get(live_server.url)
+    login(selenium, username, password)
 
     # Go to faci list page
 
-    selenium.get('http://127.0.0.1:8002/faci/')
+    selenium.get(live_server + '/faci/')
     time.sleep(2)
 
     # Go to add faci page
@@ -102,3 +103,6 @@ def test_ui():
     # Add member
 
     add_member(invited='strong_puma', for_what='Дизайн')
+
+
+# TODO: добавить тесты для авторизации с пустым паролем, для авторизации с неактивным пользователем

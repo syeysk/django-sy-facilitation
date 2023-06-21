@@ -53,6 +53,7 @@ class RegistrationView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST, data=user_creation_form.errors)
 
         user_creation_form.save()
+        login(request, User.objects.get(username=data['username']))
         return Response(status=status.HTTP_200_OK, data={})
 
 

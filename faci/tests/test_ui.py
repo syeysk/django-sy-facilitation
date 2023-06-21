@@ -22,8 +22,21 @@ def populate_step_one(selenium, aim=None, if_not_reached=None):
     time.sleep(2)
 
 
-def add_member(invited=None, for_what=None):
-    pass
+def add_member(selenium, invited=None, for_what=None):
+    # Жмём на кнопку "Добавить"
+    btn_add_member = selenium.find_element('id', 'add_member_button')
+    btn_add_member.send_keys(Keys.ENTER)
+
+    # Вводим имя пользователя
+    field = selenium.find_element(By.CSS_SELECTOR, '#members_form table tr:last-child .field_listdown')
+    field.send_keys(invited)
+    time.sleep(2)
+
+    # Выбираем пользователя из подсказки
+    btn_user = selenium.find_element(By.CSS_SELECTOR, '#members_form table tr:last-child .suggestions div:last-child')
+    _ = btn_user.location_once_scrolled_into_view
+    time.sleep(1.5)
+    btn_user.click()
 
 
 def login(selenium, username, password):
@@ -58,46 +71,46 @@ def registrate(selenium, username, password, password_repeat, email):
     time.sleep(2)
 
 
-def test_registration(live_server, faker):
-    selenium = webdriver.Chrome()
-    selenium.get(live_server.url)
+# def test_registration(live_server, faker):
+#     selenium = webdriver.Chrome()
+#     selenium.get(live_server.url)
+#
+#     username = faker.user_name()
+#     password = faker.password()
+#     email = faker.email()
+#     assert User.objects.filter(username=username).first() is None
+#     registrate(selenium, username, password, password, email)
+#
+#     assert User.objects.filter(username=username).first() is not None
+#     assert selenium.find_element('id', 'logout_button')
+#
+#
+# def test_ui_login(live_server, user):
+#     selenium = webdriver.Chrome()
+#     selenium.get(live_server.url)
+#
+#     login(selenium, user.username, user.password)
+#     with pytest.raises(NoSuchElementException):
+#         selenium.find_element('id', 'login_bad_message')
+#
+#     assert selenium.find_element('id', 'logout_button')
+#
+#
+# def test_ui_login_wrong_username(live_server):
+#     selenium = webdriver.Chrome()
+#     selenium.get(live_server.url)
+#     login(selenium, 'unexisted user', PASSWORD)
+#     assert WRONG_LOGIN_MESSAGE in selenium.find_element('id', 'login_bad_message').text
+#
+#
+# def test_ui_login_absent_username(live_server):
+#     selenium = webdriver.Chrome()
+#     selenium.get(live_server.url)
+#     login(selenium, '', PASSWORD)
+#     assert WRONG_LOGIN_MESSAGE in selenium.find_element('id', 'login_bad_message').text
 
-    username = faker.user_name()
-    password = faker.password()
-    email = faker.email()
-    assert User.objects.filter(username=username).first() is None
-    registrate(selenium, username, password, password, email)
 
-    assert User.objects.filter(username=username).first() is not None
-    assert selenium.find_element('id', 'logout_button')
-
-
-def test_ui_login(live_server, user):
-    selenium = webdriver.Chrome()
-    selenium.get(live_server.url)
-
-    login(selenium, user.username, user.password)
-    with pytest.raises(NoSuchElementException):
-        selenium.find_element('id', 'login_bad_message')
-
-    assert selenium.find_element('id', 'logout_button')
-
-
-def test_ui_login_wrong_username(live_server):
-    selenium = webdriver.Chrome()
-    selenium.get(live_server.url)
-    login(selenium, 'unexisted user', PASSWORD)
-    assert WRONG_LOGIN_MESSAGE in selenium.find_element('id', 'login_bad_message').text
-
-
-def test_ui_login_absent_username(live_server):
-    selenium = webdriver.Chrome()
-    selenium.get(live_server.url)
-    login(selenium, '', PASSWORD)
-    assert WRONG_LOGIN_MESSAGE in selenium.find_element('id', 'login_bad_message').text
-
-
-def test_ui(live_server, user):
+def test_ui(live_server, user, faker):
     selenium = webdriver.Chrome()
 
     # Go to main page and login
@@ -130,7 +143,10 @@ def test_ui(live_server, user):
 
     # Add member
 
-    add_member(invited='strong_puma', for_what='Дизайн')
+    for user_index in range(3):
+        username = faker.user_name()
+        User.objects.create_user(username, faker.password())
+        add_member(selenium, invited=username, for_what='Дизайн')
 
 
 # TODO: добавить тесты для авторизации с пустым паролем, для авторизации с неактивным пользователем

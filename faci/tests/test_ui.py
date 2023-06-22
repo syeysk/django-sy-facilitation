@@ -7,6 +7,8 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
+from faci.models import Member
+
 PASSWORD = '1234'
 WRONG_LOGIN_MESSAGE = 'Неправильный пароль или пользователь не существует'
 
@@ -37,6 +39,23 @@ def add_member(selenium, invited=None, for_what=None):
     _ = btn_user.location_once_scrolled_into_view
     time.sleep(1.5)
     btn_user.click()
+    time.sleep(1.5)
+
+    # Нажимаем на текст причины приглашения
+    btn_for_what = selenium.find_element(By.CSS_SELECTOR, '#members_form table tr:last-child .el_sign')
+    _ = btn_for_what.location_once_scrolled_into_view
+    time.sleep(1.5)
+    btn_for_what.click()
+
+    # Вводим текст причины приглашения
+    field_for_what = selenium.find_element(By.CSS_SELECTOR, '#members_form table tr:last-child input[name="for_what"]')
+    field_for_what.send_keys(for_what)
+
+
+def populate_step_three(selenium):
+    app_agenda = selenium.find_element(By.ID, 'app_agenda')
+    _ = app_agenda.location_once_scrolled_into_view
+    time.sleep(1.5)
 
 
 def login(selenium, username, password):
@@ -71,43 +90,43 @@ def registrate(selenium, username, password, password_repeat, email):
     time.sleep(2)
 
 
-# def test_registration(live_server, faker):
-#     selenium = webdriver.Chrome()
-#     selenium.get(live_server.url)
-#
-#     username = faker.user_name()
-#     password = faker.password()
-#     email = faker.email()
-#     assert User.objects.filter(username=username).first() is None
-#     registrate(selenium, username, password, password, email)
-#
-#     assert User.objects.filter(username=username).first() is not None
-#     assert selenium.find_element('id', 'logout_button')
-#
-#
-# def test_ui_login(live_server, user):
-#     selenium = webdriver.Chrome()
-#     selenium.get(live_server.url)
-#
-#     login(selenium, user.username, user.password)
-#     with pytest.raises(NoSuchElementException):
-#         selenium.find_element('id', 'login_bad_message')
-#
-#     assert selenium.find_element('id', 'logout_button')
-#
-#
-# def test_ui_login_wrong_username(live_server):
-#     selenium = webdriver.Chrome()
-#     selenium.get(live_server.url)
-#     login(selenium, 'unexisted user', PASSWORD)
-#     assert WRONG_LOGIN_MESSAGE in selenium.find_element('id', 'login_bad_message').text
-#
-#
-# def test_ui_login_absent_username(live_server):
-#     selenium = webdriver.Chrome()
-#     selenium.get(live_server.url)
-#     login(selenium, '', PASSWORD)
-#     assert WRONG_LOGIN_MESSAGE in selenium.find_element('id', 'login_bad_message').text
+def test_registration(live_server, faker):
+    selenium = webdriver.Chrome()
+    selenium.get(live_server.url)
+
+    username = faker.user_name()
+    password = faker.password()
+    email = faker.email()
+    assert User.objects.filter(username=username).first() is None
+    registrate(selenium, username, password, password, email)
+
+    assert User.objects.filter(username=username).first() is not None
+    assert selenium.find_element('id', 'logout_button')
+
+
+def test_ui_login(live_server, user):
+    selenium = webdriver.Chrome()
+    selenium.get(live_server.url)
+
+    login(selenium, user.username, user.password)
+    with pytest.raises(NoSuchElementException):
+        selenium.find_element('id', 'login_bad_message')
+
+    assert selenium.find_element('id', 'logout_button')
+
+
+def test_ui_login_wrong_username(live_server):
+    selenium = webdriver.Chrome()
+    selenium.get(live_server.url)
+    login(selenium, 'unexisted user', PASSWORD)
+    assert WRONG_LOGIN_MESSAGE in selenium.find_element('id', 'login_bad_message').text
+
+
+def test_ui_login_absent_username(live_server):
+    selenium = webdriver.Chrome()
+    selenium.get(live_server.url)
+    login(selenium, '', PASSWORD)
+    assert WRONG_LOGIN_MESSAGE in selenium.find_element('id', 'login_bad_message').text
 
 
 def test_ui(live_server, user, faker):
@@ -130,6 +149,7 @@ def test_ui(live_server, user, faker):
 
     form_sheet_members = selenium.find_element(By.CSS_SELECTOR, '#members_form .form_sheet')
     assert 'd-none' not in form_sheet_members.get_attribute('class')
+    assert selenium.current_url.endswith('/new/') is True
 
     # Populate step 1
 
@@ -140,13 +160,31 @@ def test_ui(live_server, user, faker):
     )
 
     assert 'd-none' in form_sheet_members.get_attribute('class')
+    assert selenium.current_url.endswith('/1/') is True
 
-    # Add member
+    # Step 2: Add members
 
+    form_sheet_agenda = selenium.find_element(By.CSS_SELECTOR, '#agenda_form .form_sheet')
+    assert 'd-none' not in form_sheet_agenda.get_attribute('class')
+
+    wait_member_usernames = [user.username]
     for user_index in range(3):
         username = faker.user_name()
         User.objects.create_user(username, faker.password())
         add_member(selenium, invited=username, for_what='Дизайн')
+        wait_member_usernames.append(username)
+
+    fact_member_usernames = list(
+        Member.objects.filter(faci_canvas__id=1).values_list('invited__username', flat=True),
+    )
+    # assert fact_member_usernames == wait_member_usernames
+    assert 'd-none' in form_sheet_agenda.get_attribute('class')
+
+    # Populate step 3
+
+    populate_step_three(selenium)
+
+
 
 
 # TODO: добавить тесты для авторизации с пустым паролем, для авторизации с неактивным пользователем

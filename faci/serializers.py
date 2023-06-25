@@ -17,8 +17,16 @@ class GetListFaciSerializer(serializers.Serializer):
 
 
 class FaciEditMembersSerializer(serializers.Serializer):
+    MODE_EDIT = 'edit'
+    MODE_ADD = 'add'
+    CHOICES_MODE = (
+        (MODE_ADD, 'Добавление'),
+        (MODE_EDIT, 'Редактирование'),
+    )
+
     for_what = serializers.CharField(max_length=100)
     invited_user = serializers.CharField(max_length=100)
+    mode = serializers.ChoiceField(choices=CHOICES_MODE)
 
     @staticmethod
     def validate_invited_user(value):

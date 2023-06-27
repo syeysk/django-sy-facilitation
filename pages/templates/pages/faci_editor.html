@@ -611,11 +611,17 @@
             methods: {
                 add_member(event) {
                     this.mode = 'add',
-                    this.member_list.push({'id': '', 'invited': '', 'inviting': '{{ request.user.username }}', 'for_what': 'цель приглашения?', 'edit': true});
+                    this.member_list.push({
+                        'id': '',
+                        'invited': '',
+                        'inviting': '{{ request.user.username }}',
+                        'for_what': 'цель приглашения?',
+                        'edit': true
+                    });
                     setTimeout(function() {
-                        member_items = $('#app_members>table')[0].children;
-                        member_items[member_items.length-1].querySelector('.button_ss').click();
-                    }, 20);
+                        let member_item = $('#app_members > table > tr:last-child')[0].previousElementSibling;
+                        member_item.querySelector('.button_ss').click();
+                    }, 40);
                 },
             },
             components: {

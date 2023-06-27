@@ -470,7 +470,12 @@
         const MemberItem = {
             props: ['member', 'memberMode'],
             data() {
-                return {mode: this.memberMode || 'view', previous_for_what: undefined, uneditable_invited: this.memberMode != 'add'};
+                return {
+                    mode: this.memberMode || 'view',
+                    previous_for_what: undefined,
+                    uneditable_invited: this.memberMode != 'add',
+                    bad_message: '',
+                };
             },
             template: `
 <tr>
@@ -493,7 +498,7 @@
         </span>
     </td>
     <!--<td>[[ member.inviting ]]</td>-->
-    <td>
+    <td style="text-align: center;">
         <svg class="bi member-icon icon-positive" role="img" title="Save" @click="save" :class="{'d-none': !(mode == 'edit' || mode == 'add')}">
             <use xlink:href="{% static 'pages/extern/bootstrap-icons.svg' %}#check-square-fill"/>
         </svg>
@@ -503,6 +508,11 @@
         <svg class="bi member-icon icon-negative" role="img" title="Cancel" @click="cancel" :class="{'d-none': !(mode == 'edit' || mode == 'add')}">
             <use xlink:href="{% static 'pages/extern/bootstrap-icons.svg' %}#x-square-fill"/>
         </svg>
+    </td>
+</tr>
+<tr :class="{'d-none': !bad_message}">
+    <td colspan="3">
+        <div class="alert alert-danger" role="alert">[[ bad_message ]]</div>
     </td>
 </tr>`,
             components: {
@@ -523,10 +533,15 @@
                             agenda_list.agendas.push({invited: self.member.invited, themes: '', themes_duration: 5, questions: '', self: self.member.invited == '{{request.user.username}}' });
                             self.mode = 'view';
                             self.uneditable_invited = true;
+                            self.bad_message = '';
                         },
-                        error: function(jqxhr, a, b) {
-                            console.log('error');
-                            console.log(jqxhr.responseText);
+                        statusCode: {
+                            400: function(xhr) {
+                                self.bad_message = ''
+                                for (let key in xhr.responseJSON) {
+                                    self.bad_message += key + ': ' + xhr.responseJSON[key] + '';
+                                }
+                            }
                         },
                         method: "post"
                     });
@@ -548,22 +563,14 @@
                                 component.item_list.push({'id': null, 'value': 'пользователь не найден'});
                             }
                         },
-                        error: function(jqxhr, a, b) {
-                            console.log('error');
-                            console.log(jqxhr.responseText);
-                        },
                         method: "post"
                     });
                 },
-
                 select_user(id, value) {
                 },
                 blur_selecting_user(component) {
                 },
                 focus_selecting_user(component) {
-                //    if (this.mode != 'add') {
-                //        component.is_edit = false;
-                //    }
                 },
                 edit() {
                     this.mode = 'edit';
@@ -575,6 +582,7 @@
                     }
                     this.mode = 'view';
                     this.member.for_what = this.previous_for_what;
+                    this.bad_message = '';
                 },
             },
         }

@@ -59,9 +59,18 @@
             width: calc(var(--bs-body-font-size) + 6px);
             height: calc(var(--bs-body-font-size) + 6px);
             cursor: pointer;
-            fill: #74452f;
             margin-left: 4px;
         }
+        .icon-neutral {
+            fill: #382fe2;
+        }
+        .icon-negative {
+            fill: #e2382f;
+        }
+        .icon-positive {
+            fill: #38e22f;
+        }
+
     </style>
 
     <div class="row accordion">
@@ -485,13 +494,13 @@
     </td>
     <!--<td>[[ member.inviting ]]</td>-->
     <td>
-        <svg class="bi member-icon" role="img" title="Save" @click="save" :class="{'d-none': !(mode == 'edit' || mode == 'add')}">
+        <svg class="bi member-icon icon-positive" role="img" title="Save" @click="save" :class="{'d-none': !(mode == 'edit' || mode == 'add')}">
             <use xlink:href="{% static 'pages/extern/bootstrap-icons.svg' %}#check-square-fill"/>
         </svg>
-        <svg class="bi member-icon" role="img" title="Edit" @click="edit" :class="{'d-none': !(mode == 'view')}">
+        <svg class="bi member-icon icon-neutral" role="img" title="Edit" @click="edit" :class="{'d-none': !(mode == 'view')}">
             <use xlink:href="{% static 'pages/extern/bootstrap-icons.svg' %}#pencil-fill"/>
         </svg>
-        <svg class="bi member-icon" role="img" title="Cancel" @click="cancel" :class="{'d-none': !(mode == 'edit' || mode == 'add')}">
+        <svg class="bi member-icon icon-negative" role="img" title="Cancel" @click="cancel" :class="{'d-none': !(mode == 'edit' || mode == 'add')}">
             <use xlink:href="{% static 'pages/extern/bootstrap-icons.svg' %}#x-square-fill"/>
         </svg>
     </td>

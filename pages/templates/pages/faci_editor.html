@@ -1,4 +1,5 @@
 {% extends 'template.html' %}
+{% load static %}
 
 {% block title %}
     {% if form_aim.instance.id %} <a style="text-decoration: none;" href="{% url 'faci_list' %}">🡄</a> Редактирование встречи {% else %} Новая встреча {% endif %}
@@ -53,6 +54,14 @@
         }
         .suggestions div {padding: 4px 5px 4px 5px; border-bottom: 1px solid #dfa4a4; cursor: pointer;}
         .suggestions div:hover {background:#ffe4e4;}
+
+        .member-icon {
+            width: calc(var(--bs-body-font-size) + 6px);
+            height: calc(var(--bs-body-font-size) + 6px);
+            cursor: pointer;
+            fill: #74452f;
+            margin-left: 4px;
+        }
     </style>
 
     <div class="row accordion">
@@ -476,9 +485,15 @@
     </td>
     <!--<td>[[ member.inviting ]]</td>-->
     <td>
-        <input type="button" value="V" title="Save" @click="save" :class="{'d-none': !(mode == 'edit' || mode == 'add')}">
-        <input type="button" value="/" title="Edit" @click="edit" :class="{'d-none': !(mode == 'view')}">
-        <input type="button" value="X" title="Cancel" @click="cancel" :class="{'d-none': !(mode == 'edit' || mode == 'add')}">
+        <svg class="bi member-icon" role="img" title="Save" @click="save" :class="{'d-none': !(mode == 'edit' || mode == 'add')}">
+            <use xlink:href="{% static 'pages/extern/bootstrap-icons.svg' %}#check-square-fill"/>
+        </svg>
+        <svg class="bi member-icon" role="img" title="Edit" @click="edit" :class="{'d-none': !(mode == 'view')}">
+            <use xlink:href="{% static 'pages/extern/bootstrap-icons.svg' %}#pencil-fill"/>
+        </svg>
+        <svg class="bi member-icon" role="img" title="Cancel" @click="cancel" :class="{'d-none': !(mode == 'edit' || mode == 'add')}">
+            <use xlink:href="{% static 'pages/extern/bootstrap-icons.svg' %}#x-square-fill"/>
+        </svg>
     </td>
 </tr>`,
             components: {

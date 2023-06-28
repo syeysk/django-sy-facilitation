@@ -30,27 +30,41 @@ def add_member(selenium, invited=None, for_what=None):
     btn_add_member.send_keys(Keys.ENTER)
 
     # Вводим имя пользователя
-    field = selenium.find_element(By.CSS_SELECTOR, '#members_form table tr:last-child .field_listdown')
+    # field = selenium.find_elements(By.CSS_SELECTOR, '#members_form table tr')[-2]
+    # field = field.find_element(By.CSS_SELECTOR, '.field_listdown')
+    field = selenium.find_element(By.CSS_SELECTOR, '#members_form table tr:nth-last-child(2) .field_listdown')
     field.send_keys(invited)
     time.sleep(2)
 
     # Выбираем пользователя из подсказки
-    btn_user = selenium.find_element(By.CSS_SELECTOR, '#members_form table tr:last-child .suggestions div:last-child')
+    btn_user = selenium.find_element(
+        By.CSS_SELECTOR,
+        '#members_form table tr:nth-last-child(2) .suggestions div:last-child',
+    )
     _ = btn_user.location_once_scrolled_into_view
     time.sleep(1.5)
     btn_user.click()
     time.sleep(1.5)
 
-    # Нажимаем на текст причины приглашения
-    btn_for_what = selenium.find_element(By.CSS_SELECTOR, '#members_form table tr:last-child .el_sign')
+    # Нажимаем на кнопку редактирования причины приглашения
+    btn_for_what = selenium.find_element(By.CSS_SELECTOR, '#members_form table tr:nth-last-child(2) .icon-neutral')
     _ = btn_for_what.location_once_scrolled_into_view
     time.sleep(1.5)
     btn_for_what.click()
 
     # Вводим текст причины приглашения
-    field_for_what = selenium.find_element(By.CSS_SELECTOR, '#members_form table tr:last-child input[name="for_what"]')
+    field_for_what = selenium.find_element(
+        By.CSS_SELECTOR,
+        '#members_form table tr:nth-last-child(2) input[name="for_what"]',
+    )
     field_for_what.send_keys(for_what)
 
+    # Нажимаем на кнопку сохранения причины приглашения
+    field_for_what = selenium.find_element(
+        By.CSS_SELECTOR,
+        '#members_form table tr:nth-last-child(2) .icon-positive',
+    )
+    field_for_what.send_keys(for_what)
 
 def populate_step_three(selenium):
     app_agenda = selenium.find_element(By.ID, 'app_agenda')

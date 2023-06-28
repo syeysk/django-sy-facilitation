@@ -1,4 +1,5 @@
 {% extends 'template.html' %}
+{% load static %}
 
 {% block title %}
     {% if form_aim.instance.id %} <a style="text-decoration: none;" href="{% url 'faci_list' %}">🡄</a> Редактирование встречи {% else %} Новая встреча {% endif %}
@@ -53,6 +54,23 @@
         }
         .suggestions div {padding: 4px 5px 4px 5px; border-bottom: 1px solid #dfa4a4; cursor: pointer;}
         .suggestions div:hover {background:#ffe4e4;}
+
+        .member-icon {
+            width: calc(var(--bs-body-font-size) + 6px);
+            height: calc(var(--bs-body-font-size) + 6px);
+            cursor: pointer;
+            margin-left: 4px;
+        }
+        .icon-neutral {
+            fill: #382fe2;
+        }
+        .icon-negative {
+            fill: #e2382f;
+        }
+        .icon-positive {
+            fill: #38e22f;
+        }
+
     </style>
 
     <div class="row accordion">
@@ -98,7 +116,7 @@
                     2. Участники
                 </div>
                 <form id="members_form" class="card-body accordion-collapse collapse show">
-                    <div id="app"></div>
+                    <div id="app_members"></div>
                     <input type="button" value="Добавить" id="add_member_button" class="form-control">
                     <div class="{% if step > 1 %}d-none {% endif %}form_sheet">Для открытия выполните 1-й шаг</div>
                 </form>
@@ -375,7 +393,7 @@
         }
 
         const ListdownField = {
-            props: ["id", "value", "name", "edit"],
+            props: ["id", "value", "name", "edit", 'uneditableField'],
             emits: ['search-item', 'change', 'blur', 'focus', 'update:value', 'update:id'],
             template: `
 <div class="component_listdown">
@@ -402,10 +420,15 @@
                     mid: this.id,
                     is_edit: this.edit,
                     item_list: [],
+                    uneditable: this.uneditableField,
                 }
             },
             methods: {
                 focus(event) {
+                    console.log(this.uneditable);
+                    if (this.uneditable) {
+                        return;
+                    }
                     this.is_edit = true;
                     let self = this;
                     setTimeout(function() {
@@ -445,7 +468,15 @@
         }
 
         const MemberItem = {
-            props: ["member"],
+            props: ['member', 'memberMode'],
+            data() {
+                return {
+                    mode: this.memberMode || 'view',
+                    previous_for_what: undefined,
+                    uneditable_invited: this.memberMode != 'add',
+                    bad_message: '',
+                };
+            },
             template: `
 <tr>
     <td>
@@ -453,26 +484,42 @@
               @search-item="search_user"
               @change="select_user"
               @blur="blur_selecting_user"
+              @focus="focus_selecting_user"
               v-model:value="member.invited"
               :edit="member.edit"
               name="invited"
+              :uneditable-field="uneditable_invited"
         ></listdown-field>
     </td>
     <td>
-        <toggle-field
-           @blur="blur_input_for_what"
-          :value="member.for_what"
-          :id="member.id"
-          name="for_what"
-        ></toggle-field>
+        <span>
+            <span class="el_sign" style="display: inline-block; width: 100%;" :class="{'d-none': !(mode == 'view')}">[[ member.for_what ]]</span>
+            <input v-model.trim="member.for_what" name="for_what" class="el_field" :class="{'d-none': !(mode == 'edit' || mode == 'add')}"/>
+        </span>
     </td>
     <!--<td>[[ member.inviting ]]</td>-->
+    <td style="text-align: center;">
+        <svg class="bi member-icon icon-positive" role="img" title="Save" @click="save" :class="{'d-none': !(mode == 'edit' || mode == 'add')}">
+            <use xlink:href="{% static 'pages/extern/bootstrap-icons.svg' %}#check-square-fill"/>
+        </svg>
+        <svg class="bi member-icon icon-neutral" role="img" title="Edit" @click="edit" :class="{'d-none': !(mode == 'view')}">
+            <use xlink:href="{% static 'pages/extern/bootstrap-icons.svg' %}#pencil-fill"/>
+        </svg>
+        <svg class="bi member-icon icon-negative" role="img" title="Cancel" @click="cancel" :class="{'d-none': !(mode == 'edit' || mode == 'add')}">
+            <use xlink:href="{% static 'pages/extern/bootstrap-icons.svg' %}#x-square-fill"/>
+        </svg>
+    </td>
+</tr>
+<tr :class="{'d-none': !bad_message}">
+    <td colspan="3">
+        <div class="alert alert-danger" role="alert">[[ bad_message ]]</div>
+    </td>
 </tr>`,
             components: {
-                ListdownField, ToggleField
+                ListdownField,
             },
             methods: {
-                save_member(component) {
+                save(component) {
                     let self = this;
                     $.ajax({
                         url: URL_FACI_EDITOR_MEMBER,
@@ -480,14 +527,21 @@
                             "X-CSRFToken": CSRF_TOKEN,
                         },
                         dataType: 'json',
-                        data: {for_what: component.mvalue, invited_user: self.member.invited},
+                        data: {for_what: self.member.for_what, invited_user: self.member.invited, mode: self.mode},
                         success: function(result) {
                             open_block(result['open_block']);
                             agenda_list.agendas.push({invited: self.member.invited, themes: '', themes_duration: 5, questions: '', self: self.member.invited == '{{request.user.username}}' });
+                            self.mode = 'view';
+                            self.uneditable_invited = true;
+                            self.bad_message = '';
                         },
-                        error: function(jqxhr, a, b) {
-                            console.log('error');
-                            console.log(jqxhr.responseText);
+                        statusCode: {
+                            400: function(xhr) {
+                                self.bad_message = ''
+                                for (let key in xhr.responseJSON) {
+                                    self.bad_message += key + ': ' + xhr.responseJSON[key] + '';
+                                }
+                            }
                         },
                         method: "post"
                     });
@@ -509,66 +563,73 @@
                                 component.item_list.push({'id': null, 'value': 'пользователь не найден'});
                             }
                         },
-                        error: function(jqxhr, a, b) {
-                            console.log('error');
-                            console.log(jqxhr.responseText);
-                        },
                         method: "post"
                     });
                 },
-
                 select_user(id, value) {
-                    console.log(value);
-                    this.save_member();
-                    return true;
                 },
                 blur_selecting_user(component) {
-                    console.log(component);
-                    console.log(this.member);
                 },
-                blur_input_for_what(component) {
-                    this.save_member(component);
+                focus_selecting_user(component) {
                 },
-
+                edit() {
+                    this.mode = 'edit';
+                    this.previous_for_what = this.member.for_what;
+                },
+                cancel() {
+                    if (this.mode == 'add') {
+                        this.$parent.member_list.pop(-1);
+                    }
+                    this.mode = 'view';
+                    this.member.for_what = this.previous_for_what;
+                    this.bad_message = '';
+                },
             },
         }
 
-        var app = createApp({
+        var app_members = createApp({
             template: `
 <table style="width: 100%;">
     <tr style="text-align: center;">
         <th>Участник</th>
         <th>В каком вопросе компетентен</th>
         <!--<th>Кто пригласил</th>-->
+        <th></th>
     </tr>
     <member-item
         v-for="member in member_list"
         :member="member"
+        :member-mode="mode"
     ></member-item>
 </table>`,
             data() {
                 return {
                     member_list: JSON.parse(document.getElementById('members_json').textContent),
+                    mode: 'view',
                 }
             },
             methods: {
                 add_member(event) {
-                    this.member_list.push({'id': '', 'invited': '', 'inviting': '{{ request.user.username }}', 'for_what': 'цель приглашения?', 'edit': true});
+                    this.mode = 'add',
+                    this.member_list.push({
+                        'id': '',
+                        'invited': '',
+                        'inviting': '{{ request.user.username }}',
+                        'for_what': 'цель приглашения?',
+                        'edit': true
+                    });
                     setTimeout(function() {
-                        member_items = $('#app>table')[0].children;
-                        member_items[member_items.length-1].querySelector('.button_ss').click();
-                    }, 20);
+                        let member_item = $('#app_members > table > tr:last-child')[0].previousElementSibling;
+                        member_item.querySelector('.button_ss').click();
+                    }, 40);
                 },
             },
             components: {
                 MemberItem
             },
-            compilerOptions: {
-                delimiters: ["[[", "]]"],
-            },
         });
-        app.config.compilerOptions.delimiters = [ '[[', ']]' ];
-        var member_list = app.mount('#app');
+        app_members.config.compilerOptions.delimiters = [ '[[', ']]' ];
+        var member_list = app_members.mount('#app_members');
 
         $("#add_member_button").click(member_list.add_member);
     </script>

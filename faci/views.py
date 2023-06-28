@@ -142,15 +142,27 @@ class FaciEditMembersView(LoginRequiredMixin, APIView):
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
 
+        mode = data['mode']
         invited = data['invited_user']  # TODO: обработать на фронте 400 {'unvited_username': ['пользователь не найден']}
         faci_canvas = FaciCanvas.objects.get(pk=canvas_id)
-        member_queryset = Member.objects.filter(invited=invited, faci_canvas=faci_canvas)
-        if member_queryset.count():
-            member = member_queryset[0]
+        member = Member.objects.filter(invited=invited, faci_canvas=faci_canvas).first()
+        if mode == FaciEditMembersSerializer.MODE_EDIT:
+            if not member:
+                return Response(
+                    status=status.HTTP_400_BAD_REQUEST,
+                    data={'invited_user': ['Пользователь не является участником встречи']},
+                )
+
             if member.for_what != data['for_what']:
                 member.for_what = data['for_what']
                 member.save()
         else:
+            if member:
+                return Response(
+                    status=status.HTTP_400_BAD_REQUEST,
+                    data={'invited_user': ['Пользователь уже является участником встречи']},
+                )
+
             member = Member(invited=invited, for_what=data['for_what'], inviting=request.user, faci_canvas=faci_canvas)
             member.save()
             faci_canvas.step = 3

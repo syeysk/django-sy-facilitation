@@ -47,10 +47,10 @@ def add_member(selenium, invited=None, for_what=None):
     time.sleep(1.5)
 
     # Нажимаем на кнопку редактирования причины приглашения
-    btn_for_what = selenium.find_element(By.CSS_SELECTOR, '#members_form table tr:nth-last-child(2) .icon-neutral')
-    _ = btn_for_what.location_once_scrolled_into_view
-    time.sleep(1.5)
-    btn_for_what.click()
+    # btn_for_what = selenium.find_element(By.CSS_SELECTOR, '#members_form table tr:nth-last-child(2) .icon-neutral')
+    # _ = btn_for_what.location_once_scrolled_into_view
+    # time.sleep(1.5)
+    # btn_for_what.click()
 
     # Вводим текст причины приглашения
     field_for_what = selenium.find_element(
@@ -64,7 +64,10 @@ def add_member(selenium, invited=None, for_what=None):
         By.CSS_SELECTOR,
         '#members_form table tr:nth-last-child(2) .icon-positive',
     )
-    field_for_what.send_keys(for_what)
+    _ = field_for_what.location_once_scrolled_into_view
+    time.sleep(1)
+    field_for_what.click()
+
 
 def populate_step_three(selenium):
     app_agenda = selenium.find_element(By.ID, 'app_agenda')
@@ -170,7 +173,7 @@ def test_ui(live_server, user, faker):
     populate_step_one(
         selenium,
         aim='Создать новую версию устройства',
-        if_not_reached='Упадут продажи, т.к. Текущая вресия моральна устарела',
+        if_not_reached='Упадут продажи, т.к. текущая версия морально устарела',
     )
 
     assert 'd-none' in form_sheet_members.get_attribute('class')
@@ -192,6 +195,7 @@ def test_ui(live_server, user, faker):
         Member.objects.filter(faci_canvas__id=1).values_list('invited__username', flat=True),
     )
     # assert fact_member_usernames == wait_member_usernames
+    time.sleep(1.5)
     assert 'd-none' in form_sheet_agenda.get_attribute('class')
 
     # Populate step 3

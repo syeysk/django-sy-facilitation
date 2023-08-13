@@ -91,7 +91,7 @@ class FaciEditorView(APIView):
             'members': members,
             'agendas': agendas,
         }
-        return render(request, 'pages/faci_editor.html', context)
+        return render(request, 'faci/faci_editor.html', context)
 
 
 class FaciEditAimView(APIView):
@@ -288,7 +288,7 @@ class FaciListView(View):
             faci['aim_type'] = aim_type_dict[faci['aim_type']]
 
         context = {'facis': facis}
-        return render(request, 'pages/faci_list.html', context)
+        return render(request, 'faci/faci_list.html', context)
 
 
 class AddFaciView(APIView):

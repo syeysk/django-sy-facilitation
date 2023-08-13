@@ -20,18 +20,22 @@ def populate_step_one(selenium, aim=None, if_not_reached=None):
     if if_not_reached is not None:
         selenium.find_element('id', 'id_if_not_reached').send_keys(if_not_reached)
 
+    selenium.find_element(By.ID, 'aim_form').find_element(By.XPATH, './..').screenshot(f'aim.png')
+
     selenium.find_element('id', 'btn_save_aim').send_keys(Keys.ENTER)
     time.sleep(2)
 
 
 def add_member(selenium, invited=None, for_what=None):
+    form = selenium.find_element(By.ID, 'members_form').find_element(By.XPATH, './..')
+    form.screenshot(f'members-init-{invited}.png')
+
     # Жмём на кнопку "Добавить"
     btn_add_member = selenium.find_element('id', 'add_member_button')
     btn_add_member.send_keys(Keys.ENTER)
+    form.screenshot(f'members-add-{invited}.png')
 
     # Вводим имя пользователя
-    # field = selenium.find_elements(By.CSS_SELECTOR, '#members_form table tr')[-2]
-    # field = field.find_element(By.CSS_SELECTOR, '.field_listdown')
     field = selenium.find_element(By.CSS_SELECTOR, '#members_form table tr:nth-last-child(2) .field_listdown')
     field.send_keys(invited)
     time.sleep(2)
@@ -41,6 +45,7 @@ def add_member(selenium, invited=None, for_what=None):
         By.CSS_SELECTOR,
         '#members_form table tr:nth-last-child(2) .suggestions div:last-child',
     )
+    form.screenshot(f'members-find-{invited}.png')
     _ = btn_user.location_once_scrolled_into_view
     time.sleep(1.5)
     btn_user.click()
@@ -58,6 +63,7 @@ def add_member(selenium, invited=None, for_what=None):
         '#members_form table tr:nth-last-child(2) input[name="for_what"]',
     )
     field_for_what.send_keys(for_what)
+    form.screenshot(f'members-input-{invited}.png')
 
     # Нажимаем на кнопку сохранения причины приглашения
     field_for_what = selenium.find_element(
@@ -65,8 +71,9 @@ def add_member(selenium, invited=None, for_what=None):
         '#members_form table tr:nth-last-child(2) .icon-positive',
     )
     _ = field_for_what.location_once_scrolled_into_view
-    time.sleep(1)
+    time.sleep(2)
     field_for_what.click()
+    form.screenshot(f'members-save-{invited}.png')
 
 
 def populate_step_three(selenium):

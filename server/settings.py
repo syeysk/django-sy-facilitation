@@ -17,6 +17,7 @@ ROOT_URLCONF = 'server.urls'
 WSGI_APPLICATION = 'server.wsgi.application'
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR.parent / 'static'
+INTERNAL_IPS = ['127.0.0.1']
 
 INSTALLED_APPS = [
     'django.contrib.admin',

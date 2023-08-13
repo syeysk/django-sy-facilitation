@@ -144,7 +144,6 @@
         {% block content %}No content{% endblock %}
     </div>
 
-
 		<footer class="footer">
 				<hr>
   			<div style="display:flex; height: 99%; flex-direction: column; justify-content: center;">
@@ -181,7 +180,6 @@
                     dataType: 'json',
                     data: $(event.target.form).serialize(),
                     success: function(result) {
-                        console.log(result);
                         if (result.success) {
                             window.location = window.location;
                         } else {

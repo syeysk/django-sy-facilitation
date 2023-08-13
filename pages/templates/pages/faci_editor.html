@@ -209,7 +209,9 @@
 
     <script>
         const { createApp } = Vue;
+    </script>
 
+    <script>
         const AgendaItem = {
             props: [
                 'invited',
@@ -255,7 +257,9 @@
 </div>
 `,
         };
+    </script>
 
+    <script>
         const AgendaSelfItem = {
             props: [
                 'invited',
@@ -316,7 +320,9 @@
                 },
             },
         };
+    </script>
 
+    <script>
         var app_agenda = createApp({
             props: [],
             data() {
@@ -391,7 +397,9 @@
             emits: ['change'],
             template: `<div v-on:click="$emit('change', id, value)">[[ value ]]</div>`,
         }
+    </script>
 
+    <script>
         const ListdownField = {
             props: ["id", "value", "name", "edit", 'uneditableField'],
             emits: ['search-item', 'change', 'blur', 'focus', 'update:value', 'update:id'],
@@ -466,7 +474,9 @@
                 ListdownFieldItem
             },
         }
+    </script>
 
+    <script>
         const MemberItem = {
             props: ['member', 'memberMode'],
             data() {
@@ -586,7 +596,9 @@
                 },
             },
         }
+    </script>
 
+    <script>
         var app_members = createApp({
             template: `
 <table style="width: 100%;">

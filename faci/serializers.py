@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 
@@ -30,7 +30,7 @@ class FaciEditMembersSerializer(serializers.Serializer):
 
     @staticmethod
     def validate_invited_user(value):
-        value = User.objects.filter(username=value).first()
+        value = get_user_model().objects.filter(username=value).first()
         if not value:
             raise serializers.ValidationError('Пользователя не существует')
 

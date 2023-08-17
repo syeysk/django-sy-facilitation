@@ -27,11 +27,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'drf_spectacular',
+    'django_sy_framework.base',
+    'django_sy_framework.custom_auth',
     'server',
-    'custom_auth',
     'pages',
     'faci',
-    'django_sy_framework.base',
 ]
 
 MIDDLEWARE = [
@@ -55,7 +55,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'custom_auth.context_processors.extern_auth_services',
+                'django_sy_framework.custom_auth.context_processors.extern_auth_services',
             ],
         },
     },
@@ -96,8 +96,8 @@ REST_FRAMEWORK = {
 }
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'API сервера базы знаний',
-    'DESCRIPTION': 'Сервер предоставляет доступ к манипулированию заметками',
+    'TITLE': 'API сервера фасилитации',
+    'DESCRIPTION': 'Сервер предоставляет доступ к манипулированию холстами фасилитации',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': True,
     'SCHEMA_PATH_PREFIX_INSERT': 'api',
@@ -115,6 +115,18 @@ EXTERN_AUTH = {
         'client_secret': env('EXTERN_AUTH_GOOGLE_CLIENT_SECRET'),
     }
 }
+AUTH_USER_MODEL = 'custom_auth.CustomAuthUser'
+AUTHENTICATION_BACKENDS = ['django_sy_framework.custom_auth.backend.CustomAuthBackend']
+MICROSERVICES_TOKENS = {
+    'to_auth': env('MICROSERVICE_TOKEN_TO_AUTH'),
+}
+MICROSERVICES_KEYS = {
+    'auth': env('MICROSERVICE_KEY_TO_AUTH'),
+}
+MICROSERVICES_URLS = {
+    'auth': env('MICROSERVICE_URL_AUTH'),
+}
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

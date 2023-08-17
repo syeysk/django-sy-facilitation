@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.db import models
 
 
@@ -11,8 +11,8 @@ class DatetimeMixin(models.Model):
 
 
 class Member(models.Model):
-    invited = models.ForeignKey(User, null=False, on_delete=models.CASCADE, related_name='faci_members')
-    inviting = models.ForeignKey(User, null=False, on_delete=models.CASCADE, related_name='faci_member_inviters')
+    invited = models.ForeignKey(get_user_model(), null=False, on_delete=models.CASCADE, related_name='faci_members')
+    inviting = models.ForeignKey(get_user_model(), null=False, on_delete=models.CASCADE, related_name='faci_member_inviters')
     for_what = models.CharField(verbose_name='В каком вопросе компетентен', null=False, blank=False, max_length=200)
     faci_canvas = models.ForeignKey('faci.FaciCanvas', null=False, on_delete=models.CASCADE)
     themes = models.CharField(  # TODO: удалить поле
@@ -86,7 +86,7 @@ class FaciCanvas(DatetimeMixin, models.Model):
         (MEETING_STATUS_FINISHED, 'Окончена'),
     )
 
-    user_creator = models.ForeignKey(User, null=False, on_delete=models.CASCADE)
+    user_creator = models.ForeignKey(get_user_model(), null=False, on_delete=models.CASCADE)
     #  1. Цель
     aim = models.CharField(verbose_name='Что мы пытаемся достичь?', max_length=255, null=False)
     if_not_reached = models.CharField(verbose_name='Что произойдёт, если цель не будет достигнута?', max_length=255, null=False)

@@ -1,5 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404, render
 from django.views import View
 from rest_framework.response import Response
@@ -336,5 +336,5 @@ class GetListFaciView(APIView):
 class SearchUserView(LoginRequiredMixin, APIView):
     def post(self, request):
         search_string = request.POST['search_string']
-        usernames = User.objects.filter(username__contains=search_string).values_list('username', flat=True)[:10]
+        usernames = get_user_model().objects.filter(username__contains=search_string).values_list('username', flat=True)[:10]
         return Response(status=status.HTTP_200_OK, data=usernames)

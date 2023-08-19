@@ -10,13 +10,15 @@ environ.Env.read_env(env_file=BASE_DIR / '.env')
 DEBUG = env('DEBUG')
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
 SITE_URL = env.str('SITE_URL', default='http://127.0.0.1')
-API_TOKEN_SALT = env('API_TOKEN_SALT')
 SECRET_KEY = env('SECRET_KEY')
 ROOT_URLCONF = 'server.urls'
 WSGI_APPLICATION = 'server.wsgi.application'
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR.parent / 'static'
 INTERNAL_IPS = ['127.0.0.1']
+
+API_SALT = env('API_SALT')
+API_SECRET_KEY = env('API_SECRET_KEY')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -119,9 +121,6 @@ AUTH_USER_MODEL = 'custom_auth.CustomAuthUser'
 AUTHENTICATION_BACKENDS = ['django_sy_framework.custom_auth.backend.CustomAuthBackend']
 MICROSERVICES_TOKENS = {
     'to_auth': env('MICROSERVICE_TOKEN_TO_AUTH'),
-}
-MICROSERVICES_KEYS = {
-    'auth': env('MICROSERVICE_KEY_TO_AUTH'),
 }
 MICROSERVICES_URLS = {
     'auth': env('MICROSERVICE_URL_AUTH'),

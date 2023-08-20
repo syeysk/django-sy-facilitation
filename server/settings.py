@@ -17,6 +17,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR.parent / 'static'
 INTERNAL_IPS = ['127.0.0.1']
 
+SALT = env('SALT')
 API_SALT = env('API_SALT')
 API_SECRET_KEY = env('API_SECRET_KEY')
 

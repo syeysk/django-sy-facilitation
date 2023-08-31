@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'django_sy_framework.base',
     'django_sy_framework.custom_auth',
+    'django_sy_framework.linker',
     'server',
     'pages',
     'faci',
@@ -126,7 +127,6 @@ MICROSERVICES_TOKENS = {
 MICROSERVICES_URLS = {
     'auth': env('MICROSERVICE_URL_AUTH'),
 }
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

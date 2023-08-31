@@ -510,13 +510,13 @@
     <!--<td>[[ member.inviting ]]</td>-->
     <td style="text-align: center;">
         <svg class="bi member-icon icon-positive" role="img" title="Save" @click="save" :class="{'d-none': !(mode == 'edit' || mode == 'add')}">
-            <use xlink:href="{% static 'pages/extern/bootstrap-icons.svg' %}#check-square-fill"/>
+            <use xlink:href="{% static 'base/extern/bootstrap-icons.svg' %}#check-square-fill"/>
         </svg>
         <svg class="bi member-icon icon-neutral" role="img" title="Edit" @click="edit" :class="{'d-none': !(mode == 'view')}">
-            <use xlink:href="{% static 'pages/extern/bootstrap-icons.svg' %}#pencil-fill"/>
+            <use xlink:href="{% static 'base/extern/bootstrap-icons.svg' %}#pencil-fill"/>
         </svg>
         <svg class="bi member-icon icon-negative" role="img" title="Cancel" @click="cancel" :class="{'d-none': !(mode == 'edit' || mode == 'add')}">
-            <use xlink:href="{% static 'pages/extern/bootstrap-icons.svg' %}#x-square-fill"/>
+            <use xlink:href="{% static 'base/extern/bootstrap-icons.svg' %}#x-square-fill"/>
         </svg>
     </td>
 </tr>

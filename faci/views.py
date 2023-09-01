@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
+from django_sy_framework.linker.utils import link_instance_from_request
 from faci.forms import (
     FaciCanvasAimForm,
     FaciCanvasPreparingForm,
@@ -127,6 +128,7 @@ class FaciEditAimView(APIView):
                         faci_canvas=faci_form.instance,
                     )
                     member.save()
+                    link_instance_from_request(faci_form.instance, request)
 
                 data_for_return['open_block'] = 'members'
                 data_for_return['success'] = True

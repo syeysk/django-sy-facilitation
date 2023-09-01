@@ -123,6 +123,11 @@ class FaciCanvas(DatetimeMixin, models.Model):
     def url(self):
         return '{}{}'.format(settings.SITE_URL, resolve_url('faci_editor', self.pk))
 
+    @property
+    def url_new(self):
+        return '{}{}'.format(settings.SITE_URL, resolve_url('faci_new'))
+
+
     class Meta:
         db_table = 'app_faci_canvas'
         verbose_name = 'Холст фасилитации'

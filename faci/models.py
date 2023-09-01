@@ -1,6 +1,8 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
+from django.shortcuts import resolve_url
 
 from django_sy_framework.linker.models import Linker
 
@@ -116,6 +118,10 @@ class FaciCanvas(DatetimeMixin, models.Model):
     is_closed = models.IntegerField(verbose_name='Холст закрыт', null=False, default=0)
     meeting_status = models.IntegerField(verbose_name='Статус встречи', choices=MEETING_STATUS_CHOICES, default=MEETING_STATUS_EDITING, null=False, blank=False)
     linker = GenericRelation(Linker, related_query_name='faci')
+
+    @property
+    def url(self):
+        return '{}{}'.format(settings.SITE_URL, resolve_url('faci_editor', self.pk))
 
     class Meta:
         db_table = 'app_faci_canvas'

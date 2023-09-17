@@ -183,7 +183,7 @@
                         {{ form_key_thoughts.key_thoughts }}
                     </div>
                     <div class="mb-3">
-                        <label for="{{ form_key_thoughts.parked_thoughts.id_for_label }}" class="form-label">{{ form_key_thoughts.parked_thoughts.label }}</label>
+                        <label for="{{ form_key_thoughts.parked_thoughts.id_for_label }}" class="form-label" title="Полезные мысли, не относящиеся к теме встречи">{{ form_key_thoughts.parked_thoughts.label }}</label>
                         {{ form_key_thoughts.parked_thoughts }}
                     </div>
                     <div class="{% if step > 4 %}d-none {% endif %}form_sheet">Станет доступно во время встречи (после шага 4)</div>

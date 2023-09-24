@@ -7,7 +7,6 @@ from rest_framework.views import APIView
 from rest_framework import status
 
 from django_sy_framework.linker.utils import link_instance_from_request
-from django_sy_framework.utils.exceptions import Http401
 from faci.forms import (
     FaciCanvasAimForm,
     FaciCanvasPreparingForm,
@@ -62,7 +61,7 @@ class FaciEditorView(View):
         else:
             # Создание
             if not request.user.is_authenticated:
-                raise Http401('Для добавления холста требуется авторизация')
+                return render(request, '401.html')
 
             step = 1
             form_aim = FaciCanvasAimForm()

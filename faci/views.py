@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 
 from django_sy_framework.linker.utils import link_instance_from_request
+from django_sy_framework.utils.exceptions import Http401
 from faci.forms import (
     FaciCanvasAimForm,
     FaciCanvasPreparingForm,
@@ -27,7 +28,7 @@ from faci.serializers import (
 FACI_CREATOR_FOR_WHAT = 'Инициатор встречи'
 
 
-class FaciEditorView(APIView):
+class FaciEditorView(View):
     def get(self, request, canvas_id=None):
         if canvas_id:
             # Редактирование
@@ -61,7 +62,7 @@ class FaciEditorView(APIView):
         else:
             # Создание
             if not request.user.is_authenticated:
-                return Response(status=status.HTTP_401_UNAUTHORIZED)
+                raise Http401('Для добавления холста требуется авторизация')
 
             step = 1
             form_aim = FaciCanvasAimForm()

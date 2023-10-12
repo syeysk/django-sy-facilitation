@@ -11,6 +11,7 @@ DEBUG = env('DEBUG')
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
 SITE_URL = env.str('SITE_URL', default='http://127.0.0.1')
 SECRET_KEY = env('SECRET_KEY')
+METRIC_SYSTEM_CODE = env.str('METRIC_SYSTEM_CODE', default='', multiline=True)
 ROOT_URLCONF = 'server.urls'
 WSGI_APPLICATION = 'server.wsgi.application'
 STATIC_URL = '/static/'
@@ -60,6 +61,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django_sy_framework.custom_auth.context_processors.extern_auth_services',
+                'django_sy_framework.base.context_processors.settings_variables',
             ],
         },
     },

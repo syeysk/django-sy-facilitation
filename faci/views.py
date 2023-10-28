@@ -7,16 +7,11 @@ from rest_framework.views import APIView
 from rest_framework import status
 
 from django_sy_framework.linker.utils import link_instance_from_request
-from faci.forms import (
-    FaciCanvasAimForm,
-    FaciCanvasPreparingForm,
-    FaciCanvasKeyThoughtsForm,
-    FaciCanvasAgreementsForm,
-)
 from faci.models import FaciCanvas, Member
 from faci.serializers import (
     AddFaciViewSerializer,
     GetListFaciSerializer,
+    FaciEditAimSerializer,
     FaciEditMembersSerializer,
     FaciEditAgendaSerializer,
     FaciEditPreparingSerializer,
@@ -33,17 +28,13 @@ class FaciEditorView(View):
             # Редактирование
             faci = get_object_or_404(FaciCanvas, pk=canvas_id)
             step = faci.step
-            form_aim = FaciCanvasAimForm(instance=faci)
-            form_preparing = FaciCanvasPreparingForm(instance=faci)
-            form_key_thoughts = FaciCanvasKeyThoughtsForm(instance=faci)
-            form_agreements = FaciCanvasAgreementsForm(instance=faci)
             members = [
                 {
                     'invited': member.invited.username,
                     'for_what': member.for_what,
                     'inviting': member.inviting.username,
                 }
-                for member in faci.member_set.all()
+                for member in faci.members.all()
             ]
             agendas = [
                 {
@@ -56,18 +47,15 @@ class FaciEditorView(View):
                     'counter_offer': member.counter_offer,
                     'self': member.invited.username == request.user.username,
                 }
-                for member in faci.member_set.all()
+                for member in faci.members.all()
             ]
         else:
             # Создание
             if not request.user.is_authenticated:
                 return render(request, '401.html')
 
+            faci = {}
             step = 1
-            form_aim = FaciCanvasAimForm()
-            form_preparing = FaciCanvasPreparingForm()
-            form_key_thoughts = FaciCanvasKeyThoughtsForm()
-            form_agreements = FaciCanvasAgreementsForm()
             username = request.user.username
             members = [{'invited': username, 'for_what': FACI_CREATOR_FOR_WHAT, 'inviting': username}]
             agendas = [
@@ -84,11 +72,9 @@ class FaciEditorView(View):
             ]
 
         context = {
+            'faci': faci,
+            'aim_type_choices': FaciCanvas.AIM_TYPE_CHOICES,
             'step': step,
-            'form_aim': form_aim,
-            'form_preparing': form_preparing,
-            'form_key_thoughts': form_key_thoughts,
-            'form_agreements': form_agreements,
             'members': members,
             'agendas': agendas,
         }
@@ -100,40 +86,35 @@ class FaciEditAimView(APIView):
         if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        faci_form_data = request.data
         if canvas_id:
             # Редактирование
             faci = get_object_or_404(FaciCanvas, pk=canvas_id)
             if faci.user_creator != request.user:
-                return Response(status=status.HTTP_401_UNAUTHORIZED)
+                return Response(status=status.HTTP_403_FORBIDDEN)
 
-            faci_form = FaciCanvasAimForm(faci_form_data, instance=faci)
+            serializer = FaciEditAimSerializer(faci, data=request.data)
+            serializer.is_valid(raise_exception=True)
+            updated_fields = [
+                name for name, value in serializer.validated_data.items() if getattr(faci, name) != value
+            ]
+            serializer.save()
         else:
             # Создание
-            faci_form = FaciCanvasAimForm(faci_form_data)
-            faci_form.instance.user_creator = request.user
-            faci_form.instance.step = 2
+            serializer = FaciEditAimSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            updated_fields = serializer.fields.keys()
+            faci = serializer.save(step=2, user_creator=request.user)
+            faci.members.create(
+                invited=request.user,
+                inviting=request.user,
+                for_what=FACI_CREATOR_FOR_WHAT,
+            )
+            link_instance_from_request(faci, request)
 
-        data_for_return = {}
-        if faci_form.has_changed():
-            if faci_form.is_valid():
-                data_for_return['updated'] = faci_form.changed_data
-                faci_form.save()
-                data_for_return['id'] = faci_form.instance.pk
-                if not canvas_id:
-                    member = Member(
-                        invited=request.user,
-                        inviting=request.user,
-                        for_what=FACI_CREATOR_FOR_WHAT,
-                        faci_canvas=faci_form.instance,
-                    )
-                    member.save()
-                    link_instance_from_request(faci_form.instance, request)
-
-                data_for_return['open_block'] = 'members'
-                data_for_return['success'] = True
-            else:
-                data_for_return['errors'] = faci_form.errors
+        data_for_return = {'id': faci.pk}
+        if updated_fields:
+            data_for_return['updated'] = updated_fields
+            data_for_return['open_block'] = 'members'
 
         return Response(status=status.HTTP_200_OK, data=data_for_return)
 
@@ -203,30 +184,16 @@ class FaciEditAgendaView(LoginRequiredMixin, APIView):
 
 class FaciEditPreparingView(LoginRequiredMixin, APIView):
     def post(self, request, canvas_id):
-        serializer = FaciEditPreparingSerializer(data=request.data)
+        faci = FaciCanvas.objects.get(pk=canvas_id)
+        serializer = FaciEditPreparingSerializer(faci, data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
-
-        faci = FaciCanvas.objects.get(pk=canvas_id)
-        updated = []
-
-        if faci.dt_meeting != data['dt_meeting']:
-            faci.dt_meeting = data['dt_meeting']
-            updated.append('dt_meeting')
-
-        if faci.place != data['place']:
-            faci.place = data['place']
-            updated.append('place')
-
-        if faci.duration != data['duration']:
-            faci.duration = data['duration']
-            updated.append('duration')
-
-        if updated:
-            faci.save()
-
-        data_for_return = {'updated': updated}
-        data_for_return['success'] = True
+        data_for_return = {
+            'updated': [
+                name for name, value in serializer.validated_data.items() if getattr(faci, name) != value
+            ],
+        }
+        serializer.save()
         return Response(status=status.HTTP_200_OK, data=data_for_return)
 
 
@@ -248,32 +215,29 @@ class FaciStartView(LoginRequiredMixin, APIView):
 
 class FaciEditKeyThoughtsView(LoginRequiredMixin, APIView):
     def post(self, request, canvas_id):
-        serializer = FaciEditKeyThoughtsSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        data = serializer.validated_data
-
         faci = FaciCanvas.objects.get(pk=canvas_id)
-        faci.key_thoughts = data['key_thoughts']
-        faci.parked_thoughts = data['parked_thoughts']
-        faci.save()
-
-        data_for_return = {}
-        data_for_return['success'] = True
+        serializer = FaciEditKeyThoughtsSerializer(faci, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data_for_return = {
+            'updated': [
+                name for name, value in serializer.validated_data.items() if getattr(faci, name) != value
+            ],
+        }
+        serializer.save()
         return Response(status=status.HTTP_200_OK, data=data_for_return)
 
 
 class FaciEditAgreementsView(LoginRequiredMixin, APIView):
     def post(self, request, canvas_id):
-        serializer = FaciEditAgreementsSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        data = serializer.validated_data
-
         faci = FaciCanvas.objects.get(pk=canvas_id)
-        faci.other_agreements = data['other_agreements']
-        faci.save()
-
-        data_for_return = {}
-        data_for_return['success'] = True
+        serializer = FaciEditAgreementsSerializer(faci, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data_for_return = {
+            'updated': [
+                name for name, value in serializer.validated_data.items() if getattr(faci, name) != value
+            ],
+        }
+        serializer.save()
         return Response(status=status.HTTP_200_OK, data=data_for_return)
 
 

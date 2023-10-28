@@ -19,7 +19,7 @@ class Member(models.Model):
     invited = models.ForeignKey(get_user_model(), null=False, on_delete=models.CASCADE, related_name='faci_members')
     inviting = models.ForeignKey(get_user_model(), null=False, on_delete=models.CASCADE, related_name='faci_member_inviters')
     for_what = models.CharField(verbose_name='В каком вопросе компетентен', null=False, blank=False, max_length=200)
-    faci_canvas = models.ForeignKey('faci.FaciCanvas', null=False, on_delete=models.CASCADE)
+    faci_canvas = models.ForeignKey('faci.FaciCanvas', null=False, on_delete=models.CASCADE, related_name='members')
     themes = models.CharField(  # TODO: удалить поле
         verbose_name='Тема выступления участника',
         null=False,
@@ -126,7 +126,6 @@ class FaciCanvas(DatetimeMixin, models.Model):
     @property
     def url_new(self):
         return '{}{}'.format(settings.SITE_URL, resolve_url('faci_new'))
-
 
     class Meta:
         db_table = 'app_faci_canvas'

@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-    {% if form_aim.instance.id %} <a style="text-decoration: none;" href="{% url 'faci_list' %}">🡄</a> Редактирование встречи {% else %} Новая встреча {% endif %}
+    {% if faci %} <a style="text-decoration: none;" href="{% url 'faci_list' %}">🡄</a> Редактирование встречи {% else %} Новая встреча {% endif %}
 {% endblock %}
 {% block page_title %} Встреча (холст фасилитации) {% endblock %}
 
@@ -82,26 +82,30 @@
                 <form id="aim_form" class="card-body accordion-collapse collapse show">
                     <div class="mb-3 form-group" id="aim_type-group">
                         <div class="form-floating">
-                            {{ form_aim.aim_type }}
-                            <label for="{{ form_aim.aim_type.id_for_label }}" class="form-label">{{ form_aim.aim_type.label }}</label>
+													  <select name="aim_type" class="form-select" id="aim_type-field">
+															  {% for aim_type_id, aim_type_name in aim_type_choices %}
+															      <option value="{{ aim_type_id }}" {% if aim_type_id == faci.aim_type %}selected{% endif %}>{{ aim_type_name }}</option>
+															  {% endfor %}
+														</select>
+                            <label for="aim_type-field" class="form-label">Вид встречи</label>
                         </div>
                     </div>
                     <div class="mb-3 form-group" id="aim-group">
                         <div class="form-floating">
-                            {{ form_aim.aim }}
-                            <label for="{{ form_aim.aim.id_for_label }}" class="form-label">{{ form_aim.aim.label }}</label>
+													  <input name="aim" class="form-control" id="aim-field" value="{{ faci.aim }}">
+                            <label for="aim-field" class="form-label">Что мы пытаемся достичь?</label>
                         </div>
                     </div>
                     <div class="mb-3 form-group" id="if_not_reached-group">
                         <div class="form-floating">
-                            {{ form_aim.if_not_reached }}
-                            <label for="{{ form_aim.if_not_reached.id_for_label }}" class="form-label">{{ form_aim.if_not_reached.label }}</label>
+													  <input name="if_not_reached" class="form-control" id="if_not_reached-field" value="{{ faci.if_not_reached }}">
+                            <label for="if_not_reached-field" class="form-label">Что произойдёт, если цель не будет достигнута?</label>
                         </div>
                     </div>
                     <div class="mb-3 form-group" id="solutions-group">
                         <div class="form-floating">
-                            {{ form_aim.solutions }}
-                            <label for="{{ form_aim.solutions.id_for_label }}" class="form-label">{{ form_aim.solutions.label }}</label>
+                             <input name="solutions" class="form-control" id="solutions-field" value="{{ faci.solutions }}">
+                             <label for="solutions-field" class="form-label">Первоначальные решения</label>
                         </div>
                     </div>
 
@@ -143,26 +147,26 @@
                     4. Подготовка
                 </div>
                 <form id="preparing_form" class="card-body accordion-collapse collapse show">
-                    <div class="mb-3 row" id="dt_meeting-group">
-                        <label for="{{ form_preparing.dt_meeting.id_for_label }}" class="col-sm-4 form-label">{{ form_preparing.dt_meeting.label }}</label>
-                        <div class="col-sm-6">
-                            {{ form_preparing.dt_meeting }}
+                    <div class="form-group" id="dt_meeting-group">
+                        <div class="form-floating">
+                            <input name="dt_meeting" class="form-control" id="dt_meeting-field" value="{{ faci.dt_meeting }}" type="datetime-local">
+										  			<label for="dt_meeting-field" class="form-label">Дата и время</label>
                         </div>
                     </div>
-                    <div class="mb-3 row" id="duration-group">
-                        <label for="{{ form_preparing.duration.id_for_label }}" class="col-sm-4 form-label">{{ form_preparing.duration.label }}</label>
-                        <div class="col-sm-6">
-                            {{ form_preparing.duration }}
+                    <div class="form-group" id="duration-group">
+                        <div class="form-floating">
+                            <input name="duration" class="form-control" id="duration-field" value="{{ faci.duration }}" type="number" min="1">
+												  	<label for="duration-field" class="form-label">Длительность</label>
                         </div>
                     </div>
-                    <div class="mb-3 row" id="place-group">
-                        <label for="{{ form_preparing.place.id_for_label }}" class="col-sm-4 form-label">{{ form_preparing.place.label }}</label>
-                        <div class="col-sm-6">
-                            {{ form_preparing.place }}
+                    <div class="form-group" id="place-group">
+                        <div class="form-floating">
+                            <input name="place" class="form-control" id="place-field" value="{{ faci.place }}" type="text">
+													  <label for="place-field" class="form-label">Место</label>
                         </div>
                     </div>
                     <input type="button" value="Сохранить" class="btn btn-secondary" id="btn_save_prepraring">
-                    <input type="button" value="{% if form_preparing.instance.meeting_status == form_preparing.instance.MEETING_STATUS_STARTED %}Завершить встречу{% else %}Начать встречу{% endif %}" class="btn btn-secondary" id="button_start_meeting">
+                    <input type="button" value="{% if faci.meeting_status == faci.MEETING_STATUS_STARTED %}Завершить встречу{% else %}Начать встречу{% endif %}" class="btn btn-secondary" id="button_start_meeting">
                     <div class="{% if step > 3 %}d-none {% endif %}form_sheet"><span>Откроется после выполнения 3-го шага</span></div>
                 </form>
             </div>
@@ -179,12 +183,12 @@
                 </div>
                 <form id="key_thoughts_form" class="card-body accordion-collapse collapse show">
                     <div class="mb-3">
-                        <label for="{{ form_key_thoughts.key_thoughts.id_for_label }}" class="form-label">{{ form_key_thoughts.key_thoughts.label }}</label>
-                        {{ form_key_thoughts.key_thoughts }}
+                        <label for="key_thoughts-field" class="form-label">Ключевые мысли</label>
+                        <textarea name="key_thoughts" id="key_thoughts-field" class="form-control" rows="10">{{ faci.key_thoughts }}</textarea>
                     </div>
                     <div class="mb-3">
-                        <label for="{{ form_key_thoughts.parked_thoughts.id_for_label }}" class="form-label" title="Полезные мысли, не относящиеся к теме встречи">{{ form_key_thoughts.parked_thoughts.label }}</label>
-                        {{ form_key_thoughts.parked_thoughts }}
+                        <label for="parked_thoughts-field" class="form-label" title="Полезные мысли, не относящиеся к теме встречи">Парковка</label>
+                        <textarea name="parked_thoughts" id="parked_thoughts-field" class="form-control" rows="10">{{ faci.parked_thoughts }}</textarea>
                     </div>
                     <div class="{% if step > 4 %}d-none {% endif %}form_sheet">Станет доступно во время встречи (после шага 4)</div>
                 </form>
@@ -198,8 +202,8 @@
                 </div>
                 <form id="agreements_form" class="card-body accordion-collapse collapse show">
                     <div class="mb-3">
-                        <label for="{{ form_agreements.other_agreements.id_for_label }}" class="form-label">{{ form_agreements.other_agreements.label }}</label>
-                        {{ form_agreements.other_agreements }}
+                        <label for="other_agreements-field" class="form-label">Прочие договорённости</label>
+							  				<textarea name="other_agreements" id="other_agreements-field" class="form-control" rows="10">{{ faci.other_agreements }}</textarea>
                     </div>
                     <div class="{% if step > 4 %}d-none {% endif %}form_sheet">Станет доступно во время встречи (после шага 4)</div>
                 </form>
@@ -662,17 +666,11 @@
                 dataType: 'json',
                 data: $(event.target.form).serialize(),
                 success: function(result) {
-                    if (result.success) {
-                        set_valid_field(event.target.form, result.updated);
-                    } else {
-                        set_invalid_field(event.target.form, result.errors);  // TODO: такое должно быть только под кодом 400
-                    }
-                    if (result['id']) {
-                        try {
-                            history.pushState(null, null, location.href.replace('/new', '/'+result['id']));
-                            open_block(result['open_block']);
-                        } catch(e) {}
-                    }
+                    set_valid_field(event.target.form, result.updated);
+                    try {
+                        history.pushState(null, null, location.href.replace('/new', '/'+result['id']));
+                        open_block(result['open_block']);
+                    } catch(e) {}
                 },
                 error: function(jqxhr, a, b) {
                     console.log(jqxhr.responseText);
@@ -680,6 +678,9 @@
                 statusCode: {
                     403: function(xhr) {
                         alert(xhr.responseJSON.detail);
+                    },
+                    400: function(xhr) {
+                        set_invalid_field(event.target.form, xhr.responseJSON);
                     },
                 },
                 method: "post"
@@ -696,13 +697,7 @@
                 dataType: 'json',
                 data: $(form).serialize(),
                 success: function(result) {
-                    if (result.success) {
-                        set_valid_field(form, result.updated);
-                    } else {
-                        set_invalid_field(form, result.errors); // TODO: такое должно быть только под кодом 400
-                    }
-                    if (result['id']) {
-                    }
+                    set_valid_field(form, result.updated);
                 },
                 error: function(jqxhr, a, b) {
                     console.log(jqxhr.responseText);
@@ -728,11 +723,11 @@
                 dataType: 'json',
                 data: {},
                 success: function(result) {
-                    if (result['meeting_status'] == {{ form_preparing.instance.MEETING_STATUS_STARTED }}) {
+                    if (result['meeting_status'] == {{ faci.MEETING_STATUS_STARTED }}) {
                         open_block('key_thoughts');
                         open_block('agreements');
                         event.target.value = 'Завершить встречу';
-                    } else if (result['meeting_status'] == {{ form_preparing.instance.MEETING_STATUS_FINISHED }}) {
+                    } else if (result['meeting_status'] == {{ faci.MEETING_STATUS_FINISHED }}) {
                         event.target.value = 'Начать встречу';
                     }
                 },
@@ -753,12 +748,15 @@
                 dataType: 'json',
                 data: $(event.target.form).serialize(),
                 success: function(result) {
-                    if (result['id']) {
-                    }
+                    set_valid_field(event.target.form, result.updated);
                 },
-                error: function(jqxhr, a, b) {
-                    console.log('error');
-                    console.log(jqxhr.responseText);
+                statusCode: {
+                    403: function(xhr) {
+                        alert(xhr.responseJSON.detail);
+                    },
+                    400: function(xhr) {
+                        set_invalid_field(event.target.form, xhr.responseJSON);
+                    },
                 },
                 method: "post"
             });
@@ -773,14 +771,17 @@
                 dataType: 'json',
                 data: $(event.target.form).serialize(),
                 success: function(result) {
-                    if (result['id']) {
-                    }
+                    set_valid_field(event.target.form, result.updated);
                 },
-                error: function(jqxhr, a, b) {
-                    console.log('error');
-                    console.log(jqxhr.responseText);
+                statusCode: {
+                    403: function(xhr) {
+                        alert(xhr.responseJSON.detail);
+                    },
+                    400: function(xhr) {
+                        set_invalid_field(event.target.form, xhr.responseJSON);
+                    },
                 },
-                method: "post"
+                method: "post",
             });
         }
 

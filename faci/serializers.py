@@ -1,6 +1,14 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
+from faci.models import FaciCanvas
+
+
+class FaciEditAimSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FaciCanvas
+        fields = ['aim', 'if_not_reached', 'aim_type', 'solutions']
+
 
 class AddFaciViewSerializer(serializers.Serializer):
     AIM_TYPE_CHOICES = ('solution', 'idea', 'sync')
@@ -46,16 +54,19 @@ class FaciEditAgendaSerializer(serializers.Serializer):
     counter_offer = serializers.CharField(max_length=2000, allow_blank=True, allow_null=False)
 
 
-class FaciEditPreparingSerializer(serializers.Serializer):
-    duration = serializers.IntegerField(min_value=1)
-    place = serializers.CharField(max_length=100, allow_blank=True, allow_null=False)
-    dt_meeting = serializers.DateTimeField()
+class FaciEditPreparingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FaciCanvas
+        fields = ['duration', 'place', 'dt_meeting']
 
 
-class FaciEditKeyThoughtsSerializer(serializers.Serializer):
-    key_thoughts = serializers.CharField(max_length=10000, allow_blank=True, allow_null=False)
-    parked_thoughts = serializers.CharField(max_length=10000, allow_blank=True, allow_null=False)
+class FaciEditKeyThoughtsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FaciCanvas
+        fields = ['key_thoughts', 'parked_thoughts']
 
 
-class FaciEditAgreementsSerializer(serializers.Serializer):
-    other_agreements = serializers.CharField(max_length=10000, allow_blank=True, allow_null=False)
+class FaciEditAgreementsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FaciCanvas
+        fields = ['other_agreements']

@@ -1,4 +1,5 @@
 {% extends 'template.html' %}
+{% load static %}
 
 {% block title %}
     Встречи
@@ -22,8 +23,11 @@
             display: inline-block;
             vertical-align: middle;
         }
-        .faci_card_header .aim_type {
+        /*.faci_card_header .aim_type {
             width: 25%;
+        }*/
+        .faci_card_header .aim_type img {
+            width: 50px;
         }
         .faci_card_body {
             font-size: 12px;
@@ -41,7 +45,7 @@
     {% for faci in facis %}
         <div class="faci_card">
             <a href="{% url 'faci_editor' faci.id %}" class="faci_card_header">
-                <span class="aim_type">{{ faci.aim_type }}</span>
+							  <span class="aim_type"><img src="{% static 'faci/aim_type/' %}{{faci.aim_type|first}}.svg" alt="{{ faci.aim_type|last }}" title="{{ faci.aim_type|last }}"></span>
                 <span>{{ faci.aim }}</span>
             </a>
             <div class="faci_card_body">

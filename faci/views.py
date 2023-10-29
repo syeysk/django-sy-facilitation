@@ -251,7 +251,7 @@ class FaciListView(View):
 
         aim_type_dict = dict(FaciCanvas.AIM_TYPE_CHOICES)
         for faci in facis:
-            faci['aim_type'] = aim_type_dict[faci['aim_type']]
+            faci['aim_type'] = (faci['aim_type'], aim_type_dict[faci['aim_type']])
 
         context = {'facis': facis}
         return render(request, 'faci/faci_list.html', context)

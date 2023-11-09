@@ -1,6 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -25,7 +25,6 @@ FACI_CREATOR_FOR_WHAT = 'Инициатор встречи'
 class FaciEditorView(View):
     def get(self, request, canvas_id=None):
         if canvas_id:
-            # Редактирование
             faci = get_object_or_404(FaciCanvas, pk=canvas_id)
             step = faci.step
             members = [
@@ -49,10 +48,10 @@ class FaciEditorView(View):
                 }
                 for member in faci.members.all()
             ]
+            has_access_to_edit = request.user == faci.user_creator
         else:
-            # Создание
             if not request.user.is_authenticated:
-                return render(request, '401.html')
+                return redirect('custom_login_page')
 
             faci = {}
             step = 1
@@ -70,6 +69,7 @@ class FaciEditorView(View):
                     'self': True,
                 },
             ]
+            has_access_to_edit = True
 
         context = {
             'faci': faci,
@@ -77,6 +77,7 @@ class FaciEditorView(View):
             'step': step,
             'members': members,
             'agendas': agendas,
+            'has_access_to_edit': has_access_to_edit,
         }
         return render(request, 'faci/faci_editor.html', context)
 

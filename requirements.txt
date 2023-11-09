@@ -8,5 +8,5 @@ pytest==7.3.1
 pytest-django==4.5.2
 requests==2.31.0
 selenium==4.10.0
-git+https://github.com/syeysk/django-sy-framework.git
 git+https://github.com/syeysk/sy_api.git
+git+https://github.com/syeysk/django-sy-framework.git

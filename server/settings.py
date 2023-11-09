@@ -12,7 +12,7 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
 SITE_URL = env.str('SITE_URL', default='http://127.0.0.1')
 SECRET_KEY = env('SECRET_KEY')
 METRIC_SYSTEM_CODE = env.str('METRIC_SYSTEM_CODE', default='', multiline=True)
-HIDE_METRIC_FOR = env.list('HIDE_METRIC_FOR', default=list)
+HIDE_METRIC_FOR = env.list('HIDE_METRIC_FOR', default=list())
 ROOT_URLCONF = 'server.urls'
 WSGI_APPLICATION = 'server.wsgi.application'
 STATIC_URL = '/static/'

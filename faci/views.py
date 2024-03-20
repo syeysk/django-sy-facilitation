@@ -53,7 +53,7 @@ class FaciEditorView(View):
             if not request.user.is_authenticated:
                 return redirect('custom_login_page')
 
-            faci = {}
+            faci = FaciCanvas()
             step = 1
             username = request.user.username
             members = [{'invited': username, 'for_what': FACI_CREATOR_FOR_WHAT, 'inviting': username}]

@@ -592,7 +592,9 @@
                         data: {for_what: self.member.for_what, invited_user: self.member.invited, mode: self.mode},
                         success: function(result) {
                             open_block(result['open_block']);
-                            agenda_list.agendas.push({invited: self.member.invited, themes: '', themes_duration: 5, questions: '', fundamental_objections: '', suggested_solutions: '', counter_offer: '', self: self.member.invited == '{{request.user.username}}' });
+                            if (self.mode == 'add') {
+                                agenda_list.agendas.push({invited: self.member.invited, themes: '', themes_duration: 5, questions: '', fundamental_objections: '', suggested_solutions: '', counter_offer: '', self: self.member.invited == '{{request.user.username}}' });
+                            Zz}
                             self.mode = 'view';
                             self.uneditable_invited = true;
                             self.bad_message = '';
@@ -603,6 +605,9 @@
                                 for (let key in xhr.responseJSON) {
                                     self.bad_message += key + ': ' + xhr.responseJSON[key] + '';
                                 }
+                            },
+                            403: function(xhr) {
+                                self.bad_message = xhr.responseJSON;
                             }
                         },
                         method: "post"

@@ -137,6 +137,12 @@ class FaciEditMembersView(LoginRequiredMixin, APIView):
                     data={'invited_user': ['Пользователь не является участником встречи']},
                 )
 
+            if member.inviting.pk != request.user.pk:
+                return Response(
+                    status=status.HTTP_403_FORBIDDEN,
+                    data='Запрещено редактировать приглашённого не Вами участника',
+                )
+
             if member.for_what != data['for_what']:
                 member.for_what = data['for_what']
                 member.save()

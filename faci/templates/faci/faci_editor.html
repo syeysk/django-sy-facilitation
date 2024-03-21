@@ -277,7 +277,7 @@
                 'suggested_solutions',
                 'counter_offer',
             ],
-            emits: ['blur'],
+            emits: ['click'],
             data() {
                 return {
                     m_themes: this.themes,
@@ -290,40 +290,58 @@
             },
             template: `
 <div style="background-color: var(--bs-card-border-color); padding: 5px; border-radius: 3px; display: flex; justify-content: space-between;">
-    <span><input name="themes_duration" v-model="m_themes_duration" @blur="blur" min="1" max="120" type="number" style="width: 45pt; padding: 0 0 0 3px; display: initial;" class="form-control"/> мин</span>
+    <span>
+				<div class="mb-3 form-group" id="themes_duration-group" style="display: inline-block; margin-bottom: 0 !important;">
+						<input v-model="m_themes_duration" name="themes_duration" min="1" max="120" type="number" style="width: 45pt; padding: 0 0 0 3px; display: initial;" class="form-control" id="themes_duration-field">
+				</div> мин
+    </span>
     <span>[[ invited ]]</span>
 </div>
 
 <br>
 
-<div style="font-style: italic;">Тема выступления участника:</div>
-<textarea v-model="m_themes" name="themes" @blur="blur" style="width: 100%;" rows="5" class="form-control"></textarea>
+<div class="mb-3 form-group" id="themes-group">
+		<div class="form-floating">
+				<textarea v-model="m_themes" name="themes" style="width: 100%; height: 100px;" class="form-control" id="themes-field"></textarea>
+				<label for="themes-field" class="form-label">Тема выступления участника:</label>
+		</div>
+</div>
 
-<br>
+<div class="mb-3 form-group" id="questions-group">
+		<div class="form-floating">
+				<textarea v-model="m_questions" name="questions" style="width: 100%; height: 100px;" class="form-control" id="questions-field"></textarea>
+				<label for="questions-field" class="form-label">Вопросы:</label>
+		</div>
+</div>
 
-<div style="font-style: italic;">Вопросы:</div>
-<textarea v-model="m_questions" name="questions" @blur="blur" style="width: 100%;" rows="5" class="form-control"></textarea>
+<div class="mb-3 form-group" id="fundamental_objections-group">
+		<div class="form-floating">
+				<textarea v-model="m_fundamental_objections" name="fundamental_objections" style="width: 100%; height: 100px;" class="form-control" id="fundamental_objections-field"></textarea>
+				<label for="fundamental_objections-field" class="form-label">Принципиальные возражения:</label>
+		</div>
+</div>
 
-<br>
+<div class="mb-3 form-group" id="suggested_solutions-group">
+		<div class="form-floating">
+				<textarea v-model="m_suggested_solutions" name="suggested_solutions" style="width: 100%; height: 100px;" class="form-control" id="suggested_solutions-field"></textarea>
+				<label for="suggested_solutions-field" class="form-label">Предлагаемые решения:</label>
+		</div>
+</div>
 
-<div style="font-style: italic;">Принципиальные возражения:</div>
-<textarea v-model="m_fundamental_objections" name="fundamental_objections" @blur="blur" style="width: 100%;" rows="5" class="form-control"></textarea>
+<div class="mb-3 form-group" id="counter_offer-group">
+		<div class="form-floating">
+				<textarea v-model="m_counter_offer" name="counter_offer" style="width: 100%; height: 100px;" class="form-control" id="counter_offer-field"></textarea>
+				<label for="counter_offer-field" class="form-label">Встречные предложения:</label>
+		</div>
+</div>
 
-<br>
-
-<div style="font-style: italic;">Предлагаемые решения:</div>
-<textarea v-model="m_suggested_solutions" name="suggested_solutions" @blur="blur" style="width: 100%;" rows="5" class="form-control"></textarea>
-
-<br>
-
-<div style="font-style: italic;">Встречные предложения:</div>
-<textarea v-model="m_counter_offer" name="counter_offer" @blur="blur" style="width: 100%;" rows="5" class="form-control"></textarea>
+<input type="button" value="Сохранить" class="btn btn-secondary" @click="click">
 
 <br>
 `,
             methods: {
-                blur(event) {
-                    this.$emit('blur', this);
+                click(event) {
+                    this.$emit('click', this, event);
                 },
             },
         };
@@ -346,7 +364,7 @@
         :fundamental_objections="agenda.fundamental_objections"
         :suggested_solutions="agenda.suggested_solutions"
         :counter_offer="agenda.counter_offer"
-        @blur="save_agenda"
+        @click="save_agenda"
     ></agenda-self-item>
     <div
         v-else
@@ -365,7 +383,7 @@
 </template>
             `,
             methods: {
-                save_agenda(component) {
+                save_agenda(component, event) {
                     $.ajax({
                         url: URL_FACI_EDITOR_AGENDA,
                         headers: {
@@ -381,11 +399,19 @@
                             counter_offer: component.m_counter_offer,
                         },
                         success: function(result) {
-                            console.log(result);
+                            set_valid_field(event.target.form, result.updated);
                             open_block(result['open_block']);
                         },
                         error: function(jqxhr, a, b) {
                             console.log('error');
+                        },
+                        statusCode: {
+                            403: function(xhr) {
+                                alert(xhr.responseJSON.detail);
+                            },
+                            400: function(xhr) {
+                                set_invalid_field(event.target.form, xhr.responseJSON);
+                            },
                         },
                         method: "post"
                     });

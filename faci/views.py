@@ -169,6 +169,7 @@ class FaciEditAgendaView(LoginRequiredMixin, APIView):
 
         faci_canvas = FaciCanvas.objects.get(pk=canvas_id)
         member = Member.objects.get(invited=request.user, faci_canvas=faci_canvas)
+        updated_fields = [name for name, value in data.items() if getattr(member, name) != value]
         member.themes = data['themes']
         member.themes_duration = data['themes_duration']
         member.questions = data['questions']
@@ -179,7 +180,7 @@ class FaciEditAgendaView(LoginRequiredMixin, APIView):
         faci_canvas.step = 4
         faci_canvas.save()
 
-        data_for_return = {'open_block': 'preparing', 'success': True}
+        data_for_return = {'open_block': 'preparing', 'updated': updated_fields}
         return Response(status=status.HTTP_200_OK, data=data_for_return)
 
 

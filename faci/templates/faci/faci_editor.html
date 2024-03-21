@@ -55,8 +55,8 @@
             color: #0e283c;
             z-index: 100;
         }
-        .suggestions div {padding: 4px 5px 4px 5px; border-bottom: 1px solid #dfa4a4; cursor: pointer;}
-        .suggestions div:hover {background:#ffe4e4;}
+        .suggestions > div {padding: 4px 5px 4px 5px; border-bottom: 1px solid #dfa4a4; cursor: pointer;}
+        .suggestions > div:hover {background:#ffe4e4;}
 
         .member-icon {
             width: calc(var(--bs-body-font-size) + 6px);
@@ -400,15 +400,17 @@
 
     <script>
         const ListdownFieldItem = {
-            props: ["key", "id", "value"],
+            props: ["key", "id", "data", "nameItemComponent", "value"],
             emits: ['change'],
-            template: `<div v-on:click="$emit('change', id, value)">[[ value ]]</div>`,
+            template: `<div v-on:click="$emit('change', id, value)">
+                <component :is="nameItemComponent" v-bind="$attrs" :data=data><slot/></component>
+            </div>`,
         }
     </script>
 
     <script>
         const ListdownField = {
-            props: ["id", "value", "name", "edit", 'uneditableField'],
+            props: ["id", "value", "name", "edit", 'uneditableField', 'nameItemComponent'],
             emits: ['search-item', 'change', 'blur', 'focus', 'update:value', 'update:id'],
             template: `
 <div class="component_listdown">
@@ -419,10 +421,12 @@
             <listdown-field-item
                 @change="select_item"
                 v-for="item in item_list"
+                :data="item.data"
                 :value="item.value"
                 :key="item.id"
                 :id="item.id"
-            ></listdown-field-item>
+                :name-item-component="nameItemComponent"
+            >[[item.value]]</listdown-field-item>
         </div>
         <input type="hidden" v-bind:name="name" v-model.trim="mid">
     </div>
@@ -483,6 +487,20 @@
     </script>
 
     <script>
+        const MemberSearchItem = {
+            props: ['data'],
+            template: `
+                <div>
+                    <div>[[data.first_name]] [[data.last_name]]</div>
+                    <div>[[data.username]]</div>
+                </div>
+            `,
+        }
+        ListdownFieldItem.components = {MemberSearchItem};
+    </script>
+
+
+    <script>
         const MemberItem = {
             props: ['member', 'memberMode'],
             data() {
@@ -506,6 +524,7 @@
               name="invited"
               :uneditable-field="uneditable_invited"
               placeholder="логин участника"
+              name-item-component="member-search-item"
         ></listdown-field>
     </td>
     <td>
@@ -533,7 +552,7 @@
     </td>
 </tr>`,
             components: {
-                ListdownField,
+                ListdownField, MemberSearchItem,
             },
             methods: {
                 save(component) {
@@ -573,11 +592,11 @@
                         data: {search_string: component.query},
                         success: function(result) {
                             let username;
-                            for (username of result) {
-                                component.item_list.push({'id': username, 'value': username});
+                            for (user_data of result) {
+                                component.item_list.push({'id': user_data.username, 'value': user_data.username, 'data': user_data});
                             }
                             if (component.item_list.length == 0) {
-                                component.item_list.push({'id': null, 'value': 'пользователь не найден'});
+                                component.item_list.push({'id': null, 'value': 'пользователь не найден', 'data': {'last_name': 'пользователь не найден'}});
                             }
                         },
                         method: "post"

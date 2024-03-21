@@ -152,7 +152,7 @@
                 <form id="preparing_form" class="card-body accordion-collapse collapse show">
                     <div class="form-group" id="dt_meeting-group">
                         <div class="form-floating">
-                            <input name="dt_meeting" class="form-control" id="dt_meeting-field" value="{{ faci.dt_meeting }}" type="datetime-local">
+                            <input name="dt_meeting" class="form-control" id="dt_meeting-field" value="{{ faci.dt_meeting|date:"Y-m-d\TH:i" }}" type="datetime-local">
 										  			<label for="dt_meeting-field" class="form-label">Дата и время</label>
                         </div>
                     </div>
@@ -440,7 +440,6 @@
             },
             methods: {
                 focus(event) {
-                    console.log(this.uneditable);
                     if (this.uneditable) {
                         return;
                     }
@@ -548,7 +547,7 @@
                         data: {for_what: self.member.for_what, invited_user: self.member.invited, mode: self.mode},
                         success: function(result) {
                             open_block(result['open_block']);
-                            agenda_list.agendas.push({invited: self.member.invited, themes: '', themes_duration: 5, questions: '', self: self.member.invited == '{{request.user.username}}' });
+                            agenda_list.agendas.push({invited: self.member.invited, themes: '', themes_duration: 5, questions: '', fundamental_objections: '', suggested_solutions: '', counter_offer: '', self: self.member.invited == '{{request.user.username}}' });
                             self.mode = 'view';
                             self.uneditable_invited = true;
                             self.bad_message = '';

@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-    {% if faci %} <a style="text-decoration: none;" href="{% url 'faci_list' %}">🡄</a> Редактирование встречи {% else %} Новая встреча {% endif %}
+    {% if faci %} <a style="text-decoration: none;vertical-align: text-top;" href="{% url 'faci_list' %}"><img style="width: 45px;" src="{% static 'left_arrow.svg' %}"/></a> Редактирование встречи {% else %} Новая встреча {% endif %}
 {% endblock %}
 {% block page_title %} Встреча (холст фасилитации) {% endblock %}
 
@@ -23,6 +23,9 @@
     <style>
         .card-body {
             position: relative;
+        }
+        .card-header {
+            cursor: pointer;
         }
         .form_sheet {
             position: absolute;
@@ -411,7 +414,7 @@
 <div class="component_listdown">
     <span class="button_ss" @click="focus" :class="{'d-none': is_edit}">[[ mvalue ]]</span>
     <div class="form_listdown" :class="{'d-none': !is_edit}">
-        <input type='text' v-model.trim="query" @keyup="search_item" @blur="blur" class="field_listdown">
+        <input type='text' v-model.trim="query" @keyup="search_item" @blur="blur" class="field_listdown" v-bind="$attrs">
         <div class="suggestions">
             <listdown-field-item
                 @change="select_item"
@@ -503,12 +506,13 @@
               :edit="member.edit"
               name="invited"
               :uneditable-field="uneditable_invited"
+              placeholder="логин участника"
         ></listdown-field>
     </td>
     <td>
         <span>
             <span class="el_sign" style="display: inline-block; width: 100%;" :class="{'d-none': !(mode == 'view')}">[[ member.for_what ]]</span>
-            <input v-model.trim="member.for_what" name="for_what" class="el_field" :class="{'d-none': !(mode == 'edit' || mode == 'add')}"/>
+            <input v-model.trim="member.for_what" name="for_what" class="el_field" :class="{'d-none': !(mode == 'edit' || mode == 'add')}" placeholder="цель приглашения"/>
         </span>
     </td>
     <!--<td>[[ member.inviting ]]</td>-->
@@ -631,7 +635,7 @@
                         'id': '',
                         'invited': '',
                         'inviting': '{{ request.user.username }}',
-                        'for_what': 'цель приглашения?',
+                        'for_what': '',
                         'edit': true
                     });
                     setTimeout(function() {

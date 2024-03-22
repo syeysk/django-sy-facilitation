@@ -133,6 +133,6 @@ class FaciCanvas(DatetimeMixin, models.Model):
 
 
 class ParkedThoughts(DatetimeMixin, models.Model):
-    faci = models.ForeignKey('faci.FaciCanvas', null=False, on_delete=models.CASCADE)
+    faci = models.ForeignKey('faci.FaciCanvas', null=False, on_delete=models.CASCADE, related_name="parked_thoughts")
     user = models.ForeignKey(get_user_model(), null=False, on_delete=models.CASCADE)
     parked_thought = models.CharField(verbose_name='Паркованная мысль', null=False, max_length=500, blank=False)

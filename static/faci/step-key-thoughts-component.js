@@ -4,6 +4,7 @@ StepKeyThoughtsComponent = {
             faci: JSON.parse(document.getElementById('faci_json').textContent),
             sent_parked_thought: '',
             parked_thought: '',
+            HAS_ACCESS_TO_ADD_PARKED_THOUGHTS,
         }
     },
     template: `
@@ -16,7 +17,7 @@ StepKeyThoughtsComponent = {
         <input type="button" value="Сохранить" @click="save_key_thoughts" class="btn btn-secondary">
         <br>
         <br>
-        <div class="mb-3 input-group">
+        <div class="mb-3 input-group" v-if="HAS_ACCESS_TO_ADD_PARKED_THOUGHTS">
             <textarea name="parked_thought" id="parked_thought-field" class="form-control" v-model="parked_thought" placeholder="Парковка" title="Полезные мысли, не относящиеся к теме встречи"></textarea>
             <button type="button" @click="save_parked_thought" class="btn btn-secondary"> >>> </button>
         </div>

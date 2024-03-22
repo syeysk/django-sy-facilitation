@@ -52,6 +52,7 @@ class FaciEditorView(View):
             has_access_to_edit_preparing = request.user.pk == faci.user_creator.pk
             has_access_to_add_members = request.user.is_authenticated
             has_access_to_edit_aim = request.user.pk == faci.user_creator.pk
+            has_access_to_add_parked_thoughts = request.user.is_authenticated
         else:
             if not request.user.is_authenticated:
                 return redirect('custom_login_page')
@@ -75,6 +76,7 @@ class FaciEditorView(View):
             has_access_to_edit_preparing = True
             has_access_to_add_members = True
             has_access_to_edit_aim = True
+            has_access_to_add_parked_thoughts = True
 
         context = {
             'faci': faci,
@@ -92,6 +94,7 @@ class FaciEditorView(View):
             'has_access_to_edit_preparing': has_access_to_edit_preparing,
             'has_access_to_add_members': has_access_to_add_members,
             'has_access_to_edit_aim': has_access_to_edit_aim,
+            'has_access_to_add_parked_thoughts': has_access_to_add_parked_thoughts,
         }
         return render(request, 'faci/faci_editor.html', context)
 

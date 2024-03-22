@@ -9,6 +9,7 @@
 {% block content %}
     {{ members|json_script:'members_json' }}
     {{ agendas|json_script:'agendas_json' }}
+    {{ faci_json|json_script:'faci_json' }}
     <script>
         var URL_FACI_EDITOR_AGENDA = "agenda/";
         var URL_SEARCH_USER = "search_user/";
@@ -21,6 +22,8 @@
         var CSRF_TOKEN = "{{ csrf_token }}";
         var CURRENT_USERNAME = "{{ request.user.username }}";
         var STATIC_PREFIX = "{% static '' %}";
+        var MEETING_STATUS_STARTED = {{ faci.MEETING_STATUS_STARTED }};
+        var HAS_ACCESS_TO_EDIT_PREPARING = {% if has_access_to_edit_preparing %}true{% else %}false{% endif %};
     </script>
     <style>
         .card-body {
@@ -151,27 +154,8 @@
                     4. Подготовка
                 </div>
                 <form id="preparing_form" class="card-body accordion-collapse collapse show">
-                    <div class="form-group" id="dt_meeting-group">
-                        <div class="form-floating">
-                            <input name="dt_meeting" class="form-control" id="dt_meeting-field" value="{{ faci.dt_meeting|date:"Y-m-d\TH:i" }}" type="datetime-local">
-										  			<label for="dt_meeting-field" class="form-label">Дата и время</label>
-                        </div>
-                    </div>
-                    <div class="form-group" id="duration-group">
-                        <div class="form-floating">
-                            <input name="duration" class="form-control" id="duration-field" value="{{ faci.duration }}" type="number" min="1">
-												  	<label for="duration-field" class="form-label">Длительность</label>
-                        </div>
-                    </div>
-                    <div class="form-group" id="place-group">
-                        <div class="form-floating">
-                            <input name="place" class="form-control" id="place-field" value="{{ faci.place }}" type="text">
-													  <label for="place-field" class="form-label">Место</label>
-                        </div>
-                    </div>
-                    <input type="button" value="Сохранить" class="btn btn-secondary" id="btn_save_prepraring">
-                    <input type="button" value="{% if faci.meeting_status == faci.MEETING_STATUS_STARTED %}Завершить встречу{% else %}Начать встречу{% endif %}" class="btn btn-secondary" id="button_start_meeting">
-                    <div class="{% if step > 3 %}d-none {% endif %}form_sheet"><span>Откроется после выполнения 3-го шага</span></div>
+                    <div id="app_preparing"></div>
+									  <div class="{% if step > 3 %}d-none {% endif %}form_sheet"><span>Откроется после выполнения 3-го шага</span></div>
                 </form>
             </div>
         </div>
@@ -215,6 +199,7 @@
         </div>
     </div>
 
+    <script src="{% static 'faci/step-preparing-component.js' %}?v=1"></script>
     <script src="{% static 'faci/step-agenda-item-component.js' %}?v=1"></script>
     <script src="{% static 'faci/step-agenda-self-item-component.js' %}?v=1"></script>
     <script src="{% static 'faci/step-agenda-component.js' %}?v=1"></script>
@@ -225,6 +210,10 @@
     <script src="{% static 'faci/step-members-component.js' %}?v=1"></script>
     <script>
         const { createApp } = Vue;
+
+        var app_preparing = createApp(StepPreparingComponent);
+        app_preparing.config.compilerOptions.delimiters = [ '[[', ']]' ];
+        app_preparing.mount('#app_preparing');
 
         var app_agenda = createApp(StepAgendaComponent);
         app_agenda.config.compilerOptions.delimiters = [ '[[', ']]' ];
@@ -266,33 +255,6 @@
                     },
                     400: function(xhr) {
                         set_invalid_field(event.target.form, xhr.responseJSON);
-                    },
-                },
-                method: "post"
-            });
-        }
-
-        function save_form_preparing(event) {
-            let form = event.target.form;
-            $.ajax({
-                url: URL_FACI_EDITOR_PREPARING,
-                headers: {
-                    "X-CSRFToken": CSRF_TOKEN,
-                },
-                dataType: 'json',
-                data: $(form).serialize(),
-                success: function(result) {
-                    set_valid_field(form, result.updated);
-                },
-                error: function(jqxhr, a, b) {
-                    console.log(jqxhr.responseText);
-                },
-                statusCode: {
-                    403: function(xhr) {
-                        alert(xhr.responseJSON.detail);
-                    },
-                    400: function(xhr) {
-                        set_invalid_field(form, xhr.responseJSON);
                     },
                 },
                 method: "post"
@@ -371,7 +333,6 @@
         }
 
         $('#btn_save_aim').click(save_form_aim);
-        $('#btn_save_prepraring').click(save_form_preparing);
         $('#button_start_meeting').click(start_meeting);
         $('#key_thoughts_form').change(save_key_thoughts);
         $('#agreements_form').change(save_agreements);

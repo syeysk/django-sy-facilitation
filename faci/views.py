@@ -48,7 +48,7 @@ class FaciEditorView(View):
                 }
                 for member in faci.members.all()
             ]
-            has_access_to_edit = request.user == faci.user_creator
+            has_access_to_edit_preparing = request.user == faci.user_creator
         else:
             if not request.user.is_authenticated:
                 return redirect('custom_login_page')
@@ -69,15 +69,21 @@ class FaciEditorView(View):
                     'self': True,
                 },
             ]
-            has_access_to_edit = True
+            has_access_to_edit_preparing = True
 
         context = {
             'faci': faci,
+            'faci_json': {
+                'dt_meeting': faci.dt_meeting.strftime('%Y-%m-%dT%H:%M') if faci.dt_meeting else None,
+                'duration': faci.duration,
+                'place': faci.place.strip(),
+                'meeting_status': faci.meeting_status,
+            },
             'aim_type_choices': FaciCanvas.AIM_TYPE_CHOICES,
             'step': step,
             'members': members,
             'agendas': agendas,
-            'has_access_to_edit': has_access_to_edit,
+            'has_access_to_edit_preparing': has_access_to_edit_preparing,
         }
         return render(request, 'faci/faci_editor.html', context)
 
@@ -193,9 +199,11 @@ class FaciEditAgendaView(LoginRequiredMixin, APIView):
 class FaciEditPreparingView(LoginRequiredMixin, APIView):
     def post(self, request, canvas_id):
         faci = FaciCanvas.objects.get(pk=canvas_id)
+        if faci.user_creator.pk != request.user.pk:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
         serializer = FaciEditPreparingSerializer(faci, data=request.data)
         serializer.is_valid(raise_exception=True)
-        data = serializer.validated_data
         data_for_return = {
             'updated': [
                 name for name, value in serializer.validated_data.items() if getattr(faci, name) != value

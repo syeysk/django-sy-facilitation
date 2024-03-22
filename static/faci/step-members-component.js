@@ -13,11 +13,12 @@ StepMembersComponent = {
                 :member-mode="mode"
             ></step-member-item-component>
         </table>
-        <input type="button" value="Добавить" @click="add_member" class="form-control">`,
+        <input v-if="HAS_ACCESS_TO_ADD_MEMBERS" type="button" value="Добавить" @click="add_member" class="form-control">`,
     data() {
         return {
             member_list: JSON.parse(document.getElementById('members_json').textContent),
             mode: 'view',
+            HAS_ACCESS_TO_ADD_MEMBERS,
         }
     },
     methods: {

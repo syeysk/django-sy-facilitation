@@ -7,6 +7,7 @@ const StepMemberItemComponent = {
             uneditable_invited: this.memberMode != 'add',
             bad_message: '',
             STATIC_PREFIX,
+            CURRENT_USERNAME,
         };
     },
     template: `
@@ -36,7 +37,7 @@ const StepMemberItemComponent = {
                 <svg class="bi member-icon icon-positive" role="img" title="Save" @click="save" :class="{'d-none': !(mode == 'edit' || mode == 'add')}">
                     <use :xlink:href="STATIC_PREFIX + 'base/extern/bootstrap-icons.svg#check-square-fill'"/>
                 </svg>
-                <svg class="bi member-icon icon-neutral" role="img" title="Edit" @click="edit" :class="{'d-none': !(mode == 'view')}">
+                <svg v-if="member.inviting == CURRENT_USERNAME" class="bi member-icon icon-neutral" role="img" title="Edit" @click="edit" :class="{'d-none': !(mode == 'view')}">
                     <use :xlink:href="STATIC_PREFIX + 'base/extern/bootstrap-icons.svg#pencil-fill'"/>
                 </svg>
                 <svg class="bi member-icon icon-negative" role="img" title="Cancel" @click="cancel" :class="{'d-none': !(mode == 'edit' || mode == 'add')}">

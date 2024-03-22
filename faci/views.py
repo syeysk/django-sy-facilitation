@@ -49,6 +49,7 @@ class FaciEditorView(View):
                 for member in faci.members.all()
             ]
             has_access_to_edit_preparing = request.user == faci.user_creator
+            has_access_to_add_members = request.user.is_authenticated
         else:
             if not request.user.is_authenticated:
                 return redirect('custom_login_page')
@@ -70,6 +71,7 @@ class FaciEditorView(View):
                 },
             ]
             has_access_to_edit_preparing = True
+            has_access_to_add_members = True
 
         context = {
             'faci': faci,
@@ -84,6 +86,7 @@ class FaciEditorView(View):
             'members': members,
             'agendas': agendas,
             'has_access_to_edit_preparing': has_access_to_edit_preparing,
+            'has_access_to_add_members': has_access_to_add_members,
         }
         return render(request, 'faci/faci_editor.html', context)
 

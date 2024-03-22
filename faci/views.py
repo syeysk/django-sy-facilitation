@@ -49,8 +49,9 @@ class FaciEditorView(View):
                 }
                 for member in faci.members.all()
             ]
-            has_access_to_edit_preparing = request.user == faci.user_creator
+            has_access_to_edit_preparing = request.user.pk == faci.user_creator.pk
             has_access_to_add_members = request.user.is_authenticated
+            has_access_to_edit_aim = request.user.pk == faci.user_creator.pk
         else:
             if not request.user.is_authenticated:
                 return redirect('custom_login_page')
@@ -73,6 +74,7 @@ class FaciEditorView(View):
             ]
             has_access_to_edit_preparing = True
             has_access_to_add_members = True
+            has_access_to_edit_aim = True
 
         context = {
             'faci': faci,
@@ -89,6 +91,7 @@ class FaciEditorView(View):
             'agendas': agendas,
             'has_access_to_edit_preparing': has_access_to_edit_preparing,
             'has_access_to_add_members': has_access_to_add_members,
+            'has_access_to_edit_aim': has_access_to_edit_aim,
         }
         return render(request, 'faci/faci_editor.html', context)
 
@@ -114,7 +117,7 @@ class FaciEditAimView(APIView):
             # Создание
             serializer = FaciEditAimSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
-            updated_fields = serializer.fields.keys()
+            updated_fields = list(serializer.fields.keys())
             faci = serializer.save(step=2, user_creator=request.user)
             faci.members.create(
                 invited=request.user,
@@ -127,6 +130,8 @@ class FaciEditAimView(APIView):
         if updated_fields:
             data_for_return['updated'] = updated_fields
             data_for_return['open_block'] = 'members'
+        else:
+            data_for_return['updated'] = []
 
         return Response(status=status.HTTP_200_OK, data=data_for_return)
 

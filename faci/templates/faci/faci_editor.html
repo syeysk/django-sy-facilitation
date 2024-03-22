@@ -16,7 +16,8 @@
         var URL_FACI_EDITOR_AIM = "aim/{% if 'link_to' in request.GET %}?link_to={{request.GET.link_to}}{% endif %}";
         var URL_FACI_EDITOR_PREPARING = "preparing/";
         var URL_FACI_EDITOR_START_MEETING = "start_meeting/";
-        var URL_FACI_EDITOR_KEY_THOUTS = "key_thoughts/";
+        var URL_FACI_EDITOR_KEY_THOUGHTS = "key_thoughts/";
+        var URL_FACI_EDITOR_PARKED_THOUGHTS = "parked_thoughts/";
         var URL_FACI_EDITOR_AGREEMENTS = "agreements/";
         var URL_FACI_EDITOR_MEMBER = "member/";
         var CSRF_TOKEN = "{{ csrf_token }}";
@@ -80,6 +81,13 @@
             fill: #38e22f;
         }
 
+				.fade-enter-active, .fade-leave-active {
+					transition: opacity .5s ease;
+				}
+
+				.fade-enter-from, .fade-leave-to {
+					opacity: 0;
+				}
     </style>
 
     <div class="row accordion">
@@ -171,14 +179,7 @@
                     5. Ключевые мысли
                 </div>
                 <form id="key_thoughts_form" class="card-body accordion-collapse collapse show">
-                    <div class="mb-3">
-                        <label for="key_thoughts-field" class="form-label">Ключевые мысли</label>
-                        <textarea name="key_thoughts" id="key_thoughts-field" class="form-control" rows="10">{{ faci.key_thoughts }}</textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="parked_thoughts-field" class="form-label" title="Полезные мысли, не относящиеся к теме встречи">Парковка</label>
-                        <textarea name="parked_thoughts" id="parked_thoughts-field" class="form-control" rows="10">{{ faci.parked_thoughts }}</textarea>
-                    </div>
+                    <div id="app_key_thoughts"></div>
                     <div class="{% if step > 4 %}d-none {% endif %}form_sheet">Станет доступно во время встречи (после шага 4)</div>
                 </form>
             </div>
@@ -200,6 +201,8 @@
         </div>
     </div>
 
+    <script src="{% static 'faci/step-key-thoughts-component.js' %}?v=1"></script>
+
     <script src="{% static 'faci/step-preparing-component.js' %}?v=1"></script>
     <script src="{% static 'faci/step-agenda-item-component.js' %}?v=1"></script>
     <script src="{% static 'faci/step-agenda-self-item-component.js' %}?v=1"></script>
@@ -211,6 +214,10 @@
     <script src="{% static 'faci/step-members-component.js' %}?v=1"></script>
     <script>
         const { createApp } = Vue;
+
+        var app_key_thoughts = createApp(StepKeyThoughtsComponent);
+        app_key_thoughts.config.compilerOptions.delimiters = [ '[[', ']]' ];
+        app_key_thoughts.mount('#app_key_thoughts');
 
         var app_preparing = createApp(StepPreparingComponent);
         app_preparing.config.compilerOptions.delimiters = [ '[[', ']]' ];
@@ -287,29 +294,6 @@
             });
         }
 
-        function save_key_thoughts(event) {
-            $.ajax({
-                url: URL_FACI_EDITOR_KEY_THOUTS,
-                headers: {
-                    "X-CSRFToken": CSRF_TOKEN,
-                },
-                dataType: 'json',
-                data: $(event.target.form).serialize(),
-                success: function(result) {
-                    set_valid_field(event.target.form, result.updated);
-                },
-                statusCode: {
-                    403: function(xhr) {
-                        alert(xhr.responseJSON.detail);
-                    },
-                    400: function(xhr) {
-                        set_invalid_field(event.target.form, xhr.responseJSON);
-                    },
-                },
-                method: "post"
-            });
-        }
-
         function save_agreements(event) {
             $.ajax({
                 url: URL_FACI_EDITOR_AGREEMENTS,
@@ -335,7 +319,6 @@
 
         $('#btn_save_aim').click(save_form_aim);
         $('#button_start_meeting').click(start_meeting);
-        $('#key_thoughts_form').change(save_key_thoughts);
         $('#agreements_form').change(save_agreements);
     </script>
 {% endblock %}

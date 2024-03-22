@@ -63,7 +63,13 @@ class FaciEditPreparingSerializer(serializers.ModelSerializer):
 class FaciEditKeyThoughtsSerializer(serializers.ModelSerializer):
     class Meta:
         model = FaciCanvas
-        fields = ['key_thoughts', 'parked_thoughts']
+        fields = ['key_thoughts']
+
+
+class FaciEditParkedThoughtsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FaciCanvas
+        fields = ['parked_thoughts']
 
 
 class FaciEditAgreementsSerializer(serializers.ModelSerializer):

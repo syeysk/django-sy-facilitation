@@ -16,6 +16,7 @@ from faci.serializers import (
     FaciEditAgendaSerializer,
     FaciEditPreparingSerializer,
     FaciEditKeyThoughtsSerializer,
+    FaciEditParkedThoughtsSerializer,
     FaciEditAgreementsSerializer,
 )
 
@@ -80,6 +81,8 @@ class FaciEditorView(View):
                 'duration': faci.duration,
                 'place': faci.place.strip(),
                 'meeting_status': faci.meeting_status,
+                'key_thoughts': faci.key_thoughts,
+                'parked_thoughts': faci.parked_thoughts,
             },
             'aim_type_choices': FaciCanvas.AIM_TYPE_CHOICES,
             'step': step,
@@ -236,6 +239,20 @@ class FaciEditKeyThoughtsView(LoginRequiredMixin, APIView):
     def post(self, request, canvas_id):
         faci = FaciCanvas.objects.get(pk=canvas_id)
         serializer = FaciEditKeyThoughtsSerializer(faci, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data_for_return = {
+            'updated': [
+                name for name, value in serializer.validated_data.items() if getattr(faci, name) != value
+            ],
+        }
+        serializer.save()
+        return Response(status=status.HTTP_200_OK, data=data_for_return)
+
+
+class FaciEditParkedThoughtsView(LoginRequiredMixin, APIView):
+    def post(self, request, canvas_id):
+        faci = FaciCanvas.objects.get(pk=canvas_id)
+        serializer = FaciEditParkedThoughtsSerializer(faci, data=request.data)
         serializer.is_valid(raise_exception=True)
         data_for_return = {
             'updated': [

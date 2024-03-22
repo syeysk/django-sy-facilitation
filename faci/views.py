@@ -1,5 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
+from django.db.models import F
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 from rest_framework.response import Response
@@ -272,6 +273,20 @@ class FaciAddParkedThoughtsView(LoginRequiredMixin, APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save(faci=faci, user=request.user)
         return Response(status=status.HTTP_200_OK, data={'updated': list(serializer.validated_data.keys())})
+
+
+class FaciGetParkedThoughtsView(APIView):
+    def post(self, request, canvas_id: int):
+        faci = FaciCanvas.objects.get(pk=canvas_id)
+        if not faci:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        # serializer = FaciGetParkedThoughtsSerializer(data=request.data)
+        # serializer.is_valid(raise_exception=True)
+        # data = serializer.validated_data
+
+        parked_thoughts = faci.parked_thoughts.all().values('parked_thought', username=F('user__username'))
+        return Response(status=status.HTTP_200_OK, data={'parked_thoughts': parked_thoughts})
 
 
 class FaciEditAgreementsView(LoginRequiredMixin, APIView):

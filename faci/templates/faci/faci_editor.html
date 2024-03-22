@@ -18,6 +18,7 @@
         var URL_FACI_EDITOR_START_MEETING = "start_meeting/";
         var URL_FACI_EDITOR_KEY_THOUGHTS = "key_thoughts/";
         var URL_FACI_EDITOR_PARKED_THOUGHTS = "parked_thought/";
+        var URL_FACI_EDITOR_GET_PARKED_THOUGHTS = "parked_thought/get/";
         var URL_FACI_EDITOR_AGREEMENTS = "agreements/";
         var URL_FACI_EDITOR_MEMBER = "member/";
         var CSRF_TOKEN = "{{ csrf_token }}";
@@ -30,6 +31,9 @@
         var HAS_ACCESS_TO_ADD_PARKED_THOUGHTS = {% if has_access_to_add_parked_thoughts %}true{% else %}false{% endif %};
     </script>
     <style>
+        .windowWindow {
+            position: fixed;
+        }
         .card-body {
             position: relative;
         }
@@ -224,8 +228,8 @@
         </div>
     </div>
 
+    <script src="{% static 'window-component.js' %}"></script>
     <script src="{% static 'faci/step-key-thoughts-component.js' %}?v=1"></script>
-
     <script src="{% static 'faci/step-preparing-component.js' %}?v=1"></script>
     <script src="{% static 'faci/step-agenda-item-component.js' %}?v=1"></script>
     <script src="{% static 'faci/step-agenda-self-item-component.js' %}?v=1"></script>

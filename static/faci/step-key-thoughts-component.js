@@ -5,8 +5,11 @@ StepKeyThoughtsComponent = {
             sent_parked_thought: '',
             parked_thought: '',
             HAS_ACCESS_TO_ADD_PARKED_THOUGHTS,
+            is_display_resources_window: false,
+            parked_thoughts: [],
         }
     },
+    components: {WindowComponent},
     template: `
         <div class="mb-3 form-group">
             <div class="form-floating">
@@ -24,7 +27,12 @@ StepKeyThoughtsComponent = {
         <transition name="fade">
             <div v-if="sent_parked_thought" style="color: green;">Мысль сохранена: [[ sent_parked_thought ]]</div>
         </transition>
-        <div style="text-decoration: underline; cursor: pointer;">припаркованные мысли</div>
+        <div style="text-decoration: underline; cursor: pointer;" @click="get_parked_thoughts">припаркованные мысли</div>
+        <window-component title="Припаркованные мысли" v-if="is_display_resources_window" @close="is_display_resources_window = false;">
+            <div v-for="thought in parked_thoughts">
+                <p><b>[[ thought.username ]]:</b> [[ thought.parked_thought ]]</p>
+            </div>
+        </window-component>
     `,
     methods: {
         save_key_thoughts(event) {
@@ -71,6 +79,27 @@ StepKeyThoughtsComponent = {
                     },
                     400: function(xhr) {
                         set_invalid_field(event.target.form, xhr.responseJSON);
+                    },
+                },
+                method: "post"
+            });
+        },
+        get_parked_thoughts(event) {
+            let self = this;
+            $.ajax({
+                url: URL_FACI_EDITOR_GET_PARKED_THOUGHTS,
+                headers: {
+                    "X-CSRFToken": CSRF_TOKEN,
+                },
+                dataType: 'json',
+                data: {},
+                success: function(result) {
+                    self.parked_thoughts = result.parked_thoughts;
+                    self.is_display_resources_window = true;
+                },
+                statusCode: {
+                    403: function(xhr) {
+                        alert(xhr.responseJSON.detail);
                     },
                 },
                 method: "post"

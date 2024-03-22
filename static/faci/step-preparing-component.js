@@ -35,7 +35,7 @@ StepPreparingComponent = {
 						<br>
 						Длительность: [[faci.duration]] мин
 						<br>
-						Место: <a v-if="is_url(faci.place)" :href="faci.place" rel="ugc" target="_blank">Открыть ссылку</a><span v-else>[[faci.place]]</span>
+						Место: <a v-if="is_url(faci.place)" :href="faci.place" rel="ugc" target="_blank">открыть</a><span v-else>[[faci.place]]</span>
 						<br>
   			</div>
     `,

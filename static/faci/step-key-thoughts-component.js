@@ -23,7 +23,7 @@ StepKeyThoughtsComponent = {
         <transition name="fade">
             <div v-if="sent_parked_thought" style="color: green;">Мысль сохранена: [[ sent_parked_thought ]]</div>
         </transition>
-        <div style="text-decoration: underline; cursor: pointer;">посмотреть парковку</div>
+        <div style="text-decoration: underline; cursor: pointer;">припаркованные мысли</div>
     `,
     methods: {
         save_key_thoughts(event) {

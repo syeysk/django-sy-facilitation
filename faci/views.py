@@ -16,7 +16,7 @@ from faci.serializers import (
     FaciEditAgendaSerializer,
     FaciEditPreparingSerializer,
     FaciEditKeyThoughtsSerializer,
-    FaciEditParkedThoughtsSerializer,
+    FaciAddParkedThoughtsSerializer,
     FaciEditAgreementsSerializer,
 )
 
@@ -82,7 +82,6 @@ class FaciEditorView(View):
                 'place': faci.place.strip(),
                 'meeting_status': faci.meeting_status,
                 'key_thoughts': faci.key_thoughts,
-                'parked_thoughts': faci.parked_thoughts,
             },
             'aim_type_choices': FaciCanvas.AIM_TYPE_CHOICES,
             'step': step,
@@ -238,6 +237,12 @@ class FaciStartView(LoginRequiredMixin, APIView):
 class FaciEditKeyThoughtsView(LoginRequiredMixin, APIView):
     def post(self, request, canvas_id):
         faci = FaciCanvas.objects.get(pk=canvas_id)
+        if not faci:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if faci.user_creator.pk != request.user.pk:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
         serializer = FaciEditKeyThoughtsSerializer(faci, data=request.data)
         serializer.is_valid(raise_exception=True)
         data_for_return = {
@@ -249,18 +254,16 @@ class FaciEditKeyThoughtsView(LoginRequiredMixin, APIView):
         return Response(status=status.HTTP_200_OK, data=data_for_return)
 
 
-class FaciEditParkedThoughtsView(LoginRequiredMixin, APIView):
+class FaciAddParkedThoughtsView(LoginRequiredMixin, APIView):
     def post(self, request, canvas_id):
         faci = FaciCanvas.objects.get(pk=canvas_id)
-        serializer = FaciEditParkedThoughtsSerializer(faci, data=request.data)
+        if not faci:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = FaciAddParkedThoughtsSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        data_for_return = {
-            'updated': [
-                name for name, value in serializer.validated_data.items() if getattr(faci, name) != value
-            ],
-        }
-        serializer.save()
-        return Response(status=status.HTTP_200_OK, data=data_for_return)
+        serializer.save(faci=faci, user=request.user)
+        return Response(status=status.HTTP_200_OK, data={'updated': list(serializer.validated_data.keys())})
 
 
 class FaciEditAgreementsView(LoginRequiredMixin, APIView):

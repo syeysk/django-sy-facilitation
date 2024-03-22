@@ -2,8 +2,8 @@ StepKeyThoughtsComponent = {
     data() {
         return {
             faci: JSON.parse(document.getElementById('faci_json').textContent),
-            sent_parked_thoughts: '',
-            parked_thoughts: '',
+            sent_parked_thought: '',
+            parked_thought: '',
         }
     },
     template: `
@@ -17,11 +17,11 @@ StepKeyThoughtsComponent = {
         <br>
         <br>
         <div class="mb-3 input-group">
-            <textarea name="parked_thoughts" id="parked_thoughts-field" class="form-control" v-model="parked_thoughts" placeholder="Парковка" title="Полезные мысли, не относящиеся к теме встречи">[[ faci.parked_thoughts ]]</textarea>
-            <button type="button" @click="save_parked_thoughts" class="btn btn-secondary"> >>> </button>
+            <textarea name="parked_thought" id="parked_thought-field" class="form-control" v-model="parked_thought" placeholder="Парковка" title="Полезные мысли, не относящиеся к теме встречи"></textarea>
+            <button type="button" @click="save_parked_thought" class="btn btn-secondary"> >>> </button>
         </div>
         <transition name="fade">
-            <div v-if="sent_parked_thoughts" style="color: green;">Мысль сохранена: [[ sent_parked_thoughts ]]</div>
+            <div v-if="sent_parked_thought" style="color: green;">Мысль сохранена: [[ sent_parked_thought ]]</div>
         </transition>
         <div style="text-decoration: underline; cursor: pointer;">посмотреть парковку</div>
     `,
@@ -48,21 +48,21 @@ StepKeyThoughtsComponent = {
                 method: "post"
             });
         },
-        save_parked_thoughts(event) {
+        save_parked_thought(event) {
             let self = this;
-            if (!self.parked_thoughts) return;
+            if (!self.parked_thought) return;
             $.ajax({
                 url: URL_FACI_EDITOR_PARKED_THOUGHTS,
                 headers: {
                     "X-CSRFToken": CSRF_TOKEN,
                 },
                 dataType: 'json',
-                data: {'parked_thoughts': self.parked_thoughts},
+                data: {'parked_thought': self.parked_thought},
                 success: function(result) {
                     set_valid_field(event.target.form, result.updated);
-                    self.sent_parked_thoughts = self.parked_thoughts;
-                    self.parked_thoughts = '';
-                    setTimeout(function(){self.sent_parked_thoughts = '';}, 2000);
+                    self.sent_parked_thought = self.parked_thought;
+                    self.parked_thought = '';
+                    setTimeout(function(){self.sent_parked_thought = '';}, 2000);
                 },
                 statusCode: {
                     403: function(xhr) {

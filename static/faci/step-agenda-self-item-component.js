@@ -1,8 +1,8 @@
 const StepAgendaSelfItemComponent = {
     props: [
         'invited',
-        'themes',
-        'themes_duration',
+        //'themes',
+        //'themes_duration',
         'questions',
         'fundamental_objections',
         'suggested_solutions',
@@ -11,8 +11,8 @@ const StepAgendaSelfItemComponent = {
     emits: ['click'],
     data() {
         return {
-            m_themes: this.themes,
-            m_themes_duration: this.themes_duration,
+            //m_themes: this.themes,
+            //m_themes_duration: this.themes_duration,
             m_questions: this.questions,
             m_fundamental_objections: this.fundamental_objections,
             m_suggested_solutions: this.suggested_solutions,
@@ -20,23 +20,23 @@ const StepAgendaSelfItemComponent = {
         };
     },
     template: `
-        <div style="background-color: var(--bs-card-border-color); padding: 5px; border-radius: 3px; display: flex; justify-content: space-between;">
+        <!--<div style="background-color: var(--bs-card-border-color); padding: 5px; border-radius: 3px; display: flex; justify-content: space-between;">
             <span>
                 <div class="mb-3 form-group" id="themes_duration-group" style="display: inline-block; margin-bottom: 0 !important;">
                     <input v-model="m_themes_duration" name="themes_duration" min="1" max="120" type="number" style="width: 45pt; padding: 0 0 0 3px; display: initial;" class="form-control" id="themes_duration-field">
                 </div> мин
             </span>
             <span>[[ invited ]]</span>
-        </div>
+        </div>-->
 
         <br>
 
-        <div class="mb-3 form-group" id="themes-group">
+        <!--<div class="mb-3 form-group" id="themes-group">
             <div class="form-floating">
                 <textarea v-model="m_themes" name="themes" style="width: 100%; height: 100px;" class="form-control" id="themes-field"></textarea>
                 <label for="themes-field" class="form-label">Тема выступления участника:</label>
             </div>
-        </div>
+        </div>-->
 
         <div class="mb-3 form-group" id="questions-group">
             <div class="form-floating">

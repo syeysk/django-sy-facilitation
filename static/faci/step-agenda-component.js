@@ -10,7 +10,7 @@ StepAgendaComponent = {
     template: `
         <div class="mb-3 input-group">
             <textarea name="theme" id="theme-field" class="form-control" v-model="theme" placeholder="Тема выступления" title=""></textarea>
-            <button type="button" @click="save_theme" class="btn btn-secondary"> >>> </button>
+            <button type="button" @click="add_theme" class="btn btn-secondary"> >>> </button>
         </div>
         <div v-for="theme in themes">
 						<div style="background-color: var(--bs-card-border-color); padding: 5px; border-radius: 3px; display: flex; justify-content: space-between;">
@@ -25,8 +25,6 @@ StepAgendaComponent = {
             <step-agenda-self-item-component
                 v-if="agenda.self"
                 :invited="agenda.invited"
-                :themes="agenda.themes"
-                :themes_duration="agenda.themes_duration"
                 :questions="agenda.questions"
                 :fundamental_objections="agenda.fundamental_objections"
                 :suggested_solutions="agenda.suggested_solutions"
@@ -39,8 +37,6 @@ StepAgendaComponent = {
                 <step-agenda-item-component
                     v-if="agenda.themes || agenda.questions"
                     :invited="agenda.invited"
-                    :themes="agenda.themes"
-                    :themes_duration="agenda.themes_duration"
                     :questions="agenda.questions"
                     :fundamental_objections="agenda.fundamental_objections"
                     :suggested_solutions="agenda.suggested_solutions"
@@ -58,7 +54,7 @@ StepAgendaComponent = {
                 },
                 dataType: 'json',
                 data: {
-                    themes: component.m_themes,
+                    //themes: component.m_themes,
                     themes_duration: component.m_themes_duration,
                     questions: component.m_questions,
                     fundamental_objections: component.m_fundamental_objections,
@@ -83,7 +79,7 @@ StepAgendaComponent = {
                 method: "post"
             });
         },
-        save_theme(event) {
+        add_theme(event) {
             let self = this;
             if (!self.theme) return;
             $.ajax({

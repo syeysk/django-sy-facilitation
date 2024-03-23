@@ -212,8 +212,8 @@ class FaciEditAgendaView(LoginRequiredMixin, APIView):
         faci_canvas = FaciCanvas.objects.get(pk=canvas_id)
         member = Member.objects.get(invited=request.user, faci_canvas=faci_canvas)
         updated_fields = [name for name, value in data.items() if getattr(member, name) != value]
-        member.themes = data['themes']
-        member.themes_duration = data['themes_duration']
+        #member.themes = data['themes']
+        #member.themes_duration = data['themes_duration']
         member.questions = data['questions']
         member.fundamental_objections = data['fundamental_objections']
         member.suggested_solutions = data['suggested_solutions']

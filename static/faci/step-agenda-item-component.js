@@ -1,8 +1,8 @@
 const StepAgendaItemComponent = {
 		props: [
 				'invited',
-				'themes',
-				'themes_duration',
+				//'themes',
+				//'themes_duration',
 				'questions',
 				'fundamental_objections',
 				'suggested_solutions',
@@ -10,17 +10,17 @@ const StepAgendaItemComponent = {
 		],
 		emits: [],
 		template: `
-				<div style="background-color: var(--bs-card-border-color); padding: 5px; border-radius: 3px; display: flex; justify-content: space-between;">
+				<!--<div style="background-color: var(--bs-card-border-color); padding: 5px; border-radius: 3px; display: flex; justify-content: space-between;">
 						<span>[[ themes_duration ]] мин</span>
 						<span>[[ invited ]]</span>
-				</div>
+				</div>-->
 
 				<br>
 
-				<div v-if="themes">
+				<!--<div v-if="themes">
 						<div style="font-style: italic;">Тема выступления участника:</div>
 						<p style="padding-left: 15px;"><pre>[[ themes ]]</pre></p>
-				</div>
+				</div>-->
 
 				<div v-if="questions">
 						<div style="font-style: italic;">Вопросы:</div>

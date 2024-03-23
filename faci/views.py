@@ -87,7 +87,6 @@ class FaciEditorView(View):
                 'duration': faci.duration,
                 'place': faci.place.strip(),
                 'meeting_status': faci.meeting_status,
-                'key_thoughts': faci.key_thoughts,
             },
             'themes': list(
                 faci.themes.all().order_by('-dt_create').values('id', 'theme', 'duration', username=F('user__username')),

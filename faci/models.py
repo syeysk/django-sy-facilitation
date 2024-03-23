@@ -107,8 +107,6 @@ class FaciCanvas(DatetimeMixin, models.Model):
     dt_meeting = models.DateTimeField(verbose_name='Дата и время', null=True)
     duration = models.IntegerField(verbose_name='Длительность', null=False, default=30)
     place = models.CharField(verbose_name='Место', null=False, default='', max_length=100, blank=True)
-    # 5. Ключевые мысли
-    key_thoughts = models.TextField(verbose_name='Ключевые мысли', max_length=10000, null=False, default='', blank=True)
     # 6. Договорённости
     other_agreements = models.TextField(verbose_name='Прочие договорённости', max_length=10000, null=False, default='', blank=True)
 

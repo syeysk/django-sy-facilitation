@@ -1,12 +1,11 @@
 KeyThoughtsChatComponent = {
+    props: ['themes'],
     data() {
-        let themes = JSON.parse(document.getElementById('themes_json').textContent);
         let current_theme_index = 0;
         return {
             faci: JSON.parse(document.getElementById('faci_json').textContent),
-            themes,
             current_theme_index,
-            current_theme_id: themes.length > 0 ? themes[current_theme_index].id.toString() : null,
+            current_theme_id: this.themes.length > 0 ? this.themes[current_theme_index].id.toString() : null,
         }
     },
     template: `

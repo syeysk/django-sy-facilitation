@@ -1,6 +1,7 @@
 StepKeyThoughtsComponent = {
     data() {
         return {
+            themes: JSON.parse(document.getElementById('themes_json').textContent),
             sent_parked_thought: '',
             parked_thought: '',
             HAS_ACCESS_TO_ADD_PARKED_THOUGHTS,
@@ -10,7 +11,8 @@ StepKeyThoughtsComponent = {
     },
     components: {WindowComponent, KeyThoughtsChatComponent},
     template: `
-        <key-thoughts-chat-component></key-thoughts-chat-component>
+        <key-thoughts-chat-component v-if="themes.length > 0" :themes="themes"></key-thoughts-chat-component>
+        <span v-else>Чтобы фиксировать ключевые мысли, пожалуйста, добавьте в шаге 3 темы, планируемые к обсуждение </span>
         <br>
 
         <hr>

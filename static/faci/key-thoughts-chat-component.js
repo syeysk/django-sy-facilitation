@@ -18,13 +18,13 @@ KeyThoughtsChatComponent = {
                     <span @click="next_theme" style="cursor: pointer; border-radius: 3px; border: solid 1px grey; padding: 3px;" title="Перейти к следующий теме"> >> </span>
                 </span>
             </div>
-            <div v-if="current_theme_id == theme.id.toString()" >
+            <div v-if="current_theme_id == theme.id.toString()" style="padding-left: 15px; padding-right: 15px; font-size: 10pt;">
                 <div v-for="thought in key_thoughts">
                     <p style="margin-bottom: 0.25rem;"><b>[[ thought.username ]]:</b> [[ thought.key_thought ]]</p>
                 </div>
                 <br>
 								<div class="mb-3 input-group">
-										<textarea name="key_thoughts" id="key_thoughts-field" class="form-control" style="height: 100px;"  v-model="key_thought" placeholder="Ключевая мысль"></textarea>
+										<textarea name="key_thoughts" id="key_thoughts-field" class="form-control" style="height: 80px; font-size: 10pt;"  v-model="key_thought" placeholder="Ключевая мысль"></textarea>
 										<button type="button" @click="add_key_thoughts" class="btn btn-secondary"> >>> </button>
 								</div>
             </div>

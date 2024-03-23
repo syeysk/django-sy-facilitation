@@ -6,7 +6,7 @@ KeyThoughtsChatComponent = {
             faci: JSON.parse(document.getElementById('faci_json').textContent),
             themes,
             current_theme_index,
-            current_theme_id: themes[current_theme_index].id.toString(),
+            current_theme_id: themes.length > 0 ? themes[current_theme_index].id.toString() : null,
         }
     },
     template: `

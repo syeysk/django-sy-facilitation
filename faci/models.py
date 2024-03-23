@@ -136,3 +136,18 @@ class ParkedThoughts(DatetimeMixin, models.Model):
     faci = models.ForeignKey('faci.FaciCanvas', null=False, on_delete=models.CASCADE, related_name="parked_thoughts")
     user = models.ForeignKey(get_user_model(), null=False, on_delete=models.CASCADE)
     parked_thought = models.CharField(verbose_name='Паркованная мысль', null=False, max_length=500, blank=False)
+
+    class Meta:
+        verbose_name = 'Припаркованная мысли'
+        verbose_name_plural = 'Припаркованные мысли'
+
+
+class Theme(DatetimeMixin, models.Model):
+    faci = models.ForeignKey('faci.FaciCanvas', null=False, on_delete=models.CASCADE, related_name="themes")
+    user = models.ForeignKey(get_user_model(), null=False, on_delete=models.CASCADE)
+    theme = models.CharField(verbose_name='Тема выступления', null=False, blank=False, max_length=1000)
+    duration = models.IntegerField(verbose_name='Длительность выступления, минуты', null=False, blank=False)
+
+    class Meta:
+        verbose_name = 'Тема встречи'
+        verbose_name_plural = 'Темы встречи'

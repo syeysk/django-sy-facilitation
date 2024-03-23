@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from faci.models import FaciCanvas, ParkedThoughts
+from faci.models import FaciCanvas, ParkedThoughts, Theme
 
 
 class FaciEditAimSerializer(serializers.ModelSerializer):
@@ -64,6 +64,12 @@ class FaciEditKeyThoughtsSerializer(serializers.ModelSerializer):
     class Meta:
         model = FaciCanvas
         fields = ['key_thoughts']
+
+
+class FaciAddThemeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Theme
+        fields = ['theme', 'duration']
 
 
 class FaciAddParkedThoughtsSerializer(serializers.ModelSerializer):

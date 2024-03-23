@@ -10,6 +10,7 @@
     {{ members|json_script:'members_json' }}
     {{ agendas|json_script:'agendas_json' }}
     {{ faci_json|json_script:'faci_json' }}
+    {{ themes|json_script:'themes_json' }}
     <script>
         var URL_FACI_EDITOR_AGENDA = "agenda/";
         var URL_SEARCH_USER = "search_user/";
@@ -21,6 +22,7 @@
         var URL_FACI_EDITOR_GET_PARKED_THOUGHTS = "parked_thought/get/";
         var URL_FACI_EDITOR_AGREEMENTS = "agreements/";
         var URL_FACI_EDITOR_MEMBER = "member/";
+        var URL_FACI_ADD_THEME = "add_theme/";
         var CSRF_TOKEN = "{{ csrf_token }}";
         var CURRENT_USERNAME = "{{ request.user.username }}";
         var STATIC_PREFIX = "{% static '' %}";

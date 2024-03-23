@@ -19,6 +19,7 @@ from faci.serializers import (
     FaciEditKeyThoughtsSerializer,
     FaciAddParkedThoughtsSerializer,
     FaciEditAgreementsSerializer,
+    FaciAddThemeSerializer,
 )
 
 FACI_CREATOR_FOR_WHAT = 'Инициатор встречи'
@@ -88,6 +89,9 @@ class FaciEditorView(View):
                 'meeting_status': faci.meeting_status,
                 'key_thoughts': faci.key_thoughts,
             },
+            'themes': list(
+                faci.themes.all().order_by('-dt_create').values('theme', 'duration', username=F('user__username')),
+            ),
             'aim_type_choices': FaciCanvas.AIM_TYPE_CHOICES,
             'step': step,
             'members': members,
@@ -187,6 +191,18 @@ class FaciEditMembersView(LoginRequiredMixin, APIView):
         ...
 
 
+class FaciAddThemeView(LoginRequiredMixin, APIView):
+    def post(self, request, canvas_id):
+        faci = FaciCanvas.objects.get(pk=canvas_id)
+        if not faci:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = FaciAddThemeSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(faci=faci, user=request.user)
+        return Response(status=status.HTTP_200_OK, data={'updated': list(serializer.validated_data.keys())})
+
+
 class FaciEditAgendaView(LoginRequiredMixin, APIView):
     def post(self, request, canvas_id):
         serializer = FaciEditAgendaSerializer(data=request.data)
@@ -280,10 +296,6 @@ class FaciGetParkedThoughtsView(APIView):
         faci = FaciCanvas.objects.get(pk=canvas_id)
         if not faci:
             return Response(status=status.HTTP_404_NOT_FOUND)
-
-        # serializer = FaciGetParkedThoughtsSerializer(data=request.data)
-        # serializer.is_valid(raise_exception=True)
-        # data = serializer.validated_data
 
         parked_thoughts = faci.parked_thoughts.all().values('parked_thought', username=F('user__username'))
         return Response(status=status.HTTP_200_OK, data={'parked_thoughts': parked_thoughts})

@@ -13,6 +13,7 @@ from faci.views import (
     FaciListView,
     SearchUserView,
     FaciGetParkedThoughtsView,
+    FaciAddThemeView,
 )
 
 
@@ -29,6 +30,7 @@ urlpatterns = [
     re_path(r'(?P<canvas_id>[0-9]+)/parked_thought/get/$', FaciGetParkedThoughtsView.as_view(), name='faci_editor_get_parked_thought'),
     re_path(r'(?P<canvas_id>[0-9]+)/parked_thought/$', FaciAddParkedThoughtsView.as_view(), name='faci_editor_parked_thought'),
     re_path(r'(?P<canvas_id>[0-9]+)/agreements/$', FaciEditAgreementsView.as_view(), name='faci_editor_agreements'),
+    re_path(r'(?P<canvas_id>[0-9]+)/add_theme/$', FaciAddThemeView.as_view(), name='faci_editor_add_theme'),
 
     re_path(r'(?P<canvas_id>[0-9]+)/$', FaciEditorView.as_view(), name='faci_editor'),
     re_path('new/', FaciEditorView.as_view(), name='faci_new'),

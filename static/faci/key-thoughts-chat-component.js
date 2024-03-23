@@ -15,7 +15,7 @@ KeyThoughtsChatComponent = {
                 <span :style="'color: white; font-weight: ' + (current_theme_id == theme.id.toString() ? '600;' : 'inherit;')">[[ theme.theme ]]</span>
                 <span v-if="current_theme_id == theme.id.toString()" style="white-space: nowrap;">
                     <span  style="cursor: pointer; border-radius: 3px; border: solid 1px grey; padding: 3px;"> || </span>
-                    <span @click="next_theme" style="cursor: pointer; border-radius: 3px; border: solid 1px grey; padding: 3px;"> >> </span>
+                    <span @click="next_theme" style="cursor: pointer; border-radius: 3px; border: solid 1px grey; padding: 3px;" title="Перейти к следующий теме"> >> </span>
                 </span>
             </div>
             <div v-if="current_theme_id == theme.id.toString()" >

@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 
 from django_sy_framework.linker.utils import link_instance_from_request
-from faci.models import FaciCanvas, Member
+from faci.models import FaciCanvas, Member, Theme
 from faci.serializers import (
     AddFaciViewSerializer,
     GetListFaciSerializer,
@@ -16,7 +16,7 @@ from faci.serializers import (
     FaciEditMembersSerializer,
     FaciEditAgendaSerializer,
     FaciEditPreparingSerializer,
-    FaciEditKeyThoughtsSerializer,
+    FaciAddKeyThoughtsSerializer,
     FaciAddParkedThoughtsSerializer,
     FaciEditAgreementsSerializer,
     FaciAddThemeSerializer,
@@ -260,24 +260,49 @@ class FaciStartView(LoginRequiredMixin, APIView):
         return Response(status=status.HTTP_200_OK, data=data_for_return)
 
 
-class FaciEditKeyThoughtsView(LoginRequiredMixin, APIView):
+class FaciAddKeyThoughtsView(LoginRequiredMixin, APIView):
     def post(self, request, canvas_id):
+        serializer = FaciAddKeyThoughtsSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # if not faci.themes.filter(theme_id=serializer.data['theme_id']).first():
+        #     return Response(status=status.HTTP_404_NOT_FOUND)
+
+        # theme = Theme.objects.get(theme__faci_id=canvas_id, theme_id=serializer.data['theme_id'])
+        # if not theme:
+        #     return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer.save(user=request.user)
+        return Response(status=status.HTTP_200_OK, data={'updated': list(serializer.validated_data.keys())})
+
+    # def post(self, request, canvas_id):
+    #     faci = FaciCanvas.objects.get(pk=canvas_id)
+    #     if not faci:
+    #         return Response(status=status.HTTP_404_NOT_FOUND)
+    #
+    #     if faci.user_creator.pk != request.user.pk:
+    #         return Response(status=status.HTTP_403_FORBIDDEN)
+    #
+    #     serializer = FaciEditKeyThoughtsSerializer(faci, data=request.data)
+    #     serializer.is_valid(raise_exception=True)
+    #     data_for_return = {
+    #         'updated': [
+    #             name for name, value in serializer.validated_data.items() if getattr(faci, name) != value
+    #         ],
+    #     }
+    #     serializer.save()
+    #     return Response(status=status.HTTP_200_OK, data=data_for_return)
+
+
+class FaciGetKeyThoughtsView(APIView):
+    def post(self, request, canvas_id: int):
         faci = FaciCanvas.objects.get(pk=canvas_id)
         if not faci:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        if faci.user_creator.pk != request.user.pk:
-            return Response(status=status.HTTP_403_FORBIDDEN)
-
-        serializer = FaciEditKeyThoughtsSerializer(faci, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        data_for_return = {
-            'updated': [
-                name for name, value in serializer.validated_data.items() if getattr(faci, name) != value
-            ],
-        }
-        serializer.save()
-        return Response(status=status.HTTP_200_OK, data=data_for_return)
+        theme = faci.themes.filter(pk=request.data['theme']).first()
+        key_thoughts = theme.key_thoughts.all().values('key_thought', username=F('user__username'))
+        return Response(status=status.HTTP_200_OK, data={'key_thoughts': key_thoughts})
 
 
 class FaciAddParkedThoughtsView(LoginRequiredMixin, APIView):

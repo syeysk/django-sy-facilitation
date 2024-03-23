@@ -151,3 +151,14 @@ class Theme(DatetimeMixin, models.Model):
     class Meta:
         verbose_name = 'Тема встречи'
         verbose_name_plural = 'Темы встречи'
+
+
+class KeyThought(DatetimeMixin, models.Model):
+    theme = models.ForeignKey('faci.Theme', null=False, on_delete=models.CASCADE, related_name="key_thoughts")
+    user = models.ForeignKey(get_user_model(), null=False, on_delete=models.CASCADE)
+    key_thought = models.CharField(verbose_name='Ключевая мысль', null=False, blank=False, max_length=1000)
+
+    class Meta:
+        verbose_name = 'Ключевая мысль'
+        verbose_name_plural = 'Ключевые мысли'
+

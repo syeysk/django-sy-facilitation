@@ -3,9 +3,10 @@ KeyThoughtsChatComponent = {
     data() {
         let current_theme_index = 0;
         return {
-            faci: JSON.parse(document.getElementById('faci_json').textContent),
             current_theme_index,
             current_theme_id: this.themes.length > 0 ? this.themes[current_theme_index].id.toString() : null,
+            key_thought: '',
+            key_thoughts: [],
         }
     },
     template: `
@@ -17,30 +18,45 @@ KeyThoughtsChatComponent = {
                     <span @click="next_theme" style="cursor: pointer; border-radius: 3px; border: solid 1px grey; padding: 3px;"> >> </span>
                 </span>
             </div>
-						<div v-if="current_theme_id == theme.id.toString()" class="mb-3 input-group">
-								<textarea name="key_thoughts" id="key_thoughts-field" class="form-control" style="height: 100px;"  v-model="faci.key_thoughts" placeholder="Ключевые мысли">[[ faci.key_thoughts ]]</textarea>
-								<button type="button" @click="save_key_thoughts" class="btn btn-secondary"> >>> </button>
-						</div>
+            <div v-if="current_theme_id == theme.id.toString()" >
+                <div v-for="thought in key_thoughts">
+                    <p style="margin-bottom: 0.25rem;"><b>[[ thought.username ]]:</b> [[ thought.key_thought ]]</p>
+                </div>
+                <br>
+								<div class="mb-3 input-group">
+										<textarea name="key_thoughts" id="key_thoughts-field" class="form-control" style="height: 100px;"  v-model="key_thought" placeholder="Ключевая мысль"></textarea>
+										<button type="button" @click="add_key_thoughts" class="btn btn-secondary"> >>> </button>
+								</div>
+            </div>
         </div>
     `,
+    mounted() {
+        this.get_key_thoughts();
+    },
     methods: {
         next_theme(event) {
+            this.key_thoughts = [];
             this.current_theme_index += 1;
             if (this.current_theme_index >= this.themes.length) {
                 this.current_theme_index = 0;
             }
             this.current_theme_id = this.themes[this.current_theme_index].id.toString();
+            this.get_key_thoughts();
         },
-        save_key_thoughts(event) {
+        add_key_thoughts(event) {
+            let self = this;
+            if (!self.key_thought) return;
             $.ajax({
-                url: URL_FACI_EDITOR_KEY_THOUGHTS,
+                url: URL_FACI_EDITOR_ADD_KEY_THOUGHT,
                 headers: {
                     "X-CSRFToken": CSRF_TOKEN,
                 },
                 dataType: 'json',
-                data: $(event.target.form).serialize(),
+                data: {key_thought: self.key_thought, theme: self.current_theme_id},
                 success: function(result) {
                     set_valid_field(event.target.form, result.updated);
+                    self.key_thoughts.push({username: CURRENT_USERNAME, key_thought: self.key_thought})
+                    self.key_thought = '';
                 },
                 statusCode: {
                     403: function(xhr) {
@@ -48,6 +64,26 @@ KeyThoughtsChatComponent = {
                     },
                     400: function(xhr) {
                         set_invalid_field(event.target.form, xhr.responseJSON);
+                    },
+                },
+                method: "post"
+            });
+        },
+        get_key_thoughts() {
+            let self = this;
+            $.ajax({
+                url: URL_FACI_EDITOR_GET_KEY_THOUGHTS,
+                headers: {
+                    "X-CSRFToken": CSRF_TOKEN,
+                },
+                dataType: 'json',
+                data: {theme: self.current_theme_id},
+                success: function(result) {
+                    self.key_thoughts = result.key_thoughts;
+                },
+                statusCode: {
+                    403: function(xhr) {
+                        alert(xhr.responseJSON.detail);
                     },
                 },
                 method: "post"

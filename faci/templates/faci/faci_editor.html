@@ -17,12 +17,13 @@
         var URL_FACI_EDITOR_AIM = "aim/{% if 'link_to' in request.GET %}?link_to={{request.GET.link_to}}{% endif %}";
         var URL_FACI_EDITOR_PREPARING = "preparing/";
         var URL_FACI_EDITOR_START_MEETING = "start_meeting/";
-        var URL_FACI_EDITOR_KEY_THOUGHTS = "key_thoughts/";
+        var URL_FACI_EDITOR_ADD_KEY_THOUGHT = "key_thoughts/add";
+        var URL_FACI_EDITOR_GET_KEY_THOUGHTS = "key_thoughts/get";
         var URL_FACI_EDITOR_PARKED_THOUGHTS = "parked_thought/";
         var URL_FACI_EDITOR_GET_PARKED_THOUGHTS = "parked_thought/get/";
         var URL_FACI_EDITOR_AGREEMENTS = "agreements/";
         var URL_FACI_EDITOR_MEMBER = "member/";
-        var URL_FACI_ADD_THEME = "add_theme/";
+        var URL_FACI_EDITOR_ADD_THEME = "add_theme/";
         var CSRF_TOKEN = "{{ csrf_token }}";
         var CURRENT_USERNAME = "{{ request.user.username }}";
         var STATIC_PREFIX = "{% static '' %}";
@@ -31,6 +32,7 @@
         var HAS_ACCESS_TO_ADD_MEMBERS = {% if has_access_to_add_members %}true{% else %}false{% endif %};
         var HAS_ACCESS_TO_EDIT_AIM = {% if has_access_to_edit_aim %}true{% else %}false{% endif %};
         var HAS_ACCESS_TO_ADD_PARKED_THOUGHTS = {% if has_access_to_add_parked_thoughts %}true{% else %}false{% endif %};
+        var themes = JSON.parse(document.getElementById('themes_json').textContent);
     </script>
     <style>
         .windowWindow {

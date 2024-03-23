@@ -6,7 +6,7 @@ from faci.views import (
     FaciEditMembersView,
     FaciEditAgendaView,
     FaciEditPreparingView,
-    FaciEditKeyThoughtsView,
+    FaciAddKeyThoughtsView,
     FaciAddParkedThoughtsView,
     FaciEditAgreementsView,
     FaciStartView,
@@ -14,9 +14,8 @@ from faci.views import (
     SearchUserView,
     FaciGetParkedThoughtsView,
     FaciAddThemeView,
+    FaciGetKeyThoughtsView,
 )
-
-
 
 
 urlpatterns = [
@@ -26,7 +25,8 @@ urlpatterns = [
     re_path(r'(?P<canvas_id>[0-9]+)/agenda/$', FaciEditAgendaView.as_view(), name='faci_editor_agenda'),
     re_path(r'(?P<canvas_id>[0-9]+)/preparing/$', FaciEditPreparingView.as_view(), name='faci_editor_preparing'),
     re_path(r'(?P<canvas_id>[0-9]+)/start_meeting/$', FaciStartView.as_view(), name='faci_start_meeting'),
-    re_path(r'(?P<canvas_id>[0-9]+)/key_thoughts/$', FaciEditKeyThoughtsView.as_view(), name='faci_editor_key_thoughts'),
+    re_path(r'(?P<canvas_id>[0-9]+)/key_thoughts/add$', FaciAddKeyThoughtsView.as_view(), name='faci_editor_add_key_thoughts'),
+    re_path(r'(?P<canvas_id>[0-9]+)/key_thoughts/get', FaciGetKeyThoughtsView.as_view(), name='faci_editor_get_key_thoughts'),
     re_path(r'(?P<canvas_id>[0-9]+)/parked_thought/get/$', FaciGetParkedThoughtsView.as_view(), name='faci_editor_get_parked_thought'),
     re_path(r'(?P<canvas_id>[0-9]+)/parked_thought/$', FaciAddParkedThoughtsView.as_view(), name='faci_editor_parked_thought'),
     re_path(r'(?P<canvas_id>[0-9]+)/agreements/$', FaciEditAgreementsView.as_view(), name='faci_editor_agreements'),

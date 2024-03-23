@@ -3,7 +3,7 @@ StepAgendaComponent = {
     data() {
         return {
             agendas: JSON.parse(document.getElementById('agendas_json').textContent),
-            themes: JSON.parse(document.getElementById('themes_json').textContent),
+            themes,
             theme: '',
             duration: '',
             current_theme_id: null,
@@ -142,7 +142,7 @@ StepAgendaComponent = {
             let self = this;
             if (!self.theme) return;
             $.ajax({
-                url: URL_FACI_ADD_THEME,
+                url: URL_FACI_EDITOR_ADD_THEME,
                 headers: {
                     "X-CSRFToken": CSRF_TOKEN,
                 },

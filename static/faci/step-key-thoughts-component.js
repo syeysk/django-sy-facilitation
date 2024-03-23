@@ -1,7 +1,7 @@
 StepKeyThoughtsComponent = {
     data() {
         return {
-            themes: JSON.parse(document.getElementById('themes_json').textContent),
+            themes,
             sent_parked_thought: '',
             parked_thought: '',
             HAS_ACCESS_TO_ADD_PARKED_THOUGHTS,
@@ -12,14 +12,14 @@ StepKeyThoughtsComponent = {
     components: {WindowComponent, KeyThoughtsChatComponent},
     template: `
         <key-thoughts-chat-component v-if="themes.length > 0" :themes="themes"></key-thoughts-chat-component>
-        <span v-else>Чтобы фиксировать ключевые мысли, пожалуйста, добавьте в шаге 3 темы, планируемые к обсуждение </span>
+        <span v-else>Чтобы фиксировать ключевые мысли, пожалуйста, добавьте в шаге 3 темы, планируемые к обсуждению </span>
         <br>
 
         <hr>
 
         <div class="mb-3 input-group" v-if="HAS_ACCESS_TO_ADD_PARKED_THOUGHTS">
             <textarea name="parked_thought" id="parked_thought-field" class="form-control" v-model="parked_thought" placeholder="Парковка" title="Полезные мысли, не относящиеся к теме встречи"></textarea>
-            <button type="button" @click="save_parked_thought" class="btn btn-secondary"> >>> </button>
+            <button type="button" @click="add_parked_thought" class="btn btn-secondary"> >>> </button>
         </div>
         <transition name="fade">
             <div v-if="sent_parked_thought" style="color: green;">Мысль сохранена: [[ sent_parked_thought ]]</div>
@@ -32,7 +32,7 @@ StepKeyThoughtsComponent = {
         </window-component>
     `,
     methods: {
-        save_parked_thought(event) {
+        add_parked_thought(event) {
             let self = this;
             if (!self.parked_thought) return;
             $.ajax({

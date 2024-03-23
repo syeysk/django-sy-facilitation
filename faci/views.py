@@ -90,7 +90,7 @@ class FaciEditorView(View):
                 'key_thoughts': faci.key_thoughts,
             },
             'themes': list(
-                faci.themes.all().order_by('-dt_create').values('theme', 'duration', username=F('user__username')),
+                faci.themes.all().order_by('-dt_create').values('id', 'theme', 'duration', username=F('user__username')),
             ),
             'aim_type_choices': FaciCanvas.AIM_TYPE_CHOICES,
             'step': step,
@@ -200,7 +200,8 @@ class FaciAddThemeView(LoginRequiredMixin, APIView):
         serializer = FaciAddThemeSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(faci=faci, user=request.user)
-        return Response(status=status.HTTP_200_OK, data={'updated': list(serializer.validated_data.keys())})
+        response_data = {'id': serializer.instance.id, 'updated': list(serializer.validated_data.keys())}
+        return Response(status=status.HTTP_200_OK, data=response_data)
 
 
 class FaciEditAgendaView(LoginRequiredMixin, APIView):

@@ -6,6 +6,7 @@ StepAgendaComponent = {
             themes: JSON.parse(document.getElementById('themes_json').textContent),
             theme: '',
             duration: '',
+            current_theme_id: null,
         }
     },
     template: `
@@ -17,10 +18,13 @@ StepAgendaComponent = {
             <button type="button" @click="add_theme" class="btn btn-secondary"> >>> </button>
         </div>
         <div v-for="theme in themes">
-						<div style="background-color: var(--bs-card-border-color); padding: 5px; border-radius: 3px; display: flex; justify-content: space-between;">
+						<div class="theme-header" :data-id="theme.id.toString()" :key="theme.id" @click="open_theme" style="background-color: var(--bs-card-border-color); padding: 5px; border-radius: 3px; display: flex; justify-content: space-between; cursor: pointer;">
 								<span>[[ theme.duration ]] мин</span>
 								<span>[[ theme.theme ]]</span>
 								<span>[[ theme.username ]]</span>
+						</div>
+						<div v-if="current_theme_id == theme.id.toString()">
+						    в разработке...
 						</div>
 						<br>
         </div>
@@ -50,6 +54,15 @@ StepAgendaComponent = {
         </template>
     `,
     methods: {
+        open_theme(event) {
+            let header_el = event.target.closest('.theme-header')
+            if (this.current_theme_id == header_el.dataset.id) {
+                this.current_theme_id = null;
+            } else {
+                this.current_theme_id = header_el.dataset.id;
+            }
+            console.log(header_el.dataset);
+        },
         save_agenda(component, event) {
             $.ajax({
                 url: URL_FACI_EDITOR_AGENDA,
@@ -95,7 +108,9 @@ StepAgendaComponent = {
                 data: {'theme': self.theme, duration: self.duration},
                 success: function(result) {
                     set_valid_field(event.target.form, result.updated);
-                    self.themes.unshift({username: CURRENT_USERNAME, duration: self.duration, theme: self.theme});
+                    self.themes.unshift(
+                        {username: CURRENT_USERNAME, duration: self.duration, theme: self.theme, id: result.id.toString()},
+                    );
                     self.theme = '';
                     self.duration = '';
                 },

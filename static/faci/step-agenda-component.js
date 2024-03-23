@@ -7,6 +7,7 @@ StepAgendaComponent = {
             theme: '',
             duration: '',
             current_theme_id: null,
+            current_counter: null,
         }
     },
     template: `
@@ -17,19 +18,53 @@ StepAgendaComponent = {
             </span>
             <button type="button" @click="add_theme" class="btn btn-secondary"> >>> </button>
         </div>
+
         <div v-for="theme in themes">
-						<div class="theme-header" :data-id="theme.id.toString()" :key="theme.id" @click="open_theme" style="background-color: var(--bs-card-border-color); padding: 5px; border-radius: 3px; display: flex; justify-content: space-between; cursor: pointer;">
-								<span>[[ theme.duration ]] мин</span>
-								<span>[[ theme.theme ]]</span>
-								<span>[[ theme.username ]]</span>
+						<div class="theme-header" :data-id="theme.id.toString()" :key="theme.id" @click="open_theme" style="padding: 5px; cursor: pointer; border-bottom: 1px solid #c1c1c1;">
+								<div style="display: flex; justify-content: space-between;">
+    								<span :style="current_theme_id == theme.id.toString() ? 'font-weight: 600;' : 'font-weight: inherit;'">[[ theme.theme ]]</span>
+    								<span v-if="current_theme_id == theme.id.toString()">-</span>
+    								<span v-else>+</span>
+							  </div>
+								<div style="display: flex; justify-content: space-between; font-size: 10pt; color: grey;">
+										<span>[[ theme.duration ]] мин</span>
+										<span>[[ theme.username ]]</span>
+							  </div>
 						</div>
-						<div v-if="current_theme_id == theme.id.toString()">
-						    в разработке...
+
+						<div v-if="current_theme_id == theme.id.toString()" style="padding-left: 15px;">
+						    <div data-counter="questions" class="counter-header" @click="open_counter">
+    						    Вопросы
+						    </div>
+    						<div v-if="current_counter == 'questions'">
+    						    В разработке...
+    						</div>
+
+						    <div data-counter="fundamental_objections" class="counter-header" @click="open_counter">
+                    Принципиальные возражения
+						    </div>
+						    <div v-if="current_counter == 'fundamental_objections'">
+						        В разработке...
+						    </div>
+
+						    <div data-counter="suggested_solutions" class="counter-header" @click="open_counter">
+						        Предлагаемые решения
+						    </div>
+						    <div v-if="current_counter == 'suggested_solutions'">
+						        В разработке...
+						    </div>
+
+						    <div data-counter="counter_offer" class="counter-header" @click="open_counter">
+						        Встречные предложения
+						    </div>
+						    <div v-if="current_counter == 'counter_offer'">
+						        В разработке...
+						    </div>
 						</div>
 						<br>
         </div>
 
-        <template v-for="agenda in agendas">
+        <!--<template v-for="agenda in agendas">
             <step-agenda-self-item-component
                 v-if="agenda.self"
                 :invited="agenda.invited"
@@ -51,9 +86,17 @@ StepAgendaComponent = {
                     :counter_offer="agenda.counter_offer"
                 ></step-agenda-item-component>
             </div>
-        </template>
+        </template>-->
     `,
     methods: {
+        open_counter(event) {
+            let header_el = event.target.closest('.counter-header')
+            if (this.current_counter == header_el.dataset.counter) {
+                this.current_counter = null;
+            } else {
+                this.current_counter = header_el.dataset.counter;
+            }
+        },
         open_theme(event) {
             let header_el = event.target.closest('.theme-header')
             if (this.current_theme_id == header_el.dataset.id) {
@@ -61,7 +104,6 @@ StepAgendaComponent = {
             } else {
                 this.current_theme_id = header_el.dataset.id;
             }
-            console.log(header_el.dataset);
         },
         save_agenda(component, event) {
             $.ajax({

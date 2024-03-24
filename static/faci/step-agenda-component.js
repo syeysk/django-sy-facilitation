@@ -6,6 +6,7 @@ StepAgendaComponent = {
             themes,
             theme: '',
             duration: '',
+            description: '',
             current_theme_id: null,
             current_expression_type: null,
             expressions: [],
@@ -13,11 +14,11 @@ StepAgendaComponent = {
         }
     },
     template: `
+        <textarea name="theme" id="theme-field" class="form-control" v-model="theme" placeholder="Тема выступления" title=""></textarea>
+        <textarea name="description" id="theme-field" class="form-control" v-model="description" placeholder="Расскажите подробнее" title=""></textarea>
+
         <div class="mb-3 input-group">
-            <span class="form-control" style="padding: 0; border: none;">
-                <input name="duration" id="duration-field" class="form-control" v-model="duration" placeholder="Длительность, мин." title="длительность выступления для темы, в минутах">
-                <textarea name="theme" id="theme-field" class="form-control" v-model="theme" placeholder="Тема выступления" title=""></textarea>
-            </span>
+            <input name="duration" id="duration-field" class="form-control" v-model="duration" placeholder="Длительность выступления, мин." title="длительность выступления для темы, в минутах">
             <button type="button" @click="add_theme" class="btn btn-secondary"> >>> </button>
         </div>
 
@@ -35,6 +36,7 @@ StepAgendaComponent = {
 						</div>
 
 						<div v-if="current_theme_id == theme.id.toString()" style="padding-left: 15px;">
+						    <p>[[ theme.description ]]</p>
 						    <div v-for="expr_type in expr_types">
 										<div :data-counter="expr_type[0].toString()" class="counter-header" @click="open_expressions" style="cursor: pointer; padding: 5px 0;">
 												<span v-if="current_expression_type == expr_type[0].toString()">- </span>
@@ -80,14 +82,15 @@ StepAgendaComponent = {
                 url: URL_FACI_EDITOR_ADD_THEME,
                 headers: {"X-CSRFToken": CSRF_TOKEN},
                 dataType: 'json',
-                data: {'theme': self.theme, duration: self.duration},
+                data: {theme: self.theme, duration: self.duration, description: self.description},
                 success: function(result) {
                     set_valid_field(event.target.form, result.updated);
                     self.themes.unshift(
-                        {username: CURRENT_USERNAME, duration: self.duration, theme: self.theme, id: result.id.toString()},
+                        {username: CURRENT_USERNAME, duration: self.duration, theme: self.theme, id: result.id.toString(), description: self.description},
                     );
                     self.theme = '';
                     self.duration = '';
+                    self.description = '';
                     open_block(result['open_block']);
                 },
                 statusCode: {

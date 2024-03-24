@@ -31,7 +31,7 @@ KeyThoughtsChatComponent = {
         </div>
     `,
     mounted() {
-        this.get_key_thoughts();
+        this.get_key_thoughts(false);
     },
     methods: {
         next_theme(event) {
@@ -41,7 +41,7 @@ KeyThoughtsChatComponent = {
                 this.current_theme_index = 0;
             }
             this.current_theme_id = this.themes[this.current_theme_index].id.toString();
-            this.get_key_thoughts();
+            this.get_key_thoughts(true);
         },
         add_key_thoughts(event) {
             let self = this;
@@ -69,7 +69,7 @@ KeyThoughtsChatComponent = {
                 method: "post"
             });
         },
-        get_key_thoughts() {
+        get_key_thoughts(set_current) {
             let self = this;
             $.ajax({
                 url: URL_FACI_EDITOR_GET_KEY_THOUGHTS,
@@ -77,9 +77,20 @@ KeyThoughtsChatComponent = {
                     "X-CSRFToken": CSRF_TOKEN,
                 },
                 dataType: 'json',
-                data: {theme: self.current_theme_id},
+                data: set_current ? {theme: self.current_theme_id} : {},
                 success: function(result) {
                     self.key_thoughts = result.key_thoughts;
+                    if (!set_current) {
+                        let theme_index = 0;
+                        for (theme of self.themes) {
+                            if (theme.id.toString() == result.current_theme_id.toString()) {
+                                self.current_theme_index = theme_index;
+                                self.current_theme_id = result.current_theme_id.toString();
+                                break;
+                            }
+                            theme_index += 1;
+                        }
+                    }
                 },
                 statusCode: {
                     403: function(xhr) {

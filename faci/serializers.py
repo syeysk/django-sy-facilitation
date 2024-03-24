@@ -66,7 +66,7 @@ class FaciAddExpressionSerializer(serializers.ModelSerializer):
 class FaciAddThemeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Theme
-        fields = ['theme', 'duration']
+        fields = ['theme', 'duration', 'description']
 
 
 class FaciAddParkedThoughtsSerializer(serializers.ModelSerializer):

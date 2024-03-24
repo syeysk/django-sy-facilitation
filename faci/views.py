@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 
 from django_sy_framework.linker.utils import link_instance_from_request
-from faci.models import FaciCanvas, Member, KeyThought, Expression
+from faci.models import FaciCanvas, Member, KeyThought, Expression, Theme
 from faci.serializers import (
     AddFaciViewSerializer,
     GetListFaciSerializer,
@@ -64,7 +64,9 @@ class FaciEditorView(View):
                 'meeting_status': faci.meeting_status,
             },
             'themes': list(
-                faci.themes.all().order_by('-dt_create').values('id', 'theme', 'duration', username=F('user__username')),
+                faci.themes.all().order_by('-dt_create').values(
+                    'id', 'theme', 'duration', 'description', username=F('user__username'),
+                ),
             ),
             'expr_types': Expression.EXPRESSIONS_TYPES_CHOICES,
             'aim_type_choices': FaciCanvas.AIM_TYPE_CHOICES,
@@ -254,11 +256,24 @@ class FaciAddKeyThoughtsView(LoginRequiredMixin, APIView):
 
 class FaciGetKeyThoughtsView(APIView):
     def post(self, request, canvas_id: int):
+        theme_id = request.data.get('theme')
+        if theme_id:
+            Theme.objects.filter(faci_id=canvas_id, is_current=True).update(is_current=False)
+            Theme.objects.filter(faci_id=canvas_id, pk=theme_id).update(is_current=True)
+        else:
+            theme = Theme.objects.filter(faci_id=canvas_id, is_current=True).first()
+            if not theme:
+                theme = Theme.objects.filter(faci_id=canvas_id).first()
+                theme.is_current = True
+                theme.save()
+
+            theme_id = theme.pk
+
         key_thoughts = KeyThought.objects.filter(
-            theme_id=request.data['theme'],
+            theme_id=theme_id,
             theme__faci_id=canvas_id,
         ).values('key_thought', username=F('user__username'))
-        return Response(status=status.HTTP_200_OK, data={'key_thoughts': key_thoughts})
+        return Response(status=status.HTTP_200_OK, data={'key_thoughts': key_thoughts, 'current_theme_id': theme_id})
 
 
 class FaciAddParkedThoughtsView(LoginRequiredMixin, APIView):

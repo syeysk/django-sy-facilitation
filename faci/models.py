@@ -20,49 +20,6 @@ class Member(models.Model):
     inviting = models.ForeignKey(get_user_model(), null=False, on_delete=models.CASCADE, related_name='faci_member_inviters')
     for_what = models.CharField(verbose_name='В каком вопросе компетентен', null=False, blank=False, max_length=200)
     faci_canvas = models.ForeignKey('faci.FaciCanvas', null=False, on_delete=models.CASCADE, related_name='members')
-    themes = models.CharField(  # TODO: удалить поле
-        verbose_name='Тема выступления участника',
-        null=False,
-        default='',
-        blank=True,
-        max_length=1000,
-    )
-    themes_duration = models.IntegerField(verbose_name='Длительность выступления, минуты', null=False, default=5)
-    questions = models.CharField(
-        verbose_name='Вопросы',
-        help_text='вопросы, возникшие касательно темы встречи',
-        null=False,
-        default='',
-        blank=True,
-        max_length=2000,
-    )
-    fundamental_objections = models.CharField(
-        verbose_name='Принципиальные возражения',
-        help_text=(
-            'веские причины, отменяющие решения/предложения инициатора встречи,'
-            ' делающие поставленный вопрос ничтожным'
-        ),
-        null=False,
-        default='',
-        blank=True,
-        max_length=2000,
-    )
-    suggested_solutions = models.CharField(
-        verbose_name='Предлагаемые решения',
-        help_text='дополнительные предложения для решения проблемы, обозначенной инициатором встречи',
-        null=False,
-        default='',
-        blank=True,
-        max_length=2000,
-    )
-    counter_offer = models.CharField(
-        verbose_name='Встречные предложения',
-        help_text='предложение, которое заменит собой предложение инициатора встречи',
-        null=False,
-        default='',
-        blank=True,
-        max_length=2000,
-    )
 
     class Meta:
         db_table = 'app_faci_member'
@@ -143,8 +100,10 @@ class ParkedThoughts(DatetimeMixin, models.Model):
 class Theme(DatetimeMixin, models.Model):
     faci = models.ForeignKey('faci.FaciCanvas', null=False, on_delete=models.CASCADE, related_name='themes')
     user = models.ForeignKey(get_user_model(), null=False, on_delete=models.CASCADE)
-    theme = models.CharField(verbose_name='Тема выступления', null=False, blank=False, max_length=1000)
-    duration = models.IntegerField(verbose_name='Длительность выступления, минуты', null=False, blank=False)
+    theme = models.CharField('Тема выступления', null=False, blank=False, max_length=1000)
+    duration = models.IntegerField('Длительность выступления, минуты', null=False, blank=False)
+    description = models.TextField('Подробное описание', max_length=10000, null=False, blank=False)
+    is_current = models.BooleanField('Является ли тема активной', null=False, default=False)
 
     class Meta:
         verbose_name = 'Тема встречи'

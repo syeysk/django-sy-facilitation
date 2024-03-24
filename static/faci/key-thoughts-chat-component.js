@@ -11,11 +11,11 @@ KeyThoughtsChatComponent = {
     },
     template: `
         <div v-for="theme in themes">
-            <div :key="theme.id" :style="'border-radius: 3px; padding: 2px 2px 2px 5px; margin-bottom: 10px; display: flex; justify-content: space-between; background-color: ' + (current_theme_id == theme.id.toString() ? '#24a524;' : 'grey;')">
-                <span :style="'color: white; font-weight: ' + (current_theme_id == theme.id.toString() ? '600;' : 'inherit;')">[[ theme.theme ]]</span>
+            <div :key="theme.id" :style="'color: white; border-radius: 3px; padding: 12px 7px 12px 7px; margin-bottom: 1rem; display: flex; justify-content: space-between; background-color: ' + (current_theme_id == theme.id.toString() ? '#51bd51;' : '#b9b9b9;')">
+                <span :style="'font-weight: ' + (current_theme_id == theme.id.toString() ? '600;' : 'inherit;')">[[ theme.theme ]]</span>
                 <span v-if="current_theme_id == theme.id.toString()" style="white-space: nowrap;">
-                    <span  style="cursor: pointer; border-radius: 3px; border: solid 1px grey; padding: 3px;"> || </span>
-                    <span @click="next_theme" style="cursor: pointer; border-radius: 3px; border: solid 1px grey; padding: 3px;" title="Перейти к следующий теме"> >> </span>
+                    <span  style="cursor: pointer; border-radius: 3px; border: solid 1px white; padding: 3px; margin-right: 5px;"> || </span>
+                    <span @click="next_theme" style="cursor: pointer; border-radius: 3px; border: solid 1px white; padding: 3px;" title="Перейти к следующий теме"> >> </span>
                 </span>
             </div>
             <div v-if="current_theme_id == theme.id.toString()" style="padding-left: 15px; padding-right: 15px; font-size: 10pt;">

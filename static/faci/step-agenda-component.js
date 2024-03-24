@@ -37,12 +37,13 @@ StepAgendaComponent = {
 
 						<div v-if="current_theme_id == theme.id.toString()" style="padding-left: 15px;">
 						    <div v-for="expr_type in expr_types">
-										<div :data-counter="expr_type[0].toString()" class="counter-header" @click="open_expressions">
+										<div :data-counter="expr_type[0].toString()" class="counter-header" @click="open_expressions" style="cursor: pointer; padding: 5px 0;">
+												<span v-if="current_expression_type == expr_type[0].toString()">- </span>
+												<span v-else>+</span>
 												[[ expr_type[1] ]]
 										</div>
-										<div v-if="current_expression_type == expr_type[0].toString()">
-												В разработке...
-												<p v-for="expression in expressions">
+										<div v-if="current_expression_type == expr_type[0].toString()" style="padding-left: 1rem;">
+												<p v-for="expression in expressions" style="font-size: 10pt;">
 												    <b>[[ expression.username ]]:</b> [[ expression.expression ]]
 												</p>
 												<div class="mb-3 input-group">

@@ -65,9 +65,7 @@ const StepMemberItemComponent = {
                 data: {for_what: self.member.for_what, invited_user: self.member.invited, mode: self.mode},
                 success: function(result) {
                     open_block(result['open_block']);
-                    if (self.mode == 'add') {
-                        agenda_list.agendas.push({invited: self.member.invited, themes: '', themes_duration: 5, questions: '', fundamental_objections: '', suggested_solutions: '', counter_offer: '', self: self.member.invited == CURRENT_USERNAME });
-                    }
+                    self.$parent.mode = 'view';
                     self.mode = 'view';
                     self.uneditable_invited = true;
                     self.bad_message = '';
@@ -113,6 +111,7 @@ const StepMemberItemComponent = {
         focus_selecting_user(component) {
         },
         edit() {
+            this.$parent.mode = 'edit';
             this.mode = 'edit';
             this.previous_for_what = this.member.for_what;
         },
@@ -120,6 +119,7 @@ const StepMemberItemComponent = {
             if (this.mode == 'add') {
                 this.$parent.member_list.pop(-1);
             }
+            this.$parent.mode = 'view';
             this.mode = 'view';
             this.member.for_what = this.previous_for_what;
             this.bad_message = '';

@@ -14,7 +14,6 @@ from faci.serializers import (
     GetListFaciSerializer,
     FaciEditAimSerializer,
     FaciEditMembersSerializer,
-    FaciEditAgendaSerializer,
     FaciEditPreparingSerializer,
     FaciAddKeyThoughtsSerializer,
     FaciAddParkedThoughtsSerializer,
@@ -39,19 +38,6 @@ class FaciEditorView(View):
                 }
                 for member in faci.members.all()
             ]
-            agendas = [
-                {
-                    'invited': member.invited.username,
-                    'themes': member.themes,
-                    'themes_duration': member.themes_duration,
-                    'questions': member.questions,
-                    'fundamental_objections': member.fundamental_objections,
-                    'suggested_solutions': member.suggested_solutions,
-                    'counter_offer': member.counter_offer,
-                    'self': member.invited.username == request.user.username,
-                }
-                for member in faci.members.all()
-            ]
             has_access_to_edit_preparing = request.user.pk == faci.user_creator.pk
             has_access_to_add_members = request.user.is_authenticated
             has_access_to_edit_aim = request.user.pk == faci.user_creator.pk
@@ -64,18 +50,6 @@ class FaciEditorView(View):
             step = 1
             username = request.user.username
             members = [{'invited': username, 'for_what': FACI_CREATOR_FOR_WHAT, 'inviting': username}]
-            agendas = [
-                {
-                    'invited': username,
-                    'themes': '',
-                    'themes_duration': 0,
-                    'questions': '',
-                    'fundamental_objections': '',
-                    'suggested_solutions': '',
-                    'counter_offer': '',
-                    'self': True,
-                },
-            ]
             has_access_to_edit_preparing = True
             has_access_to_add_members = True
             has_access_to_edit_aim = True
@@ -96,7 +70,6 @@ class FaciEditorView(View):
             'aim_type_choices': FaciCanvas.AIM_TYPE_CHOICES,
             'step': step,
             'members': members,
-            'agendas': agendas,
             'has_access_to_edit_preparing': has_access_to_edit_preparing,
             'has_access_to_add_members': has_access_to_add_members,
             'has_access_to_edit_aim': has_access_to_edit_aim,
@@ -183,9 +156,7 @@ class FaciEditMembersView(LoginRequiredMixin, APIView):
             faci_canvas.step = 3
             faci_canvas.save()
 
-        data_for_return = {}
-        data_for_return['open_block'] = 'agenda'
-        data_for_return['success'] = True
+        data_for_return = {'open_block': 'agenda', 'success': True}
         return Response(status=status.HTTP_200_OK, data=data_for_return)
 
     def delete(self, canvas_id):
@@ -201,31 +172,17 @@ class FaciAddThemeView(LoginRequiredMixin, APIView):
         serializer = FaciAddThemeSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(faci=faci, user=request.user)
-        response_data = {'id': serializer.instance.id, 'updated': list(serializer.validated_data.keys())}
+
+        if faci.step == 3:
+            faci.step = 4
+            faci.save()
+
+        response_data = {
+            'id': serializer.instance.id,
+            'updated': list(serializer.validated_data.keys()),
+            'open_block': 'preparing',
+        }
         return Response(status=status.HTTP_200_OK, data=response_data)
-
-
-class FaciEditAgendaView(LoginRequiredMixin, APIView):
-    def post(self, request, canvas_id):
-        serializer = FaciEditAgendaSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        data = serializer.validated_data
-
-        faci_canvas = FaciCanvas.objects.get(pk=canvas_id)
-        member = Member.objects.get(invited=request.user, faci_canvas=faci_canvas)
-        updated_fields = [name for name, value in data.items() if getattr(member, name) != value]
-        #member.themes = data['themes']
-        #member.themes_duration = data['themes_duration']
-        member.questions = data['questions']
-        member.fundamental_objections = data['fundamental_objections']
-        member.suggested_solutions = data['suggested_solutions']
-        member.counter_offer = data['counter_offer']
-        member.save()
-        faci_canvas.step = 4
-        faci_canvas.save()
-
-        data_for_return = {'open_block': 'preparing', 'updated': updated_fields}
-        return Response(status=status.HTTP_200_OK, data=data_for_return)
 
 
 class FaciEditPreparingView(LoginRequiredMixin, APIView):
@@ -341,7 +298,7 @@ class FaciAddExpressionView(LoginRequiredMixin, APIView):
         serializer = FaciAddExpressionSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(user=request.user)
-        return Response(status=status.HTTP_200_OK, data={'updated': list(serializer.validated_data.keys())})
+        return Response(status=status.HTTP_200_OK, data={'updated': ['expression']})
 
 
 class FaciEditAgreementsView(LoginRequiredMixin, APIView):

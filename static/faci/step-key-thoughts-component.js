@@ -29,6 +29,7 @@ StepKeyThoughtsComponent = {
             <div v-for="thought in parked_thoughts">
                 <p><b>[[ thought.username ]]:</b> [[ thought.parked_thought ]]</p>
             </div>
+            <div v-if="parked_thoughts.length == 0">Отвлечённые мысли пока никто не парковал.</div>
         </window-component>
     `,
     methods: {

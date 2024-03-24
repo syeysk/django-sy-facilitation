@@ -11,6 +11,7 @@
     {{ agendas|json_script:'agendas_json' }}
     {{ faci_json|json_script:'faci_json' }}
     {{ themes|json_script:'themes_json' }}
+    {{ expr_types|json_script:'expr_types_json' }}
     <script>
         var URL_FACI_EDITOR_AGENDA = "agenda/";
         var URL_SEARCH_USER = "search_user/";
@@ -18,7 +19,9 @@
         var URL_FACI_EDITOR_PREPARING = "preparing/";
         var URL_FACI_EDITOR_START_MEETING = "start_meeting/";
         var URL_FACI_EDITOR_ADD_KEY_THOUGHT = "key_thoughts/add";
-        var URL_FACI_EDITOR_GET_KEY_THOUGHTS = "key_thoughts/get";
+        var URL_FACI_EDITOR_GET_KEY_THOUGHTS = "key_thoughts/get/";
+        var URL_FACI_EDITOR_GET_EXPRESSIONS = "expressions/get/";
+        var URL_FACI_EDITOR_ADD_EXPRESSION =  "expressions/add/";
         var URL_FACI_EDITOR_PARKED_THOUGHTS = "parked_thought/";
         var URL_FACI_EDITOR_GET_PARKED_THOUGHTS = "parked_thought/get/";
         var URL_FACI_EDITOR_AGREEMENTS = "agreements/";
@@ -233,17 +236,17 @@
     </div>
 
     <script src="{% static 'window-component.js' %}"></script>
-    <script src="{% static 'faci/key-thoughts-chat-component.js' %}?v=3"></script>
-    <script src="{% static 'faci/step-key-thoughts-component.js' %}?v=4"></script>
-    <script src="{% static 'faci/step-preparing-component.js' %}?v=3"></script>
-    <script src="{% static 'faci/step-agenda-item-component.js' %}?v=3"></script>
-    <script src="{% static 'faci/step-agenda-self-item-component.js' %}?v=3"></script>
-    <script src="{% static 'faci/step-agenda-component.js' %}?v=3"></script>
-    <script src="{% static 'faci/listdown-field-item-component.js' %}?v=3"></script>
-    <script src="{% static 'faci/listdown-field-component.js' %}?v=3"></script>
-    <script src="{% static 'faci/step-member-search-item-component.js' %}?v=3"></script>
-    <script src="{% static 'faci/step-member-item-component.js' %}?v=3"></script>
-    <script src="{% static 'faci/step-members-component.js' %}?v=3"></script>
+    <script src="{% static 'faci/key-thoughts-chat-component.js' %}?v=4"></script>
+    <script src="{% static 'faci/step-key-thoughts-component.js' %}?v=5"></script>
+    <script src="{% static 'faci/step-preparing-component.js' %}?v=4"></script>
+    <script src="{% static 'faci/step-agenda-item-component.js' %}?v=4"></script>
+    <script src="{% static 'faci/step-agenda-self-item-component.js' %}?v=4"></script>
+    <script src="{% static 'faci/step-agenda-component.js' %}?v=4"></script>
+    <script src="{% static 'faci/listdown-field-item-component.js' %}?v=4"></script>
+    <script src="{% static 'faci/listdown-field-component.js' %}?v=4"></script>
+    <script src="{% static 'faci/step-member-search-item-component.js' %}?v=4"></script>
+    <script src="{% static 'faci/step-member-item-component.js' %}?v=4"></script>
+    <script src="{% static 'faci/step-members-component.js' %}?v=4"></script>
     <script>
         const { createApp } = Vue;
 

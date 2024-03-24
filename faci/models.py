@@ -131,7 +131,7 @@ class FaciCanvas(DatetimeMixin, models.Model):
 
 
 class ParkedThoughts(DatetimeMixin, models.Model):
-    faci = models.ForeignKey('faci.FaciCanvas', null=False, on_delete=models.CASCADE, related_name="parked_thoughts")
+    faci = models.ForeignKey('faci.FaciCanvas', null=False, on_delete=models.CASCADE, related_name='parked_thoughts')
     user = models.ForeignKey(get_user_model(), null=False, on_delete=models.CASCADE)
     parked_thought = models.CharField(verbose_name='Паркованная мысль', null=False, max_length=500, blank=False)
 
@@ -141,7 +141,7 @@ class ParkedThoughts(DatetimeMixin, models.Model):
 
 
 class Theme(DatetimeMixin, models.Model):
-    faci = models.ForeignKey('faci.FaciCanvas', null=False, on_delete=models.CASCADE, related_name="themes")
+    faci = models.ForeignKey('faci.FaciCanvas', null=False, on_delete=models.CASCADE, related_name='themes')
     user = models.ForeignKey(get_user_model(), null=False, on_delete=models.CASCADE)
     theme = models.CharField(verbose_name='Тема выступления', null=False, blank=False, max_length=1000)
     duration = models.IntegerField(verbose_name='Длительность выступления, минуты', null=False, blank=False)
@@ -152,7 +152,7 @@ class Theme(DatetimeMixin, models.Model):
 
 
 class KeyThought(DatetimeMixin, models.Model):
-    theme = models.ForeignKey('faci.Theme', null=False, on_delete=models.CASCADE, related_name="key_thoughts")
+    theme = models.ForeignKey('faci.Theme', null=False, on_delete=models.CASCADE, related_name='key_thoughts')
     user = models.ForeignKey(get_user_model(), null=False, on_delete=models.CASCADE)
     key_thought = models.CharField(verbose_name='Ключевая мысль', null=False, blank=False, max_length=1000)
 
@@ -160,3 +160,24 @@ class KeyThought(DatetimeMixin, models.Model):
         verbose_name = 'Ключевая мысль'
         verbose_name_plural = 'Ключевые мысли'
 
+
+class Expression(DatetimeMixin, models.Model):
+    QUESTION = 1
+    FUNDAMENTAL_OBJECTIONS = 2
+    SUGGESTED_SOLUTIONS = 3
+    COUNTER_OFFER = 4
+    EXPRESSIONS_TYPES_CHOICES = (
+        (QUESTION, 'Вопросы'),
+        (FUNDAMENTAL_OBJECTIONS, 'Принципиальные возражения'),
+        (SUGGESTED_SOLUTIONS, 'Предлагаемые решения'),
+        (COUNTER_OFFER, 'Встречные предложения'),
+    )
+
+    theme = models.ForeignKey('faci.Theme', null=False, on_delete=models.CASCADE, related_name='expressions')
+    user = models.ForeignKey(get_user_model(), null=False, on_delete=models.CASCADE)
+    expression = models.CharField(verbose_name='Ключевая мысль', null=False, blank=False, max_length=1000)
+    expression_type = models.IntegerField(verbose_name='Тип высказывания', null=False, choices=EXPRESSIONS_TYPES_CHOICES)
+
+    class Meta:
+        verbose_name = 'Высказывание к теме'
+        verbose_name_plural = 'Высказывания к теме'

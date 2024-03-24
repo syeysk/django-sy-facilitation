@@ -3,11 +3,14 @@ StepAgendaComponent = {
     data() {
         return {
             agendas: JSON.parse(document.getElementById('agendas_json').textContent),
+            expr_types: JSON.parse(document.getElementById('expr_types_json').textContent),
             themes,
             theme: '',
             duration: '',
             current_theme_id: null,
-            current_counter: null,
+            current_expression_type: null,
+            expressions: [],
+            expression: '',
         }
     },
     template: `
@@ -33,33 +36,21 @@ StepAgendaComponent = {
 						</div>
 
 						<div v-if="current_theme_id == theme.id.toString()" style="padding-left: 15px;">
-						    <div data-counter="questions" class="counter-header" @click="open_counter">
-    						    Вопросы
-						    </div>
-    						<div v-if="current_counter == 'questions'">
-    						    В разработке...
-    						</div>
-
-						    <div data-counter="fundamental_objections" class="counter-header" @click="open_counter">
-                    Принципиальные возражения
-						    </div>
-						    <div v-if="current_counter == 'fundamental_objections'">
-						        В разработке...
-						    </div>
-
-						    <div data-counter="suggested_solutions" class="counter-header" @click="open_counter">
-						        Предлагаемые решения
-						    </div>
-						    <div v-if="current_counter == 'suggested_solutions'">
-						        В разработке...
-						    </div>
-
-						    <div data-counter="counter_offer" class="counter-header" @click="open_counter">
-						        Встречные предложения
-						    </div>
-						    <div v-if="current_counter == 'counter_offer'">
-						        В разработке...
-						    </div>
+						    <div v-for="expr_type in expr_types">
+										<div :data-counter="expr_type[0].toString()" class="counter-header" @click="open_expressions">
+												[[ expr_type[1] ]]
+										</div>
+										<div v-if="current_expression_type == expr_type[0].toString()">
+												В разработке...
+												<p v-for="expression in expressions">
+												    <b>[[ expression.username ]]:</b> [[ expression.expression ]]
+												</p>
+												<div class="mb-3 input-group">
+														<textarea name="expression" id="expression-field" class="form-control" style="height: 80px; font-size: 10pt;"  v-model="expression" :placeholder="expr_type[1]"></textarea>
+														<button type="button" @click="add_expression" class="btn btn-secondary"> >>> </button>
+												</div>
+										</div>
+							  </div>
 						</div>
 						<br>
         </div>
@@ -89,13 +80,14 @@ StepAgendaComponent = {
         </template>-->
     `,
     methods: {
-        open_counter(event) {
+        open_expressions(event) {
             let header_el = event.target.closest('.counter-header')
-            if (this.current_counter == header_el.dataset.counter) {
-                this.current_counter = null;
+            if (this.current_expression_type == header_el.dataset.counter) {
+                this.current_expression_type = null;
             } else {
-                this.current_counter = header_el.dataset.counter;
+                this.current_expression_type = header_el.dataset.counter;
             }
+            this.get_expressions();
         },
         open_theme(event) {
             let header_el = event.target.closest('.theme-header')
@@ -108,9 +100,7 @@ StepAgendaComponent = {
         save_agenda(component, event) {
             $.ajax({
                 url: URL_FACI_EDITOR_AGENDA,
-                headers: {
-                    "X-CSRFToken": CSRF_TOKEN,
-                },
+                headers: {"X-CSRFToken": CSRF_TOKEN},
                 dataType: 'json',
                 data: {
                     //themes: component.m_themes,
@@ -143,9 +133,7 @@ StepAgendaComponent = {
             if (!self.theme) return;
             $.ajax({
                 url: URL_FACI_EDITOR_ADD_THEME,
-                headers: {
-                    "X-CSRFToken": CSRF_TOKEN,
-                },
+                headers: {"X-CSRFToken": CSRF_TOKEN},
                 dataType: 'json',
                 data: {'theme': self.theme, duration: self.duration},
                 success: function(result) {
@@ -162,6 +150,50 @@ StepAgendaComponent = {
                     },
                     400: function(xhr) {
                         set_invalid_field(event.target.form, xhr.responseJSON);
+                    },
+                },
+                method: "post"
+            });
+        },
+        add_expression(event) {
+            let self = this;
+            if (!self.expression) return;
+            $.ajax({
+                url: URL_FACI_EDITOR_ADD_EXPRESSION,
+                headers: {
+                    "X-CSRFToken": CSRF_TOKEN,
+                },
+                dataType: 'json',
+                data: {expression: self.expression, theme: self.current_theme_id, expression_type: self.current_expression_type},
+                success: function(result) {
+                    set_valid_field(event.target.form, result.updated);
+                    self.expressions.push({username: CURRENT_USERNAME, expression: self.expression})
+                    self.expression = '';
+                },
+                statusCode: {
+                    403: function(xhr) {
+                        alert(xhr.responseJSON.detail);
+                    },
+                    400: function(xhr) {
+                        set_invalid_field(event.target.form, xhr.responseJSON);
+                    },
+                },
+                method: "post"
+            });
+        },
+        get_expressions() {
+            let self = this;
+            $.ajax({
+                url: URL_FACI_EDITOR_GET_EXPRESSIONS,
+                headers: {"X-CSRFToken": CSRF_TOKEN},
+                dataType: 'json',
+                data: {theme: self.current_theme_id, expression_type: self.current_expression_type},
+                success: function(result) {
+                    self.expressions = result.expressions;
+                },
+                statusCode: {
+                    403: function(xhr) {
+                        alert(xhr.responseJSON.detail);
                     },
                 },
                 method: "post"

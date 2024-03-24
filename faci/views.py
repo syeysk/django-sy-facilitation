@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 
 from django_sy_framework.linker.utils import link_instance_from_request
-from faci.models import FaciCanvas, Member, Theme
+from faci.models import FaciCanvas, Member, KeyThought, Expression
 from faci.serializers import (
     AddFaciViewSerializer,
     GetListFaciSerializer,
@@ -20,6 +20,7 @@ from faci.serializers import (
     FaciAddParkedThoughtsSerializer,
     FaciEditAgreementsSerializer,
     FaciAddThemeSerializer,
+    FaciAddExpressionSerializer,
 )
 
 FACI_CREATOR_FOR_WHAT = 'Инициатор встречи'
@@ -91,6 +92,7 @@ class FaciEditorView(View):
             'themes': list(
                 faci.themes.all().order_by('-dt_create').values('id', 'theme', 'duration', username=F('user__username')),
             ),
+            'expr_types': Expression.EXPRESSIONS_TYPES_CHOICES,
             'aim_type_choices': FaciCanvas.AIM_TYPE_CHOICES,
             'step': step,
             'members': members,
@@ -295,12 +297,10 @@ class FaciAddKeyThoughtsView(LoginRequiredMixin, APIView):
 
 class FaciGetKeyThoughtsView(APIView):
     def post(self, request, canvas_id: int):
-        faci = FaciCanvas.objects.get(pk=canvas_id)
-        if not faci:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        theme = faci.themes.filter(pk=request.data['theme']).first()
-        key_thoughts = theme.key_thoughts.all().values('key_thought', username=F('user__username'))
+        key_thoughts = KeyThought.objects.filter(
+            theme_id=request.data['theme'],
+            theme__faci_id=canvas_id,
+        ).values('key_thought', username=F('user__username'))
         return Response(status=status.HTTP_200_OK, data={'key_thoughts': key_thoughts})
 
 
@@ -324,6 +324,24 @@ class FaciGetParkedThoughtsView(APIView):
 
         parked_thoughts = faci.parked_thoughts.all().values('parked_thought', username=F('user__username'))
         return Response(status=status.HTTP_200_OK, data={'parked_thoughts': parked_thoughts})
+
+
+class FaciGetExpressionsView(APIView):
+    def post(self, request, canvas_id: int):
+        expressions = Expression.objects.filter(
+            theme_id=request.data['theme'],
+            theme__faci_id=canvas_id,
+            expression_type=request.data['expression_type'],
+        ).values('expression', username=F('user__username'))
+        return Response(status=status.HTTP_200_OK, data={'expressions': expressions})
+
+
+class FaciAddExpressionView(LoginRequiredMixin, APIView):
+    def post(self, request, canvas_id):
+        serializer = FaciAddExpressionSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user)
+        return Response(status=status.HTTP_200_OK, data={'updated': list(serializer.validated_data.keys())})
 
 
 class FaciEditAgreementsView(LoginRequiredMixin, APIView):

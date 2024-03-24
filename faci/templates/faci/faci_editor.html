@@ -32,7 +32,12 @@
         var HAS_ACCESS_TO_EDIT_PREPARING = {% if has_access_to_edit_preparing %}true{% else %}false{% endif %};
         var HAS_ACCESS_TO_ADD_MEMBERS = {% if has_access_to_add_members %}true{% else %}false{% endif %};
         var HAS_ACCESS_TO_EDIT_AIM = {% if has_access_to_edit_aim %}true{% else %}false{% endif %};
+        var HAS_ACCESS_TO_ACTIVATE_THEME = {% if has_access_to_activate_theme %}true{% else %}false{% endif %};
+        var HAS_ACCESS_TO_ADD_KEY_THOUGHTS = {% if has_access_to_add_key_thoughts %}true{% else %}false{% endif %};
         var HAS_ACCESS_TO_ADD_PARKED_THOUGHTS = {% if has_access_to_add_parked_thoughts %}true{% else %}false{% endif %};
+        var HAS_ACCESS_TO_ADD_EXPRESSION = {% if has_access_to_add_expression %}true{% else %}false{% endif %};
+        var HAS_ACCESS_TO_ADD_THEME = {% if has_access_to_add_theme %}true{% else %}false{% endif %};
+
         var themes = JSON.parse(document.getElementById('themes_json').textContent);
     </script>
     <style>
@@ -234,10 +239,10 @@
     </div>
 
     <script src="{% static 'window-component.js' %}"></script>
-    <script src="{% static 'faci/key-thoughts-chat-component.js' %}?v=6"></script>
+    <script src="{% static 'faci/key-thoughts-chat-component.js' %}?v=7"></script>
     <script src="{% static 'faci/step-key-thoughts-component.js' %}?v=6"></script>
     <script src="{% static 'faci/step-preparing-component.js' %}?v=4"></script>
-    <script src="{% static 'faci/step-agenda-component.js' %}?v=8"></script>
+    <script src="{% static 'faci/step-agenda-component.js' %}?v=9"></script>
     <script src="{% static 'faci/listdown-field-item-component.js' %}?v=4"></script>
     <script src="{% static 'faci/listdown-field-component.js' %}?v=4"></script>
     <script src="{% static 'faci/step-member-search-item-component.js' %}?v=4"></script>

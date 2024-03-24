@@ -11,16 +11,20 @@ StepAgendaComponent = {
             current_expression_type: null,
             expressions: [],
             expression: '',
+            HAS_ACCESS_TO_ADD_EXPRESSION,
+            HAS_ACCESS_TO_ADD_THEME,
         }
     },
     template: `
-        <textarea name="theme" id="theme-field" class="form-control" v-model="theme" placeholder="Тема выступления" title=""></textarea>
-        <textarea name="description" id="theme-field" class="form-control" v-model="description" placeholder="Расскажите подробнее" title=""></textarea>
+        <div v-if="HAS_ACCESS_TO_ADD_THEME">
+						<textarea name="theme" id="theme-field" class="form-control" v-model="theme" placeholder="Тема выступления" title=""></textarea>
+						<textarea name="description" id="theme-field" class="form-control" v-model="description" placeholder="Расскажите подробнее" title=""></textarea>
 
-        <div class="mb-3 input-group">
-            <input name="duration" id="duration-field" class="form-control" v-model="duration" placeholder="Длительность выступления, мин." title="длительность выступления для темы, в минутах">
-            <button type="button" @click="add_theme" class="btn btn-secondary"> >>> </button>
-        </div>
+						<div class="mb-3 input-group">
+								<input name="duration" id="duration-field" class="form-control" v-model="duration" placeholder="Длительность выступления, мин." title="длительность выступления для темы, в минутах">
+								<button type="button" @click="add_theme" class="btn btn-secondary"> >>> </button>
+						</div>
+			  </div>
 
         <div v-for="theme in themes">
 						<div class="theme-header" :data-id="theme.id.toString()" :key="theme.id" @click="open_theme" style="padding: 5px; cursor: pointer; border-bottom: 1px solid #c1c1c1;">
@@ -47,7 +51,7 @@ StepAgendaComponent = {
 												<p v-for="expression in expressions" style="font-size: 10pt;">
 												    <b>[[ expression.username ]]:</b> [[ expression.expression ]]
 												</p>
-												<div class="mb-3 input-group">
+												<div class="mb-3 input-group" v-if="HAS_ACCESS_TO_ADD_EXPRESSION">
 														<textarea name="expression" id="expression-field" class="form-control" style="height: 80px; font-size: 10pt;"  v-model="expression" :placeholder="expr_type[1]"></textarea>
 														<button type="button" @click="add_expression" class="btn btn-secondary"> >>> </button>
 												</div>

@@ -103,6 +103,13 @@
 				.fade-enter-from, .fade-leave-to {
 					opacity: 0;
 				}
+
+				.theme:not(:last-child) .theme-header {
+				    border-bottom: 1px solid #c1c1c1;
+				}
+				.theme:not(:last-child) {
+				    margin-bottom: 1rem;
+				}
     </style>
 
     <div class="row accordion">
@@ -215,7 +222,7 @@
                 <div class="accordion-header card-header accordion-button" data-bs-toggle="collapse" data-bs-target="#key_thoughts_form" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
                     5. Ключевые мысли
                 </div>
-                <form id="key_thoughts_form" class="card-body accordion-collapse collapse show">
+                <form id="key_thoughts_form" class="card-body accordion-collapse collapse show" style="padding: 0 0 0 0;">
                     <div id="app_key_thoughts"></div>
                     <div class="{% if step > 4 %}d-none {% endif %}form_sheet">Станет доступно во время встречи (после шага 4)</div>
                 </form>
@@ -238,11 +245,13 @@
         </div>
     </div>
 
+    <br>
+
     <script src="{% static 'window-component.js' %}"></script>
-    <script src="{% static 'faci/key-thoughts-chat-component.js' %}?v=7"></script>
-    <script src="{% static 'faci/step-key-thoughts-component.js' %}?v=6"></script>
+    <script src="{% static 'faci/key-thoughts-chat-component.js' %}?v=8"></script>
+    <script src="{% static 'faci/step-key-thoughts-component.js' %}?v=7"></script>
     <script src="{% static 'faci/step-preparing-component.js' %}?v=4"></script>
-    <script src="{% static 'faci/step-agenda-component.js' %}?v=9"></script>
+    <script src="{% static 'faci/step-agenda-component.js' %}?v=10"></script>
     <script src="{% static 'faci/listdown-field-item-component.js' %}?v=4"></script>
     <script src="{% static 'faci/listdown-field-component.js' %}?v=4"></script>
     <script src="{% static 'faci/step-member-search-item-component.js' %}?v=4"></script>

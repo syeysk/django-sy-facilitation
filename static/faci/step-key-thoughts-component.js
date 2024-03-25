@@ -13,18 +13,17 @@ StepKeyThoughtsComponent = {
     template: `
         <key-thoughts-chat-component v-if="themes.length > 0" :themes="themes"></key-thoughts-chat-component>
         <span v-else>Чтобы фиксировать ключевые мысли, пожалуйста, добавьте в шаге 3 темы, планируемые к обсуждению </span>
-        <br>
 
-        <hr>
-
-        <div class="mb-3 input-group" v-if="HAS_ACCESS_TO_ADD_PARKED_THOUGHTS">
-            <textarea name="parked_thought" id="parked_thought-field" class="form-control" v-model="parked_thought" placeholder="Парковка" title="Полезные мысли, не относящиеся к теме встречи"></textarea>
-            <button type="button" @click="add_parked_thought" class="btn btn-secondary"> >>> </button>
-        </div>
-        <transition name="fade">
-            <div v-if="sent_parked_thought" style="color: green;">Мысль сохранена: [[ sent_parked_thought ]]</div>
-        </transition>
-        <div style="text-decoration: underline; cursor: pointer;" @click="get_parked_thoughts">припаркованные мысли</div>
+        <div style="padding: 1rem;">
+						<div class="mb-3 input-group" v-if="HAS_ACCESS_TO_ADD_PARKED_THOUGHTS">
+								<textarea name="parked_thought" id="parked_thought-field" class="form-control" v-model="parked_thought" placeholder="Парковка" title="Полезные мысли, не относящиеся к теме встречи"></textarea>
+								<button type="button" @click="add_parked_thought" class="btn btn-secondary"> >>> </button>
+						</div>
+						<transition name="fade">
+								<div v-if="sent_parked_thought" style="color: green;">Мысль сохранена: [[ sent_parked_thought ]]</div>
+						</transition>
+						<div style="text-decoration: underline; cursor: pointer;" @click="get_parked_thoughts">припаркованные мысли</div>
+				</div>
         <window-component title="Припаркованные мысли" v-if="is_display_resources_window" @close="is_display_resources_window = false;">
             <div v-for="thought in parked_thoughts">
                 <p><b>[[ thought.username ]]:</b> [[ thought.parked_thought ]]</p>

@@ -14,7 +14,7 @@ KeyThoughtsChatComponent = {
     },
     template: `
         <div v-for="theme in themes">
-            <div :key="theme.id" :style="'color: white; border-radius: 3px; padding: 12px 7px 12px 7px; margin-bottom: 1rem; display: flex; justify-content: space-between; background-color: ' + (current_theme_id == theme.id.toString() ? '#51bd51;' : '#b9b9b9;')">
+            <div :key="theme.id" :style="'border-bottom: 1px solid white; color: white; /*border-radius: 3px;*/ padding: 12px 7px 12px 7px; /*margin-bottom: 1rem;*/ display: flex; justify-content: space-between; background-color: ' + (current_theme_id == theme.id.toString() ? '#51bd51;' : '#b9b9b9;')">
                 <span :style="'cursor: default; font-weight: ' + (current_theme_id == theme.id.toString() ? '600;' : 'inherit;')">[[ theme.theme ]]</span>
                 <span v-if="current_theme_id == theme.id.toString()" style="white-space: nowrap;">
                     <span  style="cursor: pointer; border-radius: 3px; border: solid 1px white; padding: 3px; margin-right: 5px;"> || </span>
@@ -23,10 +23,9 @@ KeyThoughtsChatComponent = {
             </div>
             <div v-if="current_theme_id == theme.id.toString()" style="padding-left: 15px; padding-right: 15px; font-size: 10pt;">
                 <div v-for="thought in key_thoughts">
-                    <p style="margin-bottom: 0.25rem;"><b>[[ thought.username ]]:</b> [[ thought.key_thought ]]</p>
+                    <p style="margin-top: 0.5rem; margin-bottom: 0rem;"><b>[[ thought.username ]]:</b> [[ thought.key_thought ]]</p>
                 </div>
-                <br>
-								<div class="mb-3 input-group" v-if="HAS_ACCESS_TO_ADD_KEY_THOUGHTS">
+								<div class="mb-3 input-group" v-if="HAS_ACCESS_TO_ADD_KEY_THOUGHTS"  style="margin-top: 1rem;">
 										<textarea name="key_thoughts" id="key_thoughts-field" class="form-control" style="height: 80px; font-size: 10pt;"  v-model="key_thought" placeholder="Ключевая мысль"></textarea>
 										<button type="button" @click="add_key_thoughts" class="btn btn-secondary"> >>> </button>
 								</div>

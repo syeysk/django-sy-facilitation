@@ -26,8 +26,8 @@ StepAgendaComponent = {
 						</div>
 			  </div>
 
-        <div v-for="theme in themes">
-						<div class="theme-header" :data-id="theme.id.toString()" :key="theme.id" @click="open_theme" style="padding: 5px; cursor: pointer; border-bottom: 1px solid #c1c1c1;">
+        <div v-for="theme in themes" class="theme">
+						<div class="theme-header" :data-id="theme.id.toString()" :key="theme.id" @click="open_theme" style="padding: 5px; cursor: pointer;">
 								<div style="display: flex; justify-content: space-between;">
     								<span :style="current_theme_id == theme.id.toString() ? 'font-weight: 600;' : 'font-weight: inherit;'">[[ theme.theme ]]</span>
     								<span v-if="current_theme_id == theme.id.toString()">-</span>
@@ -38,9 +38,8 @@ StepAgendaComponent = {
 										<span>[[ theme.username ]]</span>
 							  </div>
 						</div>
-
 						<div v-if="current_theme_id == theme.id.toString()" style="padding-left: 15px;">
-						    <p>[[ theme.description ]]</p>
+						    <p v-if="theme.description">[[ theme.description ]]</p>
 						    <div v-for="expr_type in expr_types">
 										<div :data-counter="expr_type[0].toString()" class="counter-header" @click="open_expressions" style="cursor: pointer; padding: 5px 0;">
 												<span v-if="current_expression_type == expr_type[0].toString()">- </span>
@@ -58,7 +57,6 @@ StepAgendaComponent = {
 										</div>
 							  </div>
 						</div>
-						<br>
         </div>
     `,
     methods: {
@@ -66,6 +64,7 @@ StepAgendaComponent = {
             let header_el = event.target.closest('.counter-header')
             if (this.current_expression_type == header_el.dataset.counter) {
                 this.current_expression_type = null;
+                this.expressions = [];
             } else {
                 this.current_expression_type = header_el.dataset.counter;
                 this.get_expressions();
@@ -78,6 +77,8 @@ StepAgendaComponent = {
             } else {
                 this.current_theme_id = header_el.dataset.id;
             }
+            this.current_expression_type = null;
+            this.expressions = [];
         },
         add_theme(event) {
             let self = this;

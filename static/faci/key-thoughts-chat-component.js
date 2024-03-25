@@ -9,19 +9,22 @@ KeyThoughtsChatComponent = {
             key_thoughts: [],
             HAS_ACCESS_TO_ACTIVATE_THEME,
             HAS_ACCESS_TO_ADD_KEY_THOUGHTS,
-
+            is_window_other_opened: false,
+            window_theme_index: null,
         }
     },
+    components: {WindowComponent},
     template: `
-        <div v-for="theme in themes">
-            <div :key="theme.id" :style="'border-bottom: 1px solid white; color: white; /*border-radius: 3px;*/ padding: 12px 7px 12px 7px; /*margin-bottom: 1rem;*/ display: flex; justify-content: space-between; background-color: ' + (current_theme_id == theme.id.toString() ? '#51bd51;' : '#b9b9b9;')">
-                <span :style="'cursor: default; font-weight: ' + (current_theme_id == theme.id.toString() ? '600;' : 'inherit;')">[[ theme.theme ]]</span>
-                <span v-if="current_theme_id == theme.id.toString()" style="white-space: nowrap;">
-                    <span  style="cursor: pointer; border-radius: 3px; border: solid 1px white; padding: 3px; margin-right: 5px;"> || </span>
-                    <span @click="next_theme" style="cursor: pointer; border-radius: 3px; border: solid 1px white; padding: 3px;" title="Перейти к следующий теме" v-if="HAS_ACCESS_TO_ACTIVATE_THEME"> >> </span>
+        <div v-for="theme, theme_index in themes" :key="theme.id" :data-theme-index="theme_index" class="theme-item">
+            <div :style="'border-bottom: 1px solid white; color: white; /*border-radius: 3px;*/ padding: 12px 7px 12px 7px; /*margin-bottom: 1rem;*/ display: flex; justify-content: space-between; background-color: ' + (current_theme_index == theme_index.toString() ? '#51bd51;' : '#b9b9b9;')">
+                <span :style="'cursor: default; font-weight: ' + (current_theme_index == theme_index.toString() ? '600;' : 'inherit;')">[[ theme.theme ]]</span>
+                <span style="white-space: nowrap;">
+                    <span v-if="current_theme_index == theme_index.toString()" style="cursor: pointer; border-radius: 3px; border: solid 1px white; padding: 3px; margin-right: 7px;"> || </span>
+                    <span v-if="HAS_ACCESS_TO_ACTIVATE_THEME & current_theme_index == theme_index.toString()" @click="next_theme" style="cursor: pointer; border-radius: 3px; border: solid 1px white; padding: 3px; margin-right: 7px;" title="Перейти к следующий теме"> >> </span>
+                    <span @click="open_other" style="cursor: pointer; border-radius: 3px; border: solid 1px white; padding: 3px 6px;" title="Дополнительные действия"> : </span>
                 </span>
             </div>
-            <div v-if="current_theme_id == theme.id.toString()" style="padding-left: 15px; padding-right: 15px; font-size: 10pt;">
+            <div v-if="current_theme_index == theme_index.toString()" style="padding-left: 15px; padding-right: 15px; font-size: 10pt;">
                 <div v-for="thought in key_thoughts">
                     <p style="margin-top: 0.5rem; margin-bottom: 0rem;"><b>[[ thought.username ]]:</b> [[ thought.key_thought ]]</p>
                 </div>
@@ -31,6 +34,13 @@ KeyThoughtsChatComponent = {
 								</div>
             </div>
         </div>
+				<window-component title="Дополнительные действия" v-if="is_window_other_opened" @close="is_window_other_opened = false;">
+				    Для темы: <b>[[ themes[window_theme_index].theme ]]</b>
+				    <br><br>
+						<input type="button" value="Сохранить как PDF">
+						<br><br>
+						<input type="button" value="Перенести тему на другой холст">
+				</window-component>
     `,
     mounted() {
         this.get_key_thoughts(false);
@@ -102,5 +112,9 @@ KeyThoughtsChatComponent = {
                 method: "post"
             });
         },
+        open_other(event) {
+            this.window_theme_index = parseInt(event.target.closest('.theme-item').dataset.themeIndex);
+            this.is_window_other_opened = true;
+        }
     },
 }

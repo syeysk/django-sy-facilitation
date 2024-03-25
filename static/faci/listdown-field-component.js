@@ -5,7 +5,7 @@ const ListdownFieldComponent = {
         <div class="component_listdown">
             <span class="button_ss" @click="focus" :class="{'d-none': is_edit}">[[ mvalue ]]</span>
             <div class="form_listdown" :class="{'d-none': !is_edit}">
-                <input type='text' v-model.trim="query" @keyup="search_item" @blur="blur" class="field_listdown" v-bind="$attrs">
+                <input type='text' v-model.trim="query" @keyup="search_item" @focus="search_item" @blur="blur" class="field_listdown" v-bind="$attrs">
                 <div class="suggestions">
                     <listdown-field-item-component
                         @change="select_item"
@@ -29,6 +29,7 @@ const ListdownFieldComponent = {
             is_edit: this.edit,
             item_list: [],
             uneditable: this.uneditableField,
+            is_selected: false,
         }
     },
     methods: {
@@ -48,10 +49,14 @@ const ListdownFieldComponent = {
             let self = this;
             setTimeout( // чтобы сначала отработало событие click на выбранном элементе
                 function() {
-                    self.is_edit = false;
-                    self.$emit('blur', self);
+                    if (self.is_selected) {
+                        self.is_edit = false;
+                        self.$emit('blur', self);
+                    } else {
+                        self.item_list = [];
+                    }
                 },
-                100,
+                200,
             );
         },
         search_item(event) {
@@ -63,6 +68,7 @@ const ListdownFieldComponent = {
             this.mvalue = item_value;
             this.$emit('update:id', item_id);
             this.$emit('update:value', item_value);
+            this.is_selected = true;
             if (this.$emit('change', item_id, item_value)) {
                 this.is_edit = false;
                 this.query = '';

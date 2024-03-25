@@ -47,6 +47,8 @@ KeyThoughtsChatComponent = {
     },
     methods: {
         next_theme(event) {
+            if (this.themes.length == 1) return;
+
             this.key_thoughts = [];
             this.current_theme_index += 1;
             if (this.current_theme_index >= this.themes.length) {

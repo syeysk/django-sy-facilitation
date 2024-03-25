@@ -38,6 +38,11 @@ class FaciEditorView(View):
                 }
                 for member in faci.members.all()
             ]
+            themes = list(
+                faci.themes.all().order_by('-dt_create').values(
+                    'id', 'theme', 'duration', 'description', username=F('user__username'),
+                ),
+            )
             has_access_to_edit_preparing = request.user.pk == faci.user_creator.pk
             has_access_to_add_members = request.user.is_authenticated
             has_access_to_edit_aim = request.user.pk == faci.user_creator.pk
@@ -54,6 +59,7 @@ class FaciEditorView(View):
             step = 1
             username = request.user.username
             members = [{'invited': username, 'for_what': FACI_CREATOR_FOR_WHAT, 'inviting': username}]
+            themes = []
             has_access_to_edit_preparing = True
             has_access_to_add_members = True
             has_access_to_edit_aim = True
@@ -71,11 +77,7 @@ class FaciEditorView(View):
                 'place': faci.place.strip(),
                 'meeting_status': faci.meeting_status,
             },
-            'themes': list(
-                faci.themes.all().order_by('-dt_create').values(
-                    'id', 'theme', 'duration', 'description', username=F('user__username'),
-                ),
-            ),
+            'themes': themes,
             'expr_types': Expression.EXPRESSIONS_TYPES_CHOICES,
             'aim_type_choices': FaciCanvas.AIM_TYPE_CHOICES,
             'step': step,

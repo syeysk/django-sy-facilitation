@@ -21,7 +21,7 @@ StepAgendaComponent = {
 						<textarea name="description" id="theme-field" class="form-control" v-model="description" placeholder="Расскажите подробнее" title=""></textarea>
 
 						<div class="mb-3 input-group">
-								<input name="duration" id="duration-field" class="form-control" v-model="duration" placeholder="Длительность выступления, мин." title="длительность выступления для темы, в минутах">
+								<input name="duration" id="duration-field" type="number" class="form-control" v-model="duration" placeholder="Длительность выступления, мин." title="длительность выступления для темы, в минутах">
 								<button type="button" @click="add_theme" class="btn btn-secondary"> >>> </button>
 						</div>
 			  </div>

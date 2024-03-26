@@ -1,8 +1,6 @@
 StepPreparingComponent = {
     data() {
         return {
-            faci: JSON.parse(document.getElementById('faci_json').textContent),
-            MEETING_STATUS_STARTED,
             HAS_ACCESS_TO_EDIT_PREPARING,
         }
     },
@@ -16,8 +14,8 @@ StepPreparingComponent = {
 						</div>
 						<div class="mb-3 form-group" id="duration-group">
 								<div class="form-floating">
-										<input name="duration" class="form-control" id="duration-field" v-model="faci.duration" type="number" min="1">
-										<label for="duration-field" class="form-label">Длительность</label>
+										<input name="duration" class="form-control" id="duration-field" v-model="duration_of_all_themes" disabled type="number" :min="duration_of_all_themes" title="Суммарная длительность всех тем">
+										<label for="duration-field" class="form-label">Длительность встречи, в минутах</label>
 								</div>
 						</div>
 						<div class="mb-3 form-group" id="place-group">
@@ -27,31 +25,35 @@ StepPreparingComponent = {
 								</div>
 								<a v-if="is_url(faci.place)" :href="faci.place" rel="ugc" target="_blank">Открыть ссылку</a>
 						</div>
-						<input type="button" value="Сохранить" class="btn btn-secondary" @click="save">
-  					<input type="button" :value="faci.meeting_status == MEETING_STATUS_STARTED ? 'Завершить встречу' : 'Начать встречу'" class="btn btn-secondary" @click="start_meeting">
+						<div class="mb-3 form-group" id="form_of_feedback-group">
+								<div class="form-floating" title="В конце встречи пользователи увидят приглашение пройти опрос">
+										<input name="form_of_feedback" class="form-control" id="form_of_feedback-field" v-model="faci.form_of_feedback" type="text">
+										<label for="form_of_feedback-field" class="form-label">Ссылка на форму обратной связи</label>
+								</div>
+						</div>
+						<input type="button" value="Сохранить" class="btn btn-outline-primary" @click="save">
   			</div>
   			<div v-else>
 						Дата и время: [[faci.dt_meeting]]
 						<br>
 						Длительность: [[faci.duration]] мин
 						<br>
-						Место: <a v-if="is_url(faci.place)" :href="faci.place" rel="ugc" target="_blank">открыть</a><span v-else>[[faci.place]]</span>
+						Место: <a v-if="is_url(faci.place)" :href="faci.place" rel="ugc" target="_blank">[[ faci.place ]]</a><span v-else>[[faci.place]]</span>
 						<br>
   			</div>
     `,
-    inject: ['open_block'],
+    inject: ['open_block', 'faci', 'themes', 'duration_of_all_themes'],
     methods: {
         save(event) {
             let form = event.target.form;
             $.ajax({
                 url: URL_FACI_EDITOR_PREPARING,
-                headers: {
-                    "X-CSRFToken": CSRF_TOKEN,
-                },
+                headers: {"X-CSRFToken": CSRF_TOKEN},
                 dataType: 'json',
                 data: $(form).serialize(),
                 success: function(result) {
                     set_valid_field(form, result.updated);
+                    self.open_block('key_thoughts');
                 },
                 error: function(jqxhr, a, b) {
                     console.log(jqxhr.responseText);
@@ -69,30 +71,6 @@ StepPreparingComponent = {
         },
         is_url(text) {
             return text.startsWith('https://') | text.startsWith('http://');
-        },
-        start_meeting(event) {
-            $.ajax({
-                url: URL_FACI_EDITOR_START_MEETING,
-                headers: {
-                    "X-CSRFToken": CSRF_TOKEN,
-                },
-                dataType: 'json',
-                data: {},
-                success: function(result) {
-                    if (result['meeting_status'] == MEETING_STATUS_STARTED) {
-                        self.open_block('key_thoughts');
-                        self.open_block('agreements');
-                        event.target.value = 'Завершить встречу';
-                    } else if (result['meeting_status'] == MEETING_STATUS_FINISHED) {
-                        event.target.value = 'Начать встречу';
-                    }
-                },
-                error: function(jqxhr, a, b) {
-                    console.log('error');
-                    console.log(jqxhr.responseText);
-                },
-                method: "post"
-            });
         },
     },
 }

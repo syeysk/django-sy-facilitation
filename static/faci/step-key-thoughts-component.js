@@ -1,23 +1,28 @@
 StepKeyThoughtsComponent = {
     data() {
         return {
-            themes,
             sent_parked_thought: '',
             parked_thought: '',
             HAS_ACCESS_TO_ADD_PARKED_THOUGHTS,
             is_display_resources_window: false,
             parked_thoughts: [],
+            MEETING_STATUS_STARTED,
         }
     },
+    inject: ['themes', 'faci', 'open_block'],
     components: {WindowComponent, KeyThoughtsChatComponent},
     template: `
-        <key-thoughts-chat-component v-if="themes.length > 0" :themes="themes"></key-thoughts-chat-component>
+        <div style="text-align: center; padding: 5px 0;">
+            <input type="button" :value="faci.meeting_status == MEETING_STATUS_STARTED ? 'Завершить встречу' : 'Начать встречу'" class="btn btn-outline-success" @click="start_meeting">
+        </div>
+
+        <key-thoughts-chat-component v-if="themes.length > 0"></key-thoughts-chat-component>
         <span v-else>Чтобы фиксировать ключевые мысли, пожалуйста, добавьте в шаге 3 темы, планируемые к обсуждению </span>
 
         <div style="padding: 1rem;">
 						<div class="mb-3 input-group" v-if="HAS_ACCESS_TO_ADD_PARKED_THOUGHTS">
-								<textarea name="parked_thought" id="parked_thought-field" class="form-control" v-model="parked_thought" placeholder="Парковка" title="Полезные мысли, не относящиеся к теме встречи"  @keyup.enter="add_parked_thought"></textarea>
-								<button type="button" @click="add_parked_thought" class="btn btn-outline-secondary"> >>> </button>
+								<input name="parked_thought" id="parked_thought-field" class="form-control" v-model="parked_thought" placeholder="Парковка" title="Полезные мысли, не относящиеся к теме встречи"  @keyup.enter="add_parked_thought" type="text">
+								<button type="button" @click="add_parked_thought" class="btn btn-outline-primary"> >>> </button>
 						</div>
 						<transition name="fade">
 								<div v-if="sent_parked_thought" style="color: green;">Мысль сохранена: [[ sent_parked_thought ]]</div>
@@ -76,6 +81,29 @@ StepKeyThoughtsComponent = {
                     403: function(xhr) {
                         alert(xhr.responseJSON.detail);
                     },
+                },
+                method: "post"
+            });
+        },
+        start_meeting(event) {
+            self = this;
+            $.ajax({
+                url: URL_FACI_EDITOR_START_MEETING,
+                headers: {
+                    "X-CSRFToken": CSRF_TOKEN,
+                },
+                dataType: 'json',
+                data: {},
+                success: function(result) {
+                    if (result['meeting_status'] == MEETING_STATUS_STARTED) {
+                    } else if (result['meeting_status'] == MEETING_STATUS_FINISHED) {
+                        self.open_block('agreements');
+                    }
+                    self.faci.meeting_status = result['meeting_status'];
+                },
+                error: function(jqxhr, a, b) {
+                    console.log('error');
+                    console.log(jqxhr.responseText);
                 },
                 method: "post"
             });

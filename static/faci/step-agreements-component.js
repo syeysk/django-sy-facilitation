@@ -1,15 +1,11 @@
 StepAgreementsComponent = {
-    data() {
-        return {
-            faci: JSON.parse(document.getElementById('faci_json').textContent),
-        }
-    },
     template: `
 				<div class="mb-3">
 						<label for="other_agreements-field" class="form-label">Прочие договорённости</label>
 						<textarea name="other_agreements" @blur="save_agreements" id="other_agreements-field" class="form-control" rows="10">[[ faci.other_agreements ]]</textarea>
 				</div>
     `,
+    inject: ['faci'],
     methods: {
         save_agreements(event) {
             $.ajax({

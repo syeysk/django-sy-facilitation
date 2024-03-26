@@ -48,7 +48,7 @@ class FaciEditMembersSerializer(serializers.Serializer):
 class FaciEditPreparingSerializer(serializers.ModelSerializer):
     class Meta:
         model = FaciCanvas
-        fields = ['duration', 'place', 'dt_meeting']
+        fields = ['duration', 'place', 'dt_meeting', 'form_of_feedback']
 
 
 class FaciAddKeyThoughtsSerializer(serializers.ModelSerializer):

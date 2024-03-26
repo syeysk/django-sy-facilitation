@@ -1,5 +1,4 @@
 KeyThoughtsChatComponent = {
-    props: ['themes'],
     data() {
         let current_theme_index = 0;
         return {
@@ -13,6 +12,7 @@ KeyThoughtsChatComponent = {
             window_theme_index: null,
         }
     },
+    inject: ['themes'],
     components: {WindowComponent},
     template: `
         <div v-for="theme, theme_index in themes" :key="theme.id" :data-theme-index="theme_index" class="theme-item">
@@ -29,8 +29,8 @@ KeyThoughtsChatComponent = {
                     <p style="margin-top: 0.5rem; margin-bottom: 0rem;"><b>[[ thought.username ]]:</b> [[ thought.key_thought ]]</p>
                 </div>
 								<div class="mb-3 input-group" v-if="HAS_ACCESS_TO_ADD_KEY_THOUGHTS"  style="margin-top: 1rem;">
-										<textarea name="key_thoughts" id="key_thoughts-field" class="form-control" style="height: 80px; font-size: 10pt;"  v-model="key_thought" placeholder="Ключевая мысль" @keyup.enter="add_key_thoughts"></textarea>
-										<button type="button" @click="add_key_thoughts" class="btn btn-outline-secondary"> >>> </button>
+										<input name="key_thoughts" id="key_thoughts-field" class="form-control" v-model="key_thought" placeholder="Ключевая мысль" @keyup.enter="add_key_thoughts" type="text">
+										<button type="button" @click="add_key_thoughts" class="btn btn-outline-primary"> >>> </button>
 								</div>
             </div>
         </div>

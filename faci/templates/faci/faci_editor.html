@@ -41,8 +41,6 @@
         var HAS_ACCESS_TO_ADD_THEME = {% if has_access_to_add_theme %}true{% else %}false{% endif %};
 
         var STEP = {{ step }};
-
-        var themes = JSON.parse(document.getElementById('themes_json').textContent);
     </script>
     <style>
         .windowWindow {
@@ -139,6 +137,7 @@
 
         var app_faci = createApp(FaciComponent);
         app_faci.config.compilerOptions.delimiters = [ '[[', ']]' ];
+        app_faci.config.unwrapInjectedRef = true;
         app_faci.mount('#app_faci');
     </script>
 {% endblock %}

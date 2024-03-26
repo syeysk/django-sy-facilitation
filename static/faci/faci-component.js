@@ -2,11 +2,16 @@ FaciComponent = {
     data() {
         return {
             STEP,
+            faci: JSON.parse(document.getElementById('faci_json').textContent),
+            themes: JSON.parse(document.getElementById('themes_json').textContent),
         }
     },
     provide() {
         return {
             open_block: this.open_block,
+            faci: this.faci,
+            themes: this.themes,
+            duration_of_all_themes: Vue.computed(() => this.duration_of_all_themes),
         };
     },
     components: {
@@ -28,6 +33,16 @@ FaciComponent = {
 
             if (step > this.STEP) this.STEP = step;
         },
+    },
+    computed: {
+        duration_of_all_themes() {
+            let theme;
+            let total_duration = 0;
+            for (theme of this.themes) {
+                total_duration += theme.duration;
+            }
+            return total_duration | 1;
+        }
     },
     template: `
 		    <div class="row accordion">
@@ -103,7 +118,7 @@ FaciComponent = {
 										</div>
 										<form id="agreements_form" class="card-body accordion-collapse collapse show" @submit.prevent>
 												<step-agreements-component id="app_agreements"></step-agreements-component>
-												<div v-if="STEP < 6" class="form_sheet">Станет доступно во время встречи (после шага 4)</div>
+												<div v-if="STEP < 6" class="form_sheet">Станет доступно после шага 4</div>
 										</form>
 								</div>
 						</div>

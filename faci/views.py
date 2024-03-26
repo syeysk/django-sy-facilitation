@@ -81,6 +81,7 @@ class FaciEditorView(View):
                 'if_not_reached': faci.if_not_reached,
                 'solutions': faci.solutions,
                 'other_agreements': faci.other_agreements,
+                'form_of_feedback': faci.form_of_feedback,
             },
             'themes': themes,
             'expr_types': Expression.EXPRESSIONS_TYPES_CHOICES,

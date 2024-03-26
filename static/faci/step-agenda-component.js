@@ -3,7 +3,6 @@ StepAgendaComponent = {
     data() {
         return {
             expr_types: JSON.parse(document.getElementById('expr_types_json').textContent),
-            themes,
             theme: '',
             duration: '',
             description: '',
@@ -22,7 +21,7 @@ StepAgendaComponent = {
 
 						<div class="mb-3 input-group">
 								<input @keyup.enter="add_theme" name="duration" id="duration-field" type="number" class="form-control" v-model="duration" placeholder="Длительность выступления, мин." title="длительность выступления для темы, в минутах">
-								<button type="button" @click="add_theme" class="btn btn-outline-secondary" @submit.prevent> >>> </button>
+								<button type="button" @click="add_theme" class="btn btn-outline-primary" @submit.prevent> >>> </button>
 						</div>
 			  </div>
 
@@ -51,15 +50,15 @@ StepAgendaComponent = {
 												    <b>[[ expression.username ]]:</b> [[ expression.expression ]]
 												</p>
 												<div class="mb-3 input-group" v-if="HAS_ACCESS_TO_ADD_EXPRESSION">
-														<textarea name="expression" id="expression-field" class="form-control" style="height: 80px; font-size: 10pt;"  v-model="expression" :placeholder="expr_type[1]" @keyup.enter="add_expression"></textarea>
-														<button type="button" @click="add_expression" class="btn btn-outline-secondary"> >>> </button>
+														<input name="expression" id="expression-field" class="form-control" v-model="expression" :placeholder="expr_type[1]" @keyup.enter="add_expression" type="text">
+														<button type="button" @click="add_expression" class="btn btn-outline-primary"> >>> </button>
 												</div>
 										</div>
 							  </div>
 						</div>
         </div>
     `,
-    inject: ['open_block'],
+    inject: ['open_block', 'themes'],
     methods: {
         open_expressions(event) {
             let header_el = event.target.closest('.counter-header')

@@ -2,7 +2,6 @@ StepAimComponent = {
     data() {
         return {
             aim_type_choices: JSON.parse(document.getElementById('aim_type_choices_json').textContent),
-            faci: JSON.parse(document.getElementById('faci_json').textContent),
             HAS_ACCESS_TO_EDIT_AIM,
             STATIC_PREFIX,
             STEP,
@@ -37,7 +36,7 @@ StepAimComponent = {
 								</div>
 						</div>
 
-						<input type="button" :value="'Сохранить' + (STEP == 1 ? ' и перейти к заполнению участников' : '')" class="btn btn-secondary" @click="save_form_aim">
+						<input type="button" :value="'Сохранить' + (STEP == 1 ? ' и перейти к заполнению участников' : '')" class="btn btn-outline-primary" @click="save_form_aim">
 				</template>
 				<template v-else>
 						<template v-for="(aim_type_name, aim_type_id, index) of aim_type_choices">
@@ -59,7 +58,7 @@ StepAimComponent = {
 						</template>
 				</template>
     `,
-    inject: ['open_block'],
+    inject: ['open_block', 'faci'],
     methods: {
         save_form_aim(event) {
             $.ajax({

@@ -64,6 +64,7 @@ class FaciCanvas(DatetimeMixin, models.Model):
     dt_meeting = models.DateTimeField(verbose_name='Дата и время', null=True)
     duration = models.IntegerField(verbose_name='Длительность', null=False, default=30)
     place = models.CharField(verbose_name='Место', null=False, default='', max_length=100, blank=True)
+    form_of_feedback = models.CharField(verbose_name='Ссылка на внешнюю форму обратной связи', null=False, default='', max_length=500, blank=True)
     # 6. Договорённости
     other_agreements = models.TextField(verbose_name='Прочие договорённости', max_length=10000, null=False, default='', blank=True)
 
@@ -102,7 +103,7 @@ class Theme(DatetimeMixin, models.Model):
     user = models.ForeignKey(get_user_model(), null=False, on_delete=models.CASCADE)
     theme = models.CharField('Тема выступления', null=False, blank=False, max_length=1000)
     duration = models.IntegerField('Длительность выступления, минуты', null=False, blank=False)
-    description = models.TextField('Подробное описание', max_length=10000, null=False, blank=False)
+    description = models.TextField('Подробное описание', max_length=10000, null=False, blank=True)
     is_current = models.BooleanField('Является ли тема активной', null=False, default=False)
 
     class Meta:

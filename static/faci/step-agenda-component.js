@@ -21,8 +21,8 @@ StepAgendaComponent = {
 						<textarea name="description" id="theme-field" class="form-control" v-model="description" placeholder="Расскажите подробнее" title=""></textarea>
 
 						<div class="mb-3 input-group">
-								<input name="duration" id="duration-field" type="number" class="form-control" v-model="duration" placeholder="Длительность выступления, мин." title="длительность выступления для темы, в минутах">
-								<button type="button" @click="add_theme" class="btn btn-secondary"> >>> </button>
+								<input @keyup.enter="add_theme" name="duration" id="duration-field" type="number" class="form-control" v-model="duration" placeholder="Длительность выступления, мин." title="длительность выступления для темы, в минутах">
+								<button type="button" @click="add_theme" class="btn btn-outline-secondary" @submit.prevent> >>> </button>
 						</div>
 			  </div>
 
@@ -51,14 +51,15 @@ StepAgendaComponent = {
 												    <b>[[ expression.username ]]:</b> [[ expression.expression ]]
 												</p>
 												<div class="mb-3 input-group" v-if="HAS_ACCESS_TO_ADD_EXPRESSION">
-														<textarea name="expression" id="expression-field" class="form-control" style="height: 80px; font-size: 10pt;"  v-model="expression" :placeholder="expr_type[1]"></textarea>
-														<button type="button" @click="add_expression" class="btn btn-secondary"> >>> </button>
+														<textarea name="expression" id="expression-field" class="form-control" style="height: 80px; font-size: 10pt;"  v-model="expression" :placeholder="expr_type[1]" @keyup.enter="add_expression"></textarea>
+														<button type="button" @click="add_expression" class="btn btn-outline-secondary"> >>> </button>
 												</div>
 										</div>
 							  </div>
 						</div>
         </div>
     `,
+    inject: ['open_block'],
     methods: {
         open_expressions(event) {
             let header_el = event.target.closest('.counter-header')
@@ -96,7 +97,7 @@ StepAgendaComponent = {
                     self.theme = '';
                     self.duration = '';
                     self.description = '';
-                    open_block(result['open_block']);
+                    self.open_block(result['open_block']);
                 },
                 statusCode: {
                     403: function(xhr) {

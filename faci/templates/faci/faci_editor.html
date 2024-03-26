@@ -11,6 +11,7 @@
     {{ faci_json|json_script:'faci_json' }}
     {{ themes|json_script:'themes_json' }}
     {{ expr_types|json_script:'expr_types_json' }}
+    {{ aim_type_choices|json_script:'aim_type_choices_json' }}
     <script>
         var URL_SEARCH_USER = "search_user/";
         var URL_FACI_EDITOR_AIM = "aim/{% if 'link_to' in request.GET %}?link_to={{request.GET.link_to}}{% endif %}";
@@ -29,6 +30,7 @@
         var CURRENT_USERNAME = "{{ request.user.username }}";
         var STATIC_PREFIX = "{% static '' %}";
         var MEETING_STATUS_STARTED = {{ faci.MEETING_STATUS_STARTED }};
+        var MEETING_STATUS_FINISHED = {{ faci.MEETING_STATUS_FINISHED }};
         var HAS_ACCESS_TO_EDIT_PREPARING = {% if has_access_to_edit_preparing %}true{% else %}false{% endif %};
         var HAS_ACCESS_TO_ADD_MEMBERS = {% if has_access_to_add_members %}true{% else %}false{% endif %};
         var HAS_ACCESS_TO_EDIT_AIM = {% if has_access_to_edit_aim %}true{% else %}false{% endif %};
@@ -37,6 +39,8 @@
         var HAS_ACCESS_TO_ADD_PARKED_THOUGHTS = {% if has_access_to_add_parked_thoughts %}true{% else %}false{% endif %};
         var HAS_ACCESS_TO_ADD_EXPRESSION = {% if has_access_to_add_expression %}true{% else %}false{% endif %};
         var HAS_ACCESS_TO_ADD_THEME = {% if has_access_to_add_theme %}true{% else %}false{% endif %};
+
+        var STEP = {{ step }};
 
         var themes = JSON.parse(document.getElementById('themes_json').textContent);
     </script>
@@ -112,258 +116,29 @@
 				}
     </style>
 
-    <div class="row accordion">
-        <div class="col-sm-6">
-            <div class="card accordion-item">
-                <div class="accordion-header accordion-button card-header" data-bs-toggle="collapse" data-bs-target="#aim_form" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                    1. Цель
-                </div>
-                <form id="aim_form" class="card-body accordion-collapse collapse show">
-									  {% if has_access_to_edit_aim %}
-												<div class="mb-3 form-group" id="aim_type-group">
-														<div class="form-floating">
-																<select name="aim_type" class="form-select" id="aim_type-field">
-																		{% for aim_type_id, aim_type_name in aim_type_choices %}
-																				<option value="{{ aim_type_id }}" {% if aim_type_id == faci.aim_type %}selected{% endif %}>{{ aim_type_name }}</option>
-																		{% endfor %}
-																</select>
-																<label for="aim_type-field" class="form-label">Вид встречи</label>
-														</div>
-												</div>
-												<div class="mb-3 form-group" id="aim-group">
-														<div class="form-floating">
-																<input name="aim" class="form-control" id="aim-field" value="{{ faci.aim }}">
-																<label for="aim-field" class="form-label">Что мы пытаемся достичь?</label>
-														</div>
-												</div>
-												<div class="mb-3 form-group" id="if_not_reached-group">
-														<div class="form-floating">
-																<input name="if_not_reached" class="form-control" id="if_not_reached-field" value="{{ faci.if_not_reached }}">
-																<label for="if_not_reached-field" class="form-label">Что произойдёт, если цель не будет достигнута?</label>
-														</div>
-												</div>
-												<div class="mb-3 form-group" id="solutions-group">
-														<div class="form-floating">
-																 <input name="solutions" class="form-control" id="solutions-field" value="{{ faci.solutions }}">
-																 <label for="solutions-field" class="form-label">Первоначальные решения</label>
-														</div>
-												</div>
-
-											  <input type="button" value="Сохранить{% if step == 1 %} и перейти к заполнению участников{% endif %}" class="btn btn-secondary" id="btn_save_aim">
-									  {% else %}
-       									{% for aim_type_id, aim_type_name in aim_type_choices %}
-          									{% if aim_type_id == faci.aim_type %}
-									              <div style="text-align: center;">
-												            {{ aim_type_name }} <br>
-              									    <img style="width: 50px;" src="{% static 'faci/aim_type/' %}{{aim_type_id}}.svg" alt="{{ aim_type_name }}" title="{{ aim_type_name }}"> <br>
-																		{% if faci.aim %}
-																				{{ faci.aim }} <br>
-																		{% endif %}
-																</div>
-          									{% endif %}
-												{% endfor %}
-
-                        {% if faci.if_not_reached %}
-									          <br> <span style="font-style: italic;"> Что произойдёт, если цель не будет достигнута:</span> <br> {{ faci.if_not_reached }} <br>
-                        {% endif %}
-
-                        {% if faci.solutions %}
-									          <br> <span style="font-style: italic;">Первоначальные решения:</span> <br>{{ faci.solutions }} <br>
-                        {% endif %}
-									  {% endif %}
-                </form>
-            </div>
-
-            <br>
-
-            <div class="card accordion-item">
-                <div class="accordion-header card-header accordion-button" data-bs-toggle="collapse" data-bs-target="#members_form" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                    2. Участники
-                </div>
-                <form id="members_form" class="card-body accordion-collapse collapse show">
-                    <div id="app_members"></div>
-                    <div class="{% if step > 1 %}d-none {% endif %}form_sheet">Для открытия выполните 1-й шаг</div>
-                </form>
-            </div>
-        </div>
-
-        <br>
-
-        <div class="col-sm-6">
-            <div class="card accordion-item">
-                <div class="accordion-header card-header accordion-button" data-bs-toggle="collapse" data-bs-target="#agenda_form" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                    3. Повестка
-                </div>
-                <form id="agenda_form" class="card-body accordion-collapse collapse show">
-                    <div id="app_agenda"></div>
-                    <div class="{% if step > 2 %}d-none {% endif %}form_sheet"><span>Для открытия заполните, пожалуйста, список участников (2-й шаг)</span></div>
-                </form>
-            </div>
-
-            <br>
-
-            <div class="card accordion-item">
-                <div class="accordion-header card-header accordion-button" data-bs-toggle="collapse" data-bs-target="#preparing_form" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                    4. Подготовка
-                </div>
-                <form id="preparing_form" class="card-body accordion-collapse collapse show">
-                    <div id="app_preparing"></div>
-									  <div class="{% if step > 3 %}d-none {% endif %}form_sheet"><span>Откроется после выполнения 3-го шага</span></div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <br>
-
-    <div class="row accordion">
-        <div class="col-sm-6">
-            <div class="card accordion-item">
-                <div class="accordion-header card-header accordion-button" data-bs-toggle="collapse" data-bs-target="#key_thoughts_form" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                    5. Ключевые мысли
-                </div>
-                <form id="key_thoughts_form" class="card-body accordion-collapse collapse show" style="padding: 0 0 0 0;">
-                    <div id="app_key_thoughts"></div>
-                    <div class="{% if step > 4 %}d-none {% endif %}form_sheet">Станет доступно во время встречи (после шага 4)</div>
-                </form>
-            </div>
-        </div>
-
-        <div class="col-sm-6">
-            <div class="card accordion-item">
-                <div class="accordion-header card-header accordion-button" data-bs-toggle="collapse" data-bs-target="#agreements_form" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                    6. Договорённости
-                </div>
-                <form id="agreements_form" class="card-body accordion-collapse collapse show">
-                    <div class="mb-3">
-                        <label for="other_agreements-field" class="form-label">Прочие договорённости</label>
-							  				<textarea name="other_agreements" id="other_agreements-field" class="form-control" rows="10">{{ faci.other_agreements }}</textarea>
-                    </div>
-                    <div class="{% if step > 4 %}d-none {% endif %}form_sheet">Станет доступно во время встречи (после шага 4)</div>
-                </form>
-            </div>
-        </div>
-    </div>
-
+    <div id="app_faci"></div>
     <br>
 
     <script src="{% static 'window-component.js' %}"></script>
-    <script src="{% static 'faci/key-thoughts-chat-component.js' %}?v=10"></script>
-    <script src="{% static 'faci/step-key-thoughts-component.js' %}?v=7"></script>
-    <script src="{% static 'faci/step-preparing-component.js' %}?v=4"></script>
-    <script src="{% static 'faci/step-agenda-component.js' %}?v=11"></script>
+    <script src="{% static 'faci/step-aim-component.js' %}?v=1"></script>
+    <script src="{% static 'faci/key-thoughts-chat-component.js' %}?v=11"></script>
+    <script src="{% static 'faci/step-key-thoughts-component.js' %}?v=8"></script>
+    <script src="{% static 'faci/step-preparing-component.js' %}?v=5"></script>
+    <script src="{% static 'faci/step-agenda-component.js' %}?v=12"></script>
     <script src="{% static 'faci/listdown-field-item-component.js' %}?v=4"></script>
     <script src="{% static 'faci/listdown-field-component.js' %}?v=4"></script>
     <script src="{% static 'faci/step-member-search-item-component.js' %}?v=4"></script>
-    <script src="{% static 'faci/step-member-item-component.js' %}?v=6"></script>
-    <script src="{% static 'faci/step-members-component.js' %}?v=6"></script>
+    <script src="{% static 'faci/step-member-item-component.js' %}?v=7"></script>
+    <script src="{% static 'faci/step-members-component.js' %}?v=7"></script>
+    <script src="{% static 'faci/step-agreements-component.js' %}?v=6"></script>
+    <script src="{% static 'faci/faci-component.js' %}?v=1"></script>
     <script>
         const { createApp } = Vue;
 
-        var app_key_thoughts = createApp(StepKeyThoughtsComponent);
-        app_key_thoughts.config.compilerOptions.delimiters = [ '[[', ']]' ];
-        app_key_thoughts.mount('#app_key_thoughts');
-
-        var app_preparing = createApp(StepPreparingComponent);
-        app_preparing.config.compilerOptions.delimiters = [ '[[', ']]' ];
-        app_preparing.mount('#app_preparing');
-
-        var app_agenda = createApp(StepAgendaComponent);
-        app_agenda.config.compilerOptions.delimiters = [ '[[', ']]' ];
-        app_agenda.mount('#app_agenda');
-
         ListdownFieldItemComponent.components = {MemberSearchItemComponent};
 
-        var app_members = createApp(StepMembersComponent);
-        app_members.config.compilerOptions.delimiters = [ '[[', ']]' ];
-        app_members.mount('#app_members');
-
-        function open_block(block_name) {
-            if (block_name) {
-                $('#'+block_name+'_form .form_sheet')[0].classList.add('d-none');
-            }
-        }
-
-        function save_form_aim(event) {
-            $.ajax({
-                url: URL_FACI_EDITOR_AIM,
-                headers: {
-                    "X-CSRFToken": CSRF_TOKEN,
-                },
-                dataType: 'json',
-                data: $(event.target.form).serialize(),
-                success: function(result) {
-                    set_valid_field(event.target.form, result.updated);
-                    try {
-                        history.pushState(null, null, location.href.replace('/new', '/'+result['id']));
-                        open_block(result['open_block']);
-                    } catch(e) {}
-                },
-                error: function(jqxhr, a, b) {
-                    console.log(jqxhr.responseText);
-                },
-                statusCode: {
-                    403: function(xhr) {
-                        alert(xhr.responseJSON.detail);
-                    },
-                    400: function(xhr) {
-                        set_invalid_field(event.target.form, xhr.responseJSON);
-                    },
-                },
-                method: "post"
-            });
-        }
-
-        function start_meeting(event) {
-            $.ajax({
-                url: URL_FACI_EDITOR_START_MEETING,
-                headers: {
-                    "X-CSRFToken": CSRF_TOKEN,
-                },
-                dataType: 'json',
-                data: {},
-                success: function(result) {
-                    if (result['meeting_status'] == {{ faci.MEETING_STATUS_STARTED }}) {
-                        open_block('key_thoughts');
-                        open_block('agreements');
-                        event.target.value = 'Завершить встречу';
-                    } else if (result['meeting_status'] == {{ faci.MEETING_STATUS_FINISHED }}) {
-                        event.target.value = 'Начать встречу';
-                    }
-                },
-                error: function(jqxhr, a, b) {
-                    console.log('error');
-                    console.log(jqxhr.responseText);
-                },
-                method: "post"
-            });
-        }
-
-        function save_agreements(event) {
-            $.ajax({
-                url: URL_FACI_EDITOR_AGREEMENTS,
-                headers: {
-                    "X-CSRFToken": CSRF_TOKEN,
-                },
-                dataType: 'json',
-                data: $(event.target.form).serialize(),
-                success: function(result) {
-                    set_valid_field(event.target.form, result.updated);
-                },
-                statusCode: {
-                    403: function(xhr) {
-                        alert(xhr.responseJSON.detail);
-                    },
-                    400: function(xhr) {
-                        set_invalid_field(event.target.form, xhr.responseJSON);
-                    },
-                },
-                method: "post",
-            });
-        }
-
-        $('#btn_save_aim').click(save_form_aim);
-        $('#button_start_meeting').click(start_meeting);
-        $('#agreements_form').change(save_agreements);
+        var app_faci = createApp(FaciComponent);
+        app_faci.config.compilerOptions.delimiters = [ '[[', ']]' ];
+        app_faci.mount('#app_faci');
     </script>
 {% endblock %}

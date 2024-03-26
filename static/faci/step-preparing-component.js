@@ -28,7 +28,7 @@ StepPreparingComponent = {
 								<a v-if="is_url(faci.place)" :href="faci.place" rel="ugc" target="_blank">Открыть ссылку</a>
 						</div>
 						<input type="button" value="Сохранить" class="btn btn-secondary" @click="save">
-  					<input type="button" :value="faci.meeting_status == MEETING_STATUS_STARTED ? 'Завершить встречу' : 'Начать встречу'" class="btn btn-secondary" id="button_start_meeting">
+  					<input type="button" :value="faci.meeting_status == MEETING_STATUS_STARTED ? 'Завершить встречу' : 'Начать встречу'" class="btn btn-secondary" @click="start_meeting">
   			</div>
   			<div v-else>
 						Дата и время: [[faci.dt_meeting]]
@@ -39,6 +39,7 @@ StepPreparingComponent = {
 						<br>
   			</div>
     `,
+    inject: ['open_block'],
     methods: {
         save(event) {
             let form = event.target.form;
@@ -68,6 +69,30 @@ StepPreparingComponent = {
         },
         is_url(text) {
             return text.startsWith('https://') | text.startsWith('http://');
-        }
+        },
+        start_meeting(event) {
+            $.ajax({
+                url: URL_FACI_EDITOR_START_MEETING,
+                headers: {
+                    "X-CSRFToken": CSRF_TOKEN,
+                },
+                dataType: 'json',
+                data: {},
+                success: function(result) {
+                    if (result['meeting_status'] == MEETING_STATUS_STARTED) {
+                        self.open_block('key_thoughts');
+                        self.open_block('agreements');
+                        event.target.value = 'Завершить встречу';
+                    } else if (result['meeting_status'] == MEETING_STATUS_FINISHED) {
+                        event.target.value = 'Начать встречу';
+                    }
+                },
+                error: function(jqxhr, a, b) {
+                    console.log('error');
+                    console.log(jqxhr.responseText);
+                },
+                method: "post"
+            });
+        },
     },
 }

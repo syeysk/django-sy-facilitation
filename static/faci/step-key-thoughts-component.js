@@ -16,8 +16,8 @@ StepKeyThoughtsComponent = {
 
         <div style="padding: 1rem;">
 						<div class="mb-3 input-group" v-if="HAS_ACCESS_TO_ADD_PARKED_THOUGHTS">
-								<textarea name="parked_thought" id="parked_thought-field" class="form-control" v-model="parked_thought" placeholder="Парковка" title="Полезные мысли, не относящиеся к теме встречи"></textarea>
-								<button type="button" @click="add_parked_thought" class="btn btn-secondary"> >>> </button>
+								<textarea name="parked_thought" id="parked_thought-field" class="form-control" v-model="parked_thought" placeholder="Парковка" title="Полезные мысли, не относящиеся к теме встречи"  @keyup.enter="add_parked_thought"></textarea>
+								<button type="button" @click="add_parked_thought" class="btn btn-outline-secondary"> >>> </button>
 						</div>
 						<transition name="fade">
 								<div v-if="sent_parked_thought" style="color: green;">Мысль сохранена: [[ sent_parked_thought ]]</div>

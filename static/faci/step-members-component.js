@@ -1,6 +1,6 @@
 StepMembersComponent = {
     template: `
-        <table style="width: 100%;">
+        <table style="width: 100%;" id="table_members">
             <tr style="text-align: center;">
                 <th>Участник</th>
                 <th>В каком вопросе компетентен</th>
@@ -32,7 +32,7 @@ StepMembersComponent = {
                 'edit': true
             });
             setTimeout(function() {
-                let member_item = $('#app_members > table > tr:last-child')[0].previousElementSibling;
+                let member_item = $('#table_members > tr:last-child')[0].previousElementSibling;
                 member_item.querySelector('.button_ss').click();
             }, 40);
         },

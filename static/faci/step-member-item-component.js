@@ -29,7 +29,7 @@ const StepMemberItemComponent = {
             <td>
                 <span>
                     <span class="el_sign" style="display: inline-block; width: 100%;" :class="{'d-none': !(mode == 'view')}">[[ member.for_what ]]</span>
-                    <input v-model.trim="member.for_what" name="for_what" class="el_field" :class="{'d-none': !(mode == 'edit' || mode == 'add')}" placeholder="цель приглашения"/>
+                    <input v-model.trim="member.for_what" name="for_what" class="el_field" :class="{'d-none': !(mode == 'edit' || mode == 'add')}" placeholder="цель приглашения" @keyup.enter="save" ref="fow_what_field"/>
                 </span>
             </td>
             <!--<td>[[ member.inviting ]]</td>-->
@@ -53,6 +53,7 @@ const StepMemberItemComponent = {
     components: {
         ListdownFieldComponent,
     },
+    inject: ['open_block'],
     methods: {
         save(component) {
             let self = this;
@@ -64,7 +65,7 @@ const StepMemberItemComponent = {
                 dataType: 'json',
                 data: {for_what: self.member.for_what, invited_user: self.member.invited, mode: self.mode},
                 success: function(result) {
-                    open_block(result['open_block']);
+                    self.open_block(result['open_block']);
                     self.$parent.mode = 'view';
                     self.mode = 'view';
                     self.uneditable_invited = true;
@@ -105,6 +106,7 @@ const StepMemberItemComponent = {
             });
         },
         select_user(id, value) {
+            this.$refs.fow_what_field.focus();
         },
         blur_selecting_user(component) {
         },

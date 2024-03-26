@@ -17,7 +17,7 @@ from faci.serializers import (
     FaciEditPreparingSerializer,
     FaciAddKeyThoughtsSerializer,
     FaciAddParkedThoughtsSerializer,
-    FaciEditAgreementsSerializer,
+    FaciAddAgreementSerializer,
     FaciAddThemeSerializer,
     FaciAddExpressionSerializer,
 )
@@ -43,6 +43,11 @@ class FaciEditorView(View):
                     'id', 'theme', 'duration', 'description', username=F('user__username'),
                 ),
             )
+            agreements = list(
+                faci.agreements.all().values(
+                    'id', 'agreement', 'expire_dt', 'done_dt', responsible_username=F('responsible__username'),
+                )
+            )
             has_access_to_edit_preparing = request.user.pk == faci.user_creator.pk
             has_access_to_add_members = request.user.is_authenticated
             has_access_to_edit_aim = request.user.pk == faci.user_creator.pk
@@ -51,6 +56,7 @@ class FaciEditorView(View):
             has_access_to_add_parked_thoughts = request.user.is_authenticated
             has_access_to_add_expression = request.user.is_authenticated
             has_access_to_add_theme = request.user.is_authenticated
+            has_access_to_add_agreement = request.user.is_authenticated
         else:
             if not request.user.is_authenticated:
                 return redirect('custom_login_page')
@@ -60,6 +66,7 @@ class FaciEditorView(View):
             username = request.user.username
             members = [{'invited': username, 'for_what': FACI_CREATOR_FOR_WHAT, 'inviting': username}]
             themes = []
+            agreements = []
             has_access_to_edit_preparing = True
             has_access_to_add_members = True
             has_access_to_edit_aim = True
@@ -68,6 +75,7 @@ class FaciEditorView(View):
             has_access_to_add_parked_thoughts = True
             has_access_to_add_expression = True
             has_access_to_add_theme = True
+            has_access_to_add_agreement = True
 
         context = {
             'faci': faci,
@@ -80,7 +88,6 @@ class FaciEditorView(View):
                 'aim_type': faci.aim_type,
                 'if_not_reached': faci.if_not_reached,
                 'solutions': faci.solutions,
-                'other_agreements': faci.other_agreements,
                 'form_of_feedback': faci.form_of_feedback,
             },
             'themes': themes,
@@ -88,6 +95,7 @@ class FaciEditorView(View):
             'aim_type_choices': dict(FaciCanvas.AIM_TYPE_CHOICES),
             'step': step,
             'members': members,
+            'agreements': agreements,
             'has_access_to_edit_preparing': has_access_to_edit_preparing,
             'has_access_to_add_members': has_access_to_add_members,
             'has_access_to_edit_aim': has_access_to_edit_aim,
@@ -96,6 +104,7 @@ class FaciEditorView(View):
             'has_access_to_add_parked_thoughts': has_access_to_add_parked_thoughts,
             'has_access_to_add_expression': has_access_to_add_expression,
             'has_access_to_add_theme': has_access_to_add_theme,
+            'has_access_to_add_agreement': has_access_to_add_agreement,
         }
         return render(request, 'faci/faci_editor.html', context)
 
@@ -336,18 +345,13 @@ class FaciAddExpressionView(LoginRequiredMixin, APIView):
         return Response(status=status.HTTP_200_OK, data={'updated': ['expression']})
 
 
-class FaciEditAgreementsView(LoginRequiredMixin, APIView):
+class FaciAddAgreementView(LoginRequiredMixin, APIView):
     def post(self, request, canvas_id):
         faci = FaciCanvas.objects.get(pk=canvas_id)
-        serializer = FaciEditAgreementsSerializer(faci, data=request.data)
+        serializer = FaciAddAgreementSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        data_for_return = {
-            'updated': [
-                name for name, value in serializer.validated_data.items() if getattr(faci, name) != value
-            ],
-        }
-        serializer.save()
-        return Response(status=status.HTTP_200_OK, data=data_for_return)
+        serializer.save(faci=faci, user=request.user)
+        return Response(status=status.HTTP_200_OK, data={'id': serializer.instance.pk, 'updated': ['agreements']})
 
 
 class FaciListView(View):

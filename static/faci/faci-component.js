@@ -117,7 +117,7 @@ FaciComponent = {
 												6. Договорённости
 										</div>
 										<form id="agreements_form" class="card-body accordion-collapse collapse show" @submit.prevent>
-												<step-agreements-component id="app_agreements"></step-agreements-component>
+												<step-agreements-component></step-agreements-component>
 												<div v-if="STEP < 6" class="form_sheet">Станет доступно после шага 4</div>
 										</form>
 								</div>

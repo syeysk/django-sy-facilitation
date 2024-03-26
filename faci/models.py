@@ -141,3 +141,16 @@ class Expression(DatetimeMixin, models.Model):
     class Meta:
         verbose_name = 'Высказывание к теме'
         verbose_name_plural = 'Высказывания к теме'
+
+
+class Agreement(DatetimeMixin, models.Model):
+    faci = models.ForeignKey('faci.FaciCanvas', null=False, on_delete=models.CASCADE, related_name='agreements')
+    user = models.ForeignKey(get_user_model(), null=False, on_delete=models.CASCADE)
+    agreement = models.CharField('Текст соглашения', null=False, blank=False, max_length=1000)
+    expire_dt = models.DateTimeField('Срок выполнения', null=True, blank=False)
+    responsible = models.ForeignKey(get_user_model(), null=True, on_delete=models.CASCADE, related_name="agreements_resp")
+    done_dt = models.DateTimeField('Дата, когда задача была выполнена', null=True, blank=False)
+
+    class Meta:
+        verbose_name = 'Итоговое соглашение'
+        verbose_name_plural = 'Итоговые соглашения'

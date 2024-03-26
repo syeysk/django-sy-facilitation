@@ -12,6 +12,7 @@
     {{ themes|json_script:'themes_json' }}
     {{ expr_types|json_script:'expr_types_json' }}
     {{ aim_type_choices|json_script:'aim_type_choices_json' }}
+    {{ agreements|json_script:'agreements_json' }}
     <script>
         var URL_SEARCH_USER = "search_user/";
         var URL_FACI_EDITOR_AIM = "aim/{% if 'link_to' in request.GET %}?link_to={{request.GET.link_to}}{% endif %}";
@@ -23,7 +24,7 @@
         var URL_FACI_EDITOR_ADD_EXPRESSION =  "expressions/add/";
         var URL_FACI_EDITOR_PARKED_THOUGHTS = "parked_thought/";
         var URL_FACI_EDITOR_GET_PARKED_THOUGHTS = "parked_thought/get/";
-        var URL_FACI_EDITOR_AGREEMENTS = "agreements/";
+        var URL_FACI_ADD_AGREEMENT = "agreement/add/";
         var URL_FACI_EDITOR_MEMBER = "member/";
         var URL_FACI_EDITOR_ADD_THEME = "add_theme/";
         var CSRF_TOKEN = "{{ csrf_token }}";
@@ -39,6 +40,7 @@
         var HAS_ACCESS_TO_ADD_PARKED_THOUGHTS = {% if has_access_to_add_parked_thoughts %}true{% else %}false{% endif %};
         var HAS_ACCESS_TO_ADD_EXPRESSION = {% if has_access_to_add_expression %}true{% else %}false{% endif %};
         var HAS_ACCESS_TO_ADD_THEME = {% if has_access_to_add_theme %}true{% else %}false{% endif %};
+        var HAS_ACCESS_TO_ADD_AGREEMENT = {% if has_access_to_add_agreement %}true{% else %}false{% endif %};
 
         var STEP = {{ step }};
     </script>

@@ -65,8 +65,6 @@ class FaciCanvas(DatetimeMixin, models.Model):
     duration = models.IntegerField(verbose_name='Длительность', null=False, default=30)
     place = models.CharField(verbose_name='Место', null=False, default='', max_length=100, blank=True)
     form_of_feedback = models.CharField(verbose_name='Ссылка на внешнюю форму обратной связи', null=False, default='', max_length=500, blank=True)
-    # 6. Договорённости
-    other_agreements = models.TextField(verbose_name='Прочие договорённости', max_length=10000, null=False, default='', blank=True)
 
     # Служебные поля
     step = models.IntegerField(verbose_name='Шаг', null=False, default=1)
@@ -146,7 +144,7 @@ class Expression(DatetimeMixin, models.Model):
 class Agreement(DatetimeMixin, models.Model):
     faci = models.ForeignKey('faci.FaciCanvas', null=False, on_delete=models.CASCADE, related_name='agreements')
     user = models.ForeignKey(get_user_model(), null=False, on_delete=models.CASCADE)
-    agreement = models.CharField('Текст соглашения', null=False, blank=False, max_length=1000)
+    agreement = models.CharField('Текст соглашения', null=False, blank=False, max_length=2000)
     expire_dt = models.DateTimeField('Срок выполнения', null=True, blank=False)
     responsible = models.ForeignKey(get_user_model(), null=True, on_delete=models.CASCADE, related_name="agreements_resp")
     done_dt = models.DateTimeField('Дата, когда задача была выполнена', null=True, blank=False)

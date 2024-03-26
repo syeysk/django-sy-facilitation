@@ -57,6 +57,7 @@ class FaciEditorView(View):
             has_access_to_add_expression = request.user.is_authenticated
             has_access_to_add_theme = request.user.is_authenticated
             has_access_to_add_agreement = request.user.is_authenticated
+            has_access_to_start_and_stop_meeting = request.user.pk == faci.user_creator.pk
         else:
             if not request.user.is_authenticated:
                 return redirect('custom_login_page')
@@ -76,6 +77,7 @@ class FaciEditorView(View):
             has_access_to_add_expression = True
             has_access_to_add_theme = True
             has_access_to_add_agreement = True
+            has_access_to_start_and_stop_meeting = True
 
         context = {
             'faci': faci,
@@ -105,6 +107,7 @@ class FaciEditorView(View):
             'has_access_to_add_expression': has_access_to_add_expression,
             'has_access_to_add_theme': has_access_to_add_theme,
             'has_access_to_add_agreement': has_access_to_add_agreement,
+            'has_access_to_start_and_stop_meeting': has_access_to_start_and_stop_meeting,
         }
         return render(request, 'faci/faci_editor.html', context)
 

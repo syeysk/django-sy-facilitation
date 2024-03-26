@@ -23,7 +23,7 @@ StepPreparingComponent = {
 										<input name="place" class="form-control" id="place-field" v-model="faci.place" type="text">
 										<label for="place-field" class="form-label">Место</label>
 								</div>
-								<a v-if="is_url(faci.place)" :href="faci.place" rel="ugc" target="_blank">Открыть ссылку</a>
+								<a v-if="is_url(faci.place)" :href="faci.place" rel="ugc" target="_blank">[[ cutted_place ]]</a>
 						</div>
 						<div class="mb-3 form-group" id="form_of_feedback-group">
 								<div class="form-floating" title="В конце встречи пользователи увидят приглашение пройти опрос">
@@ -38,13 +38,24 @@ StepPreparingComponent = {
 						<br>
 						Длительность: [[faci.duration]] мин
 						<br>
-						Место: <a v-if="is_url(faci.place)" :href="faci.place" rel="ugc" target="_blank">[[ faci.place ]]</a><span v-else>[[faci.place]]</span>
+						Место: <a v-if="is_url(faci.place)" :href="faci.place" rel="ugc" target="_blank">[[ cutted_place ]]</a><span v-else>[[faci.place]]</span>
 						<br>
   			</div>
     `,
+    computed: {
+        cutted_place() {
+            let place = this.faci.place;
+            let length_to_show = 50;
+            if (place.length > length_to_show) {
+                return place.slice(0, length_to_show / 2) +'...'+ place.slice(-(length_to_show / 2 - 3));
+            }
+            return place;
+        },
+    },
     inject: ['open_block', 'faci', 'themes', 'duration_of_all_themes'],
     methods: {
         save(event) {
+            let self = this;
             let form = event.target.form;
             $.ajax({
                 url: URL_FACI_EDITOR_PREPARING,

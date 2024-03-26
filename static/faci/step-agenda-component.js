@@ -38,7 +38,7 @@ StepAgendaComponent = {
 							  </div>
 						</div>
 						<div v-if="current_theme_id == theme.id.toString()" style="padding-left: 15px;">
-						    <p v-if="theme.description">[[ theme.description ]]</p>
+						    <p v-if="theme.description"><pre style="font: inherit">[[ theme.description ]]</pre></p>
 						    <div v-for="expr_type in expr_types">
 										<div :data-counter="expr_type[0].toString()" class="counter-header" @click="open_expressions" style="cursor: pointer; padding: 5px 0;">
 												<span v-if="current_expression_type == expr_type[0].toString()">- </span>

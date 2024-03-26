@@ -41,6 +41,7 @@
         var HAS_ACCESS_TO_ADD_EXPRESSION = {% if has_access_to_add_expression %}true{% else %}false{% endif %};
         var HAS_ACCESS_TO_ADD_THEME = {% if has_access_to_add_theme %}true{% else %}false{% endif %};
         var HAS_ACCESS_TO_ADD_AGREEMENT = {% if has_access_to_add_agreement %}true{% else %}false{% endif %};
+        var HAS_ACCESS_TO_START_AND_STOP_MEETING = {% if has_access_to_start_and_stop_meeting %}true{% else %}false{% endif %};
 
         var STEP = {{ step }};
     </script>
@@ -120,18 +121,18 @@
     <br>
 
     <script src="{% static 'window-component.js' %}"></script>
-    <script src="{% static 'faci/step-aim-component.js' %}?v=1"></script>
-    <script src="{% static 'faci/key-thoughts-chat-component.js' %}?v=11"></script>
-    <script src="{% static 'faci/step-key-thoughts-component.js' %}?v=8"></script>
-    <script src="{% static 'faci/step-preparing-component.js' %}?v=5"></script>
-    <script src="{% static 'faci/step-agenda-component.js' %}?v=12"></script>
-    <script src="{% static 'faci/listdown-field-item-component.js' %}?v=4"></script>
-    <script src="{% static 'faci/listdown-field-component.js' %}?v=4"></script>
-    <script src="{% static 'faci/step-member-search-item-component.js' %}?v=4"></script>
-    <script src="{% static 'faci/step-member-item-component.js' %}?v=7"></script>
-    <script src="{% static 'faci/step-members-component.js' %}?v=7"></script>
-    <script src="{% static 'faci/step-agreements-component.js' %}?v=6"></script>
-    <script src="{% static 'faci/faci-component.js' %}?v=1"></script>
+    <script src="{% static 'faci/step-aim-component.js' %}?v=2"></script>
+    <script src="{% static 'faci/key-thoughts-chat-component.js' %}?v=12"></script>
+    <script src="{% static 'faci/step-key-thoughts-component.js' %}?v=9"></script>
+    <script src="{% static 'faci/step-preparing-component.js' %}?v=6"></script>
+    <script src="{% static 'faci/step-agenda-component.js' %}?v=13"></script>
+    <script src="{% static 'faci/listdown-field-item-component.js' %}?v=5"></script>
+    <script src="{% static 'faci/listdown-field-component.js' %}?v=5"></script>
+    <script src="{% static 'faci/step-member-search-item-component.js' %}?v=5"></script>
+    <script src="{% static 'faci/step-member-item-component.js' %}?v=8"></script>
+    <script src="{% static 'faci/step-members-component.js' %}?v=8"></script>
+    <script src="{% static 'faci/step-agreements-component.js' %}?v=7"></script>
+    <script src="{% static 'faci/faci-component.js' %}?v=2"></script>
     <script>
         const { createApp } = Vue;
 

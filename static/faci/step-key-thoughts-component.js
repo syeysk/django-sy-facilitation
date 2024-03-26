@@ -7,12 +7,13 @@ StepKeyThoughtsComponent = {
             is_display_resources_window: false,
             parked_thoughts: [],
             MEETING_STATUS_STARTED,
+            HAS_ACCESS_TO_START_AND_STOP_MEETING,
         }
     },
     inject: ['themes', 'faci', 'open_block'],
     components: {WindowComponent, KeyThoughtsChatComponent},
     template: `
-        <div style="text-align: center; padding: 5px 0;">
+        <div style="text-align: center; padding: 5px 0;" v-if="HAS_ACCESS_TO_START_AND_STOP_MEETING">
             <input type="button" :value="faci.meeting_status == MEETING_STATUS_STARTED ? 'Завершить встречу' : 'Начать встречу'" class="btn btn-outline-success" @click="start_meeting">
         </div>
 
@@ -31,7 +32,7 @@ StepKeyThoughtsComponent = {
 				</div>
         <window-component title="Припаркованные мысли" v-if="is_display_resources_window" @close="is_display_resources_window = false;">
             <div v-for="thought in parked_thoughts">
-                <p><b>[[ thought.username ]]:</b> [[ thought.parked_thought ]]</p>
+                <p style="margin-bottom: 0.25rem;"><b>[[ thought.username ]]:</b> [[ thought.parked_thought ]]</p>
             </div>
             <div v-if="parked_thoughts.length == 0">Отвлечённые мысли пока никто не парковал.</div>
         </window-component>

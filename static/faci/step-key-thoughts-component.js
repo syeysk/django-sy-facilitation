@@ -12,7 +12,7 @@ StepKeyThoughtsComponent = {
             HAS_ACCESS_TO_START_AND_STOP_MEETING,
         }
     },
-    inject: ['themes', 'faci', 'open_block'],
+    inject: ['themes', 'faci'],
     components: {WindowComponent, KeyThoughtsChatComponent},
     template: `
         <div style="text-align: center; padding: 5px 0;" v-if="HAS_ACCESS_TO_START_AND_STOP_MEETING">
@@ -100,11 +100,8 @@ StepKeyThoughtsComponent = {
                 dataType: 'json',
                 data: {},
                 success: function(result) {
-                    if (result['meeting_status'] == MEETING_STATUS_STARTED) {
-                    } else if (result['meeting_status'] == MEETING_STATUS_FINISHED) {
-                        self.open_block('agreements');
-                    }
-                    self.faci.meeting_status = result['meeting_status'];
+                    self.faci.meeting_status = result.meeting_status;
+                    self.faci.step = result.step;
                 },
                 error: function(jqxhr, a, b) {
                     console.log('error');

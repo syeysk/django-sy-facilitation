@@ -58,9 +58,10 @@ StepAimComponent = {
 						</template>
 				</template>
     `,
-    inject: ['open_block', 'faci'],
+    inject: ['faci'],
     methods: {
         save_form_aim(event) {
+            let self = this;
             $.ajax({
                 url: URL_FACI_EDITOR_AIM,
                 headers: {"X-CSRFToken": CSRF_TOKEN},
@@ -70,8 +71,8 @@ StepAimComponent = {
                     set_valid_field(event.target.form, result.updated);
                     try {
                         history.pushState(null, null, location.href.replace('/new', '/'+result['id']));
-                        self.open_block(result['open_block']);
                     } catch(e) {}
+                    self.faci.step = result.step;
                 },
                 error: function(jqxhr, a, b) {
                     console.log(jqxhr.responseText);

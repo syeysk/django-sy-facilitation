@@ -30,9 +30,9 @@
         var CSRF_TOKEN = "{{ csrf_token }}";
         var CURRENT_USERNAME = "{{ request.user.username }}";
         var STATIC_PREFIX = "{% static '' %}";
-        var MEETING_STATUS_EDITING = {{ faci.MEETING_STATUS_EDITING }};
-        var MEETING_STATUS_STARTED = {{ faci.MEETING_STATUS_STARTED }};
-        var MEETING_STATUS_FINISHED = {{ faci.MEETING_STATUS_FINISHED }};
+        var MEETING_STATUS_EDITING = {{ MEETING_STATUS_EDITING }};
+        var MEETING_STATUS_STARTED = {{ MEETING_STATUS_STARTED }};
+        var MEETING_STATUS_FINISHED = {{ MEETING_STATUS_FINISHED }};
         var HAS_ACCESS_TO_EDIT_PREPARING = {% if has_access_to_edit_preparing %}true{% else %}false{% endif %};
         var HAS_ACCESS_TO_ADD_MEMBERS = {% if has_access_to_add_members %}true{% else %}false{% endif %};
         var HAS_ACCESS_TO_EDIT_AIM = {% if has_access_to_edit_aim %}true{% else %}false{% endif %};
@@ -43,8 +43,6 @@
         var HAS_ACCESS_TO_ADD_THEME = {% if has_access_to_add_theme %}true{% else %}false{% endif %};
         var HAS_ACCESS_TO_ADD_AGREEMENT = {% if has_access_to_add_agreement %}true{% else %}false{% endif %};
         var HAS_ACCESS_TO_START_AND_STOP_MEETING = {% if has_access_to_start_and_stop_meeting %}true{% else %}false{% endif %};
-
-        var STEP = {{ step }};
     </script>
     <style>
         .windowWindow {

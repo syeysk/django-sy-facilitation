@@ -1,5 +1,4 @@
 StepAgendaComponent = {
-    props: [],
     data() {
         return {
             expr_types: JSON.parse(document.getElementById('expr_types_json').textContent),
@@ -59,7 +58,7 @@ StepAgendaComponent = {
 						</div>
         </div>
     `,
-    inject: ['open_block', 'themes', 'faci'],
+    inject: ['themes', 'faci'],
     methods: {
         open_expressions(event) {
             let header_el = event.target.closest('.counter-header')
@@ -97,7 +96,7 @@ StepAgendaComponent = {
                     self.theme = '';
                     self.duration = '';
                     self.description = '';
-                    self.open_block(result['open_block']);
+                    self.faci.step = result.step;
                 },
                 statusCode: {
                     403: function(xhr) {

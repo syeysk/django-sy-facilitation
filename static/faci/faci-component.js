@@ -1,14 +1,12 @@
 FaciComponent = {
     data() {
         return {
-            STEP,
             faci: JSON.parse(document.getElementById('faci_json').textContent),
             themes: JSON.parse(document.getElementById('themes_json').textContent),
         }
     },
     provide() {
         return {
-            open_block: this.open_block,
             faci: this.faci,
             themes: this.themes,
             duration_of_all_themes: Vue.computed(() => this.duration_of_all_themes),
@@ -21,21 +19,6 @@ FaciComponent = {
         StepPreparingComponent,
         StepKeyThoughtsComponent,
         StepAgreementsComponent,
-    },
-    methods: {
-        open_block(block) {
-            let step = null;
-            if (block == "members") step = 2;
-            else if (block == "agenda") step = 3;
-            else if (block == "preparing") step = 4;
-            else if (block == "key_thoughts") step = 5;
-            else if (block == "agreements") step = 6;
-
-            if (step > this.STEP) {
-                this.STEP = step;
-                this.faci.step = step;
-            }
-        },
     },
     computed: {
         duration_of_all_themes() {
@@ -67,7 +50,7 @@ FaciComponent = {
 										</div>
 										<form id="members_form" class="card-body accordion-collapse collapse show" @submit.prevent>
 												<step-members-component></step-members-component>
-												<div v-if="STEP < 2" class="form_sheet">Для открытия выполните 1-й шаг</div>
+												<div v-if="faci.step < 2" class="form_sheet">Для открытия выполните 1-й шаг</div>
 										</form>
 								</div>
 						</div>
@@ -81,7 +64,7 @@ FaciComponent = {
 										</div>
 										<form id="agenda_form" class="card-body accordion-collapse collapse show" @submit.prevent>
 												<step-agenda-component></step-agenda-component>
-												<div v-if="STEP < 3" class="form_sheet"><span>Для открытия заполните, пожалуйста, список участников (2-й шаг)</span></div>
+												<div v-if="faci.step < 3" class="form_sheet"><span>Для открытия заполните, пожалуйста, список участников (2-й шаг)</span></div>
 										</form>
 								</div>
 
@@ -93,7 +76,7 @@ FaciComponent = {
 										</div>
 										<form id="preparing_form" class="card-body accordion-collapse collapse show" @submit.prevent>
 												<step-preparing-component></step-preparing-component>
-												<div v-if="STEP < 4" class="form_sheet"><span>Откроется после выполнения 3-го шага</span></div>
+												<div v-if="faci.step < 4" class="form_sheet"><span>Откроется после выполнения 3-го шага</span></div>
 										</form>
 								</div>
 						</div>
@@ -109,7 +92,7 @@ FaciComponent = {
 										</div>
 										<form id="key_thoughts_form" class="card-body accordion-collapse collapse show" style="padding: 0 0 0 0;" @submit.prevent>
 												<step-key-thoughts-component></step-key-thoughts-component>
-												<div v-if="STEP < 5" class="form_sheet">Станет доступно во время встречи (после шага 4)</div>
+												<div v-if="faci.step < 5" class="form_sheet">Станет доступно во время встречи (после шага 4)</div>
 										</form>
 								</div>
 						</div>
@@ -121,7 +104,7 @@ FaciComponent = {
 										</div>
 										<form id="agreements_form" class="card-body accordion-collapse collapse show" @submit.prevent>
 												<step-agreements-component></step-agreements-component>
-												<div v-if="STEP < 6" class="form_sheet">Станет доступно после шага 4</div>
+												<div v-if="faci.step < 6" class="form_sheet">Станет доступно, как только начнётcя встреча</div>
 										</form>
 								</div>
 						</div>

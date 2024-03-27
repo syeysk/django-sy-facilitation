@@ -53,7 +53,7 @@ const StepMemberItemComponent = {
     components: {
         ListdownFieldComponent,
     },
-    inject: ['open_block'],
+    inject: ['faci'],
     methods: {
         save(component) {
             let self = this;
@@ -65,7 +65,7 @@ const StepMemberItemComponent = {
                 dataType: 'json',
                 data: {for_what: self.member.for_what, invited_user: self.member.invited, mode: self.mode},
                 success: function(result) {
-                    self.open_block(result['open_block']);
+                    self.faci.step = result.step;
                     self.$parent.mode = 'view';
                     self.mode = 'view';
                     self.uneditable_invited = true;

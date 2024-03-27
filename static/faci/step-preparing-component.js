@@ -53,7 +53,7 @@ StepPreparingComponent = {
             return place;
         },
     },
-    inject: ['open_block', 'faci', 'themes', 'duration_of_all_themes'],
+    inject: ['faci', 'themes', 'duration_of_all_themes'],
     methods: {
         save(event) {
             let self = this;
@@ -65,7 +65,7 @@ StepPreparingComponent = {
                 data: $(form).serialize(),
                 success: function(result) {
                     set_valid_field(form, result.updated);
-                    self.open_block('key_thoughts');
+                    self.faci.step = result.step;
                 },
                 error: function(jqxhr, a, b) {
                     console.log(jqxhr.responseText);

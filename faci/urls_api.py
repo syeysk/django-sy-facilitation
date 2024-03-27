@@ -1,6 +1,6 @@
 from django.urls import path
 
-from faci.views import (
+from faci.views_api import (
     AddFaciView,
     GetListFaciView,
 )

@@ -19,11 +19,6 @@ class AddFaciViewSerializer(serializers.Serializer):
     solutions = serializers.CharField(max_length=255)
 
 
-class GetListFaciSerializer(serializers.Serializer):
-    count_on_page = serializers.IntegerField(min_value=1, max_value=100)
-    page_number = serializers.IntegerField(min_value=1)
-
-
 class FaciEditMembersSerializer(serializers.Serializer):
     MODE_EDIT = 'edit'
     MODE_ADD = 'add'

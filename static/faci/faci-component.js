@@ -31,7 +31,10 @@ FaciComponent = {
             else if (block == "key_thoughts") step = 5;
             else if (block == "agreements") step = 6;
 
-            if (step > this.STEP) this.STEP = step;
+            if (step > this.STEP) {
+                this.STEP = step;
+                this.faci.step = step;
+            }
         },
     },
     computed: {

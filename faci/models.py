@@ -28,6 +28,13 @@ class Member(models.Model):
 
 
 class FaciCanvas(DatetimeMixin, models.Model):
+    STEP_AIM = 1
+    STEP_MEMBERS = 2
+    STEP_AGENDA = 3
+    STEP_PREPARING = 4
+    STEP_KEY_THOUGHTS = 5
+    STEP_AGREEMENTS = 6
+
     AIM_TYPE_SOLUTION = 1
     AIM_TYPE_IDEA = 2
     AIM_TYPE_SYNC = 3
@@ -67,9 +74,12 @@ class FaciCanvas(DatetimeMixin, models.Model):
     form_of_feedback = models.CharField(verbose_name='Ссылка на внешнюю форму обратной связи', null=False, default='', max_length=500, blank=True)
 
     # Служебные поля
-    step = models.IntegerField(verbose_name='Шаг', null=False, default=1)
+    step = models.IntegerField(verbose_name='Шаг', null=False, default=STEP_AIM)
     is_closed = models.IntegerField(verbose_name='Холст закрыт', null=False, default=0)
     meeting_status = models.IntegerField(verbose_name='Статус встречи', choices=MEETING_STATUS_CHOICES, default=MEETING_STATUS_EDITING, null=False, blank=False)
+    when_started = models.DateTimeField('Дата фактического начала встречи', null=True, blank=False)
+    when_finished = models.DateTimeField('Дата фактического окончания встречи', null=True, blank=False)
+
     linker = GenericRelation(Linker, related_query_name='faci')
 
     @property

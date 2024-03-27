@@ -1,6 +1,8 @@
+import datetime
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
-from django.db.models import F
+from django.db.models import F, Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 from rest_framework.response import Response
@@ -63,7 +65,7 @@ class FaciEditorView(View):
                 return redirect('custom_login_page')
 
             faci = FaciCanvas()
-            step = 1
+            step = faci.STEP_AIM
             username = request.user.username
             members = [{'invited': username, 'for_what': FACI_CREATOR_FOR_WHAT, 'inviting': username}]
             themes = []
@@ -134,7 +136,7 @@ class FaciEditAimView(APIView):
             serializer = FaciEditAimSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             updated_fields = list(serializer.fields.keys())
-            faci = serializer.save(step=2, user_creator=request.user)
+            faci = serializer.save(step=FaciCanvas.STEP_MEMBERS, user_creator=request.user)
             faci.members.create(
                 invited=request.user,
                 inviting=request.user,
@@ -160,8 +162,14 @@ class FaciEditMembersView(LoginRequiredMixin, APIView):
 
         mode = data['mode']
         invited = data['invited_user']  # TODO: обработать на фронте 400 {'unvited_username': ['пользователь не найден']}
-        faci_canvas = FaciCanvas.objects.get(pk=canvas_id)
-        member = Member.objects.filter(invited=invited, faci_canvas=faci_canvas).first()
+        faci = FaciCanvas.objects.get(pk=canvas_id)
+        if faci.step < faci.STEP_MEMBERS:
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+                data=f'Сначала заполните шаг {faci.STEP_AIM} (Цель)',
+            )
+
+        member = Member.objects.filter(invited=invited, faci_canvas=faci).first()
         if mode == FaciEditMembersSerializer.MODE_EDIT:
             if not member:
                 return Response(
@@ -185,10 +193,11 @@ class FaciEditMembersView(LoginRequiredMixin, APIView):
                     data={'invited_user': ['Пользователь уже является участником встречи']},
                 )
 
-            member = Member(invited=invited, for_what=data['for_what'], inviting=request.user, faci_canvas=faci_canvas)
+            member = Member(invited=invited, for_what=data['for_what'], inviting=request.user, faci_canvas=faci)
             member.save()
-            faci_canvas.step = 3
-            faci_canvas.save()
+            if faci.step == faci.STEP_MEMBERS:
+                faci.step = faci.STEP_AGENDA
+                faci.save()
 
         data_for_return = {'open_block': 'agenda', 'success': True}
         return Response(status=status.HTTP_200_OK, data=data_for_return)
@@ -200,15 +209,30 @@ class FaciEditMembersView(LoginRequiredMixin, APIView):
 class FaciAddThemeView(LoginRequiredMixin, APIView):
     def post(self, request, canvas_id):
         faci = FaciCanvas.objects.get(pk=canvas_id)
-        if not faci:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        if faci.step < faci.STEP_AGENDA:
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+                data=f'Сначала добавьте участников',
+            )
+
+        if faci.meeting_status == faci.MEETING_STATUS_STARTED:
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+                data=f'Встреча уже началась, добавление новых тем недоступно',
+            )
+
+        if faci.meeting_status == faci.MEETING_STATUS_FINISHED:
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+                data=f'Встреча завершена, добавление новых тем недоступно',
+            )
 
         serializer = FaciAddThemeSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(faci=faci, user=request.user)
 
-        if faci.step == 3:
-            faci.step = 4
+        if faci.step == faci.STEP_AGENDA:
+            faci.step = faci.STEP_PREPARING
             faci.save()
 
         response_data = {
@@ -225,6 +249,24 @@ class FaciEditPreparingView(LoginRequiredMixin, APIView):
         if faci.user_creator.pk != request.user.pk:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
+        if faci.step < faci.STEP_PREPARING:
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+                data=f'Сначала добавьте темы',
+            )
+
+        if faci.meeting_status == faci.MEETING_STATUS_STARTED:
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+                data=f'Встреча уже началась, изменение подготовки недоступно',
+            )
+
+        if faci.meeting_status == faci.MEETING_STATUS_FINISHED:
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+                data=f'Встреча завершена, изменение подготовки недоступно',
+            )
+
         serializer = FaciEditPreparingSerializer(faci, data=request.data)
         serializer.is_valid(raise_exception=True)
         data_for_return = {
@@ -233,27 +275,72 @@ class FaciEditPreparingView(LoginRequiredMixin, APIView):
             ],
         }
         serializer.save()
+        if faci.step == faci.STEP_PREPARING:
+            faci.step = faci.STEP_KEY_THOUGHTS
+            faci.save()
+
         return Response(status=status.HTTP_200_OK, data=data_for_return)
 
 
 class FaciStartView(LoginRequiredMixin, APIView):
     def post(self, request, canvas_id):
         faci = FaciCanvas.objects.get(pk=canvas_id)
-        faci.step = 6
-        if faci.meeting_status == faci.MEETING_STATUS_STARTED:
-            faci.meeting_status = faci.MEETING_STATUS_FINISHED
-        else:
-            faci.meeting_status = faci.MEETING_STATUS_STARTED
-        faci.save()
+        if faci.user.pk != request.user.pk:
+            return Response(status=status.HTTP_403_FORBIDDEN)
 
-        data_for_return = {}
-        data_for_return['success'] = True
-        data_for_return['meeting_status'] = faci.meeting_status
+        if faci.step < faci.STEP_KEY_THOUGHTS:
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+                data=f'Сначала заполните подготовку',
+            )
+
+        any_datetime = None
+        if faci.meeting_status == faci.MEETING_STATUS_EDITING:
+            faci.meeting_status = faci.MEETING_STATUS_STARTED
+            faci.when_started = datetime.datetime.utcnow()
+            if faci.step == faci.STEP_KEY_THOUGHTS:
+                faci.step = faci.STEP_AGREEMENTS
+                faci.save()
+
+            any_datetime = faci.when_started
+        elif faci.meeting_status == faci.MEETING_STATUS_STARTED:
+            faci.meeting_status = faci.MEETING_STATUS_FINISHED
+            faci.when_finished = datetime.datetime.utcnow()
+            faci.save()
+            any_datetime = faci.when_finished
+
+        data_for_return = {
+            'success': True,
+            'meeting_status': faci.meeting_status,
+            'date': any_datetime
+        }
         return Response(status=status.HTTP_200_OK, data=data_for_return)
 
 
 class FaciAddKeyThoughtsView(LoginRequiredMixin, APIView):
     def post(self, request, canvas_id):
+        faci = FaciCanvas.objects.get(pk=canvas_id)
+        if faci.step < faci.STEP_AGREEMENTS:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        if faci.step < faci.STEP_KEY_THOUGHTS:
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+                data=f'Сначала заполните подготовку',
+            )
+
+        if faci.meeting_status == faci.MEETING_STATUS_EDITING:
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+                data=f'Чтобы добавлять ключевые мысли, необходимо начать встречу',
+            )
+
+        if faci.meeting_status == faci.MEETING_STATUS_FINISHED:
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+                data=f'Встреча завершена, добавление ключевых мыслей больше недоступно',
+            )
+
         serializer = FaciAddKeyThoughtsSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -311,8 +398,23 @@ class FaciGetKeyThoughtsView(APIView):
 class FaciAddParkedThoughtsView(LoginRequiredMixin, APIView):
     def post(self, request, canvas_id):
         faci = FaciCanvas.objects.get(pk=canvas_id)
-        if not faci:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        if faci.step < faci.STEP_KEY_THOUGHTS:
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+                data=f'Сначала заполните подготовку',
+            )
+
+        if faci.meeting_status == faci.MEETING_STATUS_EDITING:
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+                data=f'Чтобы парковать мысли, необходимо начать встречу',
+            )
+
+        if faci.meeting_status == faci.MEETING_STATUS_FINISHED:
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+                data=f'Встреча завершена, паркование мыслей больше недоступно',
+            )
 
         serializer = FaciAddParkedThoughtsSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -323,9 +425,6 @@ class FaciAddParkedThoughtsView(LoginRequiredMixin, APIView):
 class FaciGetParkedThoughtsView(APIView):
     def post(self, request, canvas_id: int):
         faci = FaciCanvas.objects.get(pk=canvas_id)
-        if not faci:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
         parked_thoughts = faci.parked_thoughts.all().values('parked_thought', username=F('user__username'))
         return Response(status=status.HTTP_200_OK, data={'parked_thoughts': parked_thoughts})
 
@@ -342,6 +441,19 @@ class FaciGetExpressionsView(APIView):
 
 class FaciAddExpressionView(LoginRequiredMixin, APIView):
     def post(self, request, canvas_id):
+        faci = FaciCanvas.objects.get(pk=canvas_id)
+        if faci.meeting_status == faci.MEETING_STATUS_STARTED:
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+                data=f'Встреча уже началась, добавление недоступно',
+            )
+
+        if faci.meeting_status == faci.MEETING_STATUS_FINISHED:
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+                data=f'Встреча завершена, добавление недоступно',
+            )
+
         serializer = FaciAddExpressionSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(user=request.user)
@@ -351,6 +463,24 @@ class FaciAddExpressionView(LoginRequiredMixin, APIView):
 class FaciAddAgreementView(LoginRequiredMixin, APIView):
     def post(self, request, canvas_id):
         faci = FaciCanvas.objects.get(pk=canvas_id)
+        if faci.step < faci.STEP_AGREEMENTS:
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+                data=f'Сначала начните встречу',
+            )
+
+        if faci.meeting_status == faci.MEETING_STATUS_EDITING:
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+                data=f'Чтобы добавлять соглашения, необходимо начать встречу',
+            )
+
+        if faci.meeting_status == faci.MEETING_STATUS_FINISHED:
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+                data=f'Встреча завершена, добавление соглашений недоступно',
+            )
+
         serializer = FaciAddAgreementSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(faci=faci, user=request.user)
@@ -392,7 +522,7 @@ class AddFaciView(APIView):
             solutions=data['solutions'],
         )
         faci.save()
-        data_for_return = {'id': faci.id}
+        data_for_return = {'id': faci.pk}
         return Response(status=status.HTTP_200_OK, data=data_for_return)
 
 
@@ -418,5 +548,10 @@ class GetListFaciView(APIView):
 class SearchUserView(LoginRequiredMixin, APIView):
     def post(self, request):
         search_string = request.POST['search_string']
-        usernames = get_user_model().objects.filter(username__contains=search_string).values('username', 'last_name', 'first_name')[:10]
+        query = (
+                    Q(username__contains=search_string)
+                    | Q(last_name__contains=search_string)
+                    | Q(first_name__contains=search_string)
+        )
+        usernames = get_user_model().objects.filter(query).values('username', 'last_name', 'first_name')[:10]
         return Response(status=status.HTTP_200_OK, data=usernames)

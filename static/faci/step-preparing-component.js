@@ -2,10 +2,11 @@ StepPreparingComponent = {
     data() {
         return {
             HAS_ACCESS_TO_EDIT_PREPARING,
+            MEETING_STATUS_EDITING,
         }
     },
     template: `
-        <div v-if="HAS_ACCESS_TO_EDIT_PREPARING">
+        <div v-if="HAS_ACCESS_TO_EDIT_PREPARING & faci.meeting_status == MEETING_STATUS_EDITING">
 						<div class="mb-3 form-group" id="dt_meeting-group">
 								<div class="form-floating">
 										<input name="dt_meeting" class="form-control" id="dt_meeting-field" v-model="faci.dt_meeting" type="datetime-local">

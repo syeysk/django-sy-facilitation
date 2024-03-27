@@ -4,11 +4,11 @@ StepAimComponent = {
             aim_type_choices: JSON.parse(document.getElementById('aim_type_choices_json').textContent),
             HAS_ACCESS_TO_EDIT_AIM,
             STATIC_PREFIX,
-            STEP,
+            MEETING_STATUS_EDITING,
         }
     },
     template: `
-        <template v-if="HAS_ACCESS_TO_EDIT_AIM">
+        <template v-if="HAS_ACCESS_TO_EDIT_AIM & faci.meeting_status == MEETING_STATUS_EDITING">
 						<div class="mb-3 form-group" id="aim_type-group">
 								<div class="form-floating">
 										<select name="aim_type" class="form-select" id="aim_type-field">
@@ -36,7 +36,7 @@ StepAimComponent = {
 								</div>
 						</div>
 
-						<input type="button" :value="'Сохранить' + (STEP == 1 ? ' и перейти к заполнению участников' : '')" class="btn btn-outline-primary" @click="save_form_aim">
+						<input type="button" :value="'Сохранить' + (faci.step == 1 ? ' и перейти к заполнению участников' : '')" class="btn btn-outline-primary" @click="save_form_aim">
 				</template>
 				<template v-else>
 						<template v-for="(aim_type_name, aim_type_id, index) of aim_type_choices">

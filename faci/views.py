@@ -285,7 +285,7 @@ class FaciEditPreparingView(LoginRequiredMixin, APIView):
 class FaciStartView(LoginRequiredMixin, APIView):
     def post(self, request, canvas_id):
         faci = FaciCanvas.objects.get(pk=canvas_id)
-        if faci.user.pk != request.user.pk:
+        if faci.user_creator.pk != request.user.pk:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
         if faci.step < faci.STEP_KEY_THOUGHTS:

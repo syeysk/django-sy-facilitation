@@ -6,7 +6,9 @@ StepKeyThoughtsComponent = {
             HAS_ACCESS_TO_ADD_PARKED_THOUGHTS,
             is_display_resources_window: false,
             parked_thoughts: [],
+            MEETING_STATUS_EDITING,
             MEETING_STATUS_STARTED,
+            MEETING_STATUS_FINISHED,
             HAS_ACCESS_TO_START_AND_STOP_MEETING,
         }
     },
@@ -14,14 +16,16 @@ StepKeyThoughtsComponent = {
     components: {WindowComponent, KeyThoughtsChatComponent},
     template: `
         <div style="text-align: center; padding: 5px 0;" v-if="HAS_ACCESS_TO_START_AND_STOP_MEETING">
-            <input type="button" :value="faci.meeting_status == MEETING_STATUS_STARTED ? 'Завершить встречу' : 'Начать встречу'" class="btn btn-outline-success" @click="start_meeting">
+            <input type="button" v-if="faci.meeting_status == MEETING_STATUS_EDITING" value="Начать встречу" class="btn btn-outline-success" @click="start_meeting">
+            <input type="button" v-if="faci.meeting_status == MEETING_STATUS_STARTED" value="Завершить встречу" class="btn btn-outline-success" @click="start_meeting">
+            <span v-if="faci.meeting_status == MEETING_STATUS_FINISHED">Встреча завершена</span>
         </div>
 
         <key-thoughts-chat-component v-if="themes.length > 0"></key-thoughts-chat-component>
         <span v-else>Чтобы фиксировать ключевые мысли, пожалуйста, добавьте в шаге 3 темы, планируемые к обсуждению </span>
 
         <div style="padding: 1rem;">
-						<div class="mb-3 input-group" v-if="HAS_ACCESS_TO_ADD_PARKED_THOUGHTS">
+						<div class="mb-3 input-group" v-if="HAS_ACCESS_TO_ADD_PARKED_THOUGHTS & faci.meeting_status == MEETING_STATUS_STARTED">
 								<input name="parked_thought" id="parked_thought-field" class="form-control" v-model="parked_thought" placeholder="Парковка" title="Полезные мысли, не относящиеся к теме встречи"  @keyup.enter="add_parked_thought" type="text">
 								<button type="button" @click="add_parked_thought" class="btn btn-outline-primary"> >>> </button>
 						</div>

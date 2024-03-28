@@ -20,7 +20,11 @@ StepKeyThoughtsComponent = {
             <input type="button" v-if="faci.meeting_status == MEETING_STATUS_STARTED" value="Завершить встречу" class="btn btn-outline-success" @click="start_meeting">
             <template v-if="faci.meeting_status == MEETING_STATUS_FINISHED">
                 <span>Встреча завершена. </span>
-                <span>Встреча прошла с [[faci.when_started.toFormat("yyyy-MM-dd HH:mm")]] по [[faci.when_finished.toFormat("yyyy-MM-dd HH:mm")]], продлилась [[faci.when_finished - faci.when_started]] минут</span>
+                <br>
+                <span>Встреча прошла с [[faci.when_started.toFormat("yyyy-MM-dd HH:mm")]] по [[faci.when_finished.toFormat("yyyy-MM-dd HH:mm")]], продлилась [[Math.floor(faci.duration_actual.as('hours'))]] часов [[faci.duration_actual.as('minutes')]] минут, что </span>
+                <span v-if="faci.duration_actual.as('minutes') == faci.duration.as('minutes')">совпадает с запланированной длительностью</span>
+                <span v-else-if="faci.duration_actual.as('minutes') > faci.duration.as('minutes')">дольше запланированного на [[Math.floor(faci.duration_actual.as('hours') - faci.duration.as('hours'))]] часов [[faci.duration_actual.as('minutes') - faci.duration.as('minutes')]] минут</span>
+                <span v-else>меньше запланированного на [[Math.floor(faci.duration.as('hours') - faci.duration_actual.as('hours'))]] часов [[faci.duration.as('minutes') - faci.duration_actual.as('minutes')]] минут</span>
             </template>
         </div>
 
@@ -105,8 +109,10 @@ StepKeyThoughtsComponent = {
                 success: function(result) {
                     self.faci.meeting_status = result.meeting_status;
                     self.faci.step = result.step;
-                    self.faci.when_started = result.when_started ? new DateTime(result.when_started) : null;
-                    self.faci.when_finished = result.when_finished ? new DateTime(result.when_finished) : null;
+                    self.faci.when_started = result.when_started ? luxon.DateTime.fromISO(result.when_started) : null;
+                    self.faci.when_finished = result.when_finished ? luxon.DateTime.fromISO(result.when_finished) : null;
+                    self.faci.duration = result.duration ? luxon.Duration.fromObject({minutes: result.duration}) : null;
+                    self.faci.duration_actual = result.duration_actual ? luxon.Duration.fromObject({minutes: result.duration_actual}) : null;
                 },
                 error: function(jqxhr, a, b) {
                     console.log('error');

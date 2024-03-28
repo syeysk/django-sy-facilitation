@@ -15,7 +15,6 @@
     {{ agreements|json_script:'agreements_json' }}
     <script src="{% static 'legacy/luxon.min.js' %}"></script>
     <script>
-        var DateTime = luxon.DateTime;
         var URL_SEARCH_USER = "search_user/";
         var URL_FACI_EDITOR_AIM = "aim/{% if 'link_to' in request.GET %}?link_to={{request.GET.link_to}}{% endif %}";
         var URL_FACI_EDITOR_PREPARING = "preparing/";

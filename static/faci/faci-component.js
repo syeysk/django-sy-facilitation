@@ -1,8 +1,10 @@
 FaciComponent = {
     data() {
         faci = JSON.parse(document.getElementById('faci_json').textContent);
-        faci.when_started = faci.when_started ? new DateTime(faci.when_started) : null;
-        faci.when_finished = faci.when_finished ? new DateTime(faci.when_finished) : null;
+        faci.when_started = faci.when_started ? luxon.DateTime.fromISO(faci.when_started) : null;
+        faci.when_finished = faci.when_finished ? luxon.DateTime.fromISO(faci.when_finished) : null;
+				faci.duration = faci.duration ? luxon.Duration.fromObject({minutes: faci.duration}) : null;
+				faci.duration_actual = faci.duration_actual ? luxon.Duration.fromObject({minutes: faci.duration_actual}) : null;
         return {
             faci,
             themes: JSON.parse(document.getElementById('themes_json').textContent),
@@ -13,6 +15,8 @@ FaciComponent = {
             faci: this.faci,
             themes: this.themes,
             duration_of_all_themes: Vue.computed(() => this.duration_of_all_themes),
+            when_finished_plan: Vue.computed(() => this.when_finished_plan),
+            duration_diff: Vue.computed(() => this.diff_actual_and_plan),
         };
     },
     components: {
@@ -24,14 +28,14 @@ FaciComponent = {
         StepAgreementsComponent,
     },
     computed: {
-        duration_of_all_themes() {
+        duration_of_all_themes() {  // return minutes as Integer
             let theme;
             let total_duration = 0;
             for (theme of this.themes) {
                 total_duration += theme.duration;
             }
             return total_duration || 1;
-        }
+        },
     },
     template: `
 		    <div class="row accordion">

@@ -37,7 +37,7 @@ StepPreparingComponent = {
   			<div v-else>
 						Дата и время: [[faci.dt_meeting]]
 						<br>
-						Длительность: [[faci.duration]] мин
+						Длительность: [[duration_of_all_themes]] мин
 						<br>
 						Место: <a v-if="is_url(faci.place)" :href="faci.place" rel="ugc" target="_blank">[[ cutted_place ]]</a><span v-else>[[faci.place]]</span>
 						<br>

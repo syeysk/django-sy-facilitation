@@ -69,7 +69,8 @@ class FaciCanvas(DatetimeMixin, models.Model):
     )
     # 4. Подготовка
     dt_meeting = models.DateTimeField(verbose_name='Дата и время', null=True)
-    duration = models.IntegerField(verbose_name='Длительность', null=False, default=30)
+    duration = models.IntegerField(verbose_name='Длительность по плану', null=False, default=30)
+    duration_actual = models.IntegerField(verbose_name='Длительность по факту', null=True)
     place = models.CharField(verbose_name='Место', null=False, default='', max_length=100, blank=True)
     form_of_feedback = models.CharField(verbose_name='Ссылка на внешнюю форму обратной связи', null=False, default='', max_length=500, blank=True)
 

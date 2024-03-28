@@ -2,7 +2,7 @@ import datetime
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
-from django.db.models import F, Q
+from django.db.models import F, Q, Sum
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 from rest_framework.response import Response
@@ -89,6 +89,7 @@ class FaciEditorView(View):
             'id': faci.pk,
             'dt_meeting': faci.dt_meeting.strftime('%Y-%m-%dT%H:%M') if faci.dt_meeting else None,
             'duration': faci.duration,
+            'duration_actual': faci.duration_actual,
             'place': faci.place.strip(),
             'meeting_status': faci.meeting_status,
             'aim': faci.aim,
@@ -283,6 +284,8 @@ class FaciStartView(LoginRequiredMixin, APIView):
         elif faci.meeting_status == faci.MEETING_STATUS_STARTED:
             faci.meeting_status = faci.MEETING_STATUS_FINISHED
             faci.when_finished = datetime.datetime.now(datetime.timezone.utc)
+            faci.duration_actual = (faci.when_finished - faci.when_started).total_seconds() // 60
+            faci.duration = faci.themes.all().aggregate(Sum('duration'))['duration__sum']
             faci.save()
 
         data_for_return = {
@@ -290,6 +293,8 @@ class FaciStartView(LoginRequiredMixin, APIView):
             'when_started': faci.when_started,
             'when_finished': faci.when_finished,
             'step': faci.step,
+            'duration_actual': faci.duration_actual,
+            'duration': faci.duration,
         }
         return Response(status=status.HTTP_200_OK, data=data_for_return)
 

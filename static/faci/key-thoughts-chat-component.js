@@ -21,7 +21,7 @@ KeyThoughtsChatComponent = {
                 <span :style="'cursor: default; font-weight: ' + (current_theme_index == theme_index.toString() ? '600;' : 'inherit;')">[[ theme.theme ]]</span>
                 <span style="white-space: nowrap;">
                     <span v-if="current_theme_index == theme_index.toString()" style="cursor: pointer; border-radius: 3px; border: solid 1px white; padding: 3px; margin-right: 7px;"> || </span>
-                    <span v-if="HAS_ACCESS_TO_ACTIVATE_THEME & current_theme_index == theme_index.toString()" @click="next_theme" style="cursor: pointer; border-radius: 3px; border: solid 1px white; padding: 3px; margin-right: 7px;" title="Перейти к следующий теме"> >> </span>
+                    <span v-if="HAS_ACCESS_TO_ACTIVATE_THEME && current_theme_index == theme_index.toString()" @click="next_theme" style="cursor: pointer; border-radius: 3px; border: solid 1px white; padding: 3px; margin-right: 7px;" title="Перейти к следующий теме"> >> </span>
                     <span @click="open_other" style="cursor: pointer; border-radius: 3px; border: solid 1px white; padding: 3px 6px;" title="Дополнительные действия"> : </span>
                 </span>
             </div>
@@ -29,7 +29,7 @@ KeyThoughtsChatComponent = {
                 <div v-for="thought in key_thoughts">
                     <p style="margin-top: 0.5rem; margin-bottom: 0rem;"><b>[[ thought.username ]]:</b> [[ thought.key_thought ]]</p>
                 </div>
-								<div class="mb-3 input-group" v-if="HAS_ACCESS_TO_ADD_KEY_THOUGHTS & faci.meeting_status == MEETING_STATUS_STARTED"  style="margin-top: 1rem;">
+								<div class="mb-3 input-group" v-if="HAS_ACCESS_TO_ADD_KEY_THOUGHTS && faci.meeting_status == MEETING_STATUS_STARTED"  style="margin-top: 1rem;">
 										<input name="key_thoughts" id="key_thoughts-field" class="form-control" v-model="key_thought" placeholder="Ключевая мысль" @keyup.enter="add_key_thoughts" type="text">
 										<button type="button" @click="add_key_thoughts" class="btn btn-outline-primary"> >>> </button>
 								</div>

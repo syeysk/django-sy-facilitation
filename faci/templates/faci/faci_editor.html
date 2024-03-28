@@ -2,18 +2,20 @@
 {% load static %}
 
 {% block title %}
-    {% if faci %} <a style="text-decoration: none;vertical-align: text-top;" href="{% url 'faci_list' %}"><img style="width: 45px;" src="{% static 'left_arrow.svg' %}"/></a> Редактирование встречи {% else %} Новая встреча {% endif %}
+    {% if faci.id %} <a style="text-decoration: none;vertical-align: text-top;" href="{% url 'faci_list' %}"><img style="width: 45px;" src="{% static 'left_arrow.svg' %}"/></a> Редактирование встречи {% else %} Новая встреча {% endif %}
 {% endblock %}
 {% block page_title %} Встреча (холст фасилитации) {% endblock %}
 
 {% block content %}
     {{ members|json_script:'members_json' }}
-    {{ faci_json|json_script:'faci_json' }}
+    {{ faci|json_script:'faci_json' }}
     {{ themes|json_script:'themes_json' }}
     {{ expr_types|json_script:'expr_types_json' }}
     {{ aim_type_choices|json_script:'aim_type_choices_json' }}
     {{ agreements|json_script:'agreements_json' }}
+    <script src="{% static 'legacy/luxon.min.js' %}"></script>
     <script>
+        var DateTime = luxon.DateTime;
         var URL_SEARCH_USER = "search_user/";
         var URL_FACI_EDITOR_AIM = "aim/{% if 'link_to' in request.GET %}?link_to={{request.GET.link_to}}{% endif %}";
         var URL_FACI_EDITOR_PREPARING = "preparing/";

@@ -15,7 +15,7 @@ StepAgendaComponent = {
         }
     },
     template: `
-        <div v-if="HAS_ACCESS_TO_ADD_THEME & faci.meeting_status == MEETING_STATUS_EDITING">
+        <div v-if="HAS_ACCESS_TO_ADD_THEME && faci.meeting_status == MEETING_STATUS_EDITING">
 						<textarea name="theme" id="theme-field" class="form-control" v-model="theme" placeholder="Тема выступления" title=""></textarea>
 						<textarea name="description" id="theme-field" class="form-control" v-model="description" placeholder="Расскажите подробнее" title=""></textarea>
 
@@ -49,7 +49,7 @@ StepAgendaComponent = {
 												<p v-for="expression in expressions" style="font-size: 10pt;">
 												    <b>[[ expression.username ]]:</b> [[ expression.expression ]]
 												</p>
-												<div class="mb-3 input-group" v-if="HAS_ACCESS_TO_ADD_EXPRESSION & faci.meeting_status == MEETING_STATUS_EDITING">
+												<div class="mb-3 input-group" v-if="HAS_ACCESS_TO_ADD_EXPRESSION && faci.meeting_status == MEETING_STATUS_EDITING">
 														<input name="expression" id="expression-field" class="form-control" v-model="expression" :placeholder="expr_type[1]" @keyup.enter="add_expression" type="text">
 														<button type="button" @click="add_expression" class="btn btn-outline-primary"> >>> </button>
 												</div>

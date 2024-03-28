@@ -27,9 +27,17 @@ FACI_CREATOR_FOR_WHAT = 'Инициатор встречи'
 
 class FaciEditorView(View):
     def get(self, request, canvas_id=None):
+        context = {
+            'MEETING_STATUS_EDITING': FaciCanvas.MEETING_STATUS_EDITING,
+            'MEETING_STATUS_STARTED': FaciCanvas.MEETING_STATUS_STARTED,
+            'MEETING_STATUS_FINISHED': FaciCanvas.MEETING_STATUS_FINISHED,
+            'expr_types': Expression.EXPRESSIONS_TYPES_CHOICES,
+            'aim_type_choices': dict(FaciCanvas.AIM_TYPE_CHOICES),
+        }
+
         if canvas_id:
             faci = get_object_or_404(FaciCanvas, pk=canvas_id)
-            members = [
+            context['members'] = [
                 {
                     'invited': member.invited.username,
                     'for_what': member.for_what,
@@ -37,77 +45,60 @@ class FaciEditorView(View):
                 }
                 for member in faci.members.all()
             ]
-            themes = list(
+            context['themes'] = list(
                 faci.themes.all().order_by('-dt_create').values(
                     'id', 'theme', 'duration', 'description', username=F('user__username'),
                 ),
             )
-            agreements = list(
+            context['agreements'] = list(
                 faci.agreements.all().values(
                     'id', 'agreement', 'expire_dt', 'done_dt', responsible_username=F('responsible__username'),
                 )
             )
-            has_access_to_edit_preparing = request.user.pk == faci.user_creator.pk
-            has_access_to_add_members = request.user.is_authenticated
-            has_access_to_edit_aim = request.user.pk == faci.user_creator.pk
-            has_access_to_activate_theme = request.user.pk == faci.user_creator.pk
-            has_access_to_add_key_thoughts = request.user.is_authenticated
-            has_access_to_add_parked_thoughts = request.user.is_authenticated
-            has_access_to_add_expression = request.user.is_authenticated
-            has_access_to_add_theme = request.user.is_authenticated
-            has_access_to_add_agreement = request.user.is_authenticated
-            has_access_to_start_and_stop_meeting = request.user.pk == faci.user_creator.pk
+            context['has_access_to_edit_preparing'] = request.user.pk == faci.user_creator.pk
+            context['has_access_to_add_members'] = request.user.is_authenticated
+            context['has_access_to_edit_aim'] = request.user.pk == faci.user_creator.pk
+            context['has_access_to_activate_theme'] = request.user.pk == faci.user_creator.pk
+            context['has_access_to_add_key_thoughts'] = request.user.is_authenticated
+            context['has_access_to_add_parked_thoughts'] = request.user.is_authenticated
+            context['has_access_to_add_expression'] = request.user.is_authenticated
+            context['has_access_to_add_theme'] = request.user.is_authenticated
+            context['has_access_to_add_agreement'] = request.user.is_authenticated
+            context['has_access_to_start_and_stop_meeting'] = request.user.pk == faci.user_creator.pk
         else:
             if not request.user.is_authenticated:
                 return redirect('custom_login_page')
 
             faci = FaciCanvas()
             username = request.user.username
-            members = [{'invited': username, 'for_what': FACI_CREATOR_FOR_WHAT, 'inviting': username}]
-            themes = []
-            agreements = []
-            has_access_to_edit_preparing = True
-            has_access_to_add_members = True
-            has_access_to_edit_aim = True
-            has_access_to_activate_theme = True
-            has_access_to_add_key_thoughts = True
-            has_access_to_add_parked_thoughts = True
-            has_access_to_add_expression = True
-            has_access_to_add_theme = True
-            has_access_to_add_agreement = True
-            has_access_to_start_and_stop_meeting = True
+            context['members'] = [{'invited': username, 'for_what': FACI_CREATOR_FOR_WHAT, 'inviting': username}]
+            context['themes'] = []
+            context['agreements'] = []
+            context['has_access_to_edit_preparing'] = True
+            context['has_access_to_add_members'] = True
+            context['has_access_to_edit_aim'] = True
+            context['has_access_to_activate_theme'] = True
+            context['has_access_to_add_key_thoughts'] = True
+            context['has_access_to_add_parked_thoughts'] = True
+            context['has_access_to_add_expression'] = True
+            context['has_access_to_add_theme'] = True
+            context['has_access_to_add_agreement'] = True
+            context['has_access_to_start_and_stop_meeting'] = True
 
-        context = {
-            'MEETING_STATUS_EDITING': FaciCanvas.MEETING_STATUS_EDITING,
-            'MEETING_STATUS_STARTED': FaciCanvas.MEETING_STATUS_STARTED,
-            'MEETING_STATUS_FINISHED': FaciCanvas.MEETING_STATUS_FINISHED,
-            'faci_json': {
-                'dt_meeting': faci.dt_meeting.strftime('%Y-%m-%dT%H:%M') if faci.dt_meeting else None,
-                'duration': faci.duration,
-                'place': faci.place.strip(),
-                'meeting_status': faci.meeting_status,
-                'aim': faci.aim,
-                'aim_type': faci.aim_type,
-                'if_not_reached': faci.if_not_reached,
-                'solutions': faci.solutions,
-                'form_of_feedback': faci.form_of_feedback,
-                'step': faci.step,
-            },
-            'themes': themes,
-            'expr_types': Expression.EXPRESSIONS_TYPES_CHOICES,
-            'aim_type_choices': dict(FaciCanvas.AIM_TYPE_CHOICES),
-            'members': members,
-            'agreements': agreements,
-            'has_access_to_edit_preparing': has_access_to_edit_preparing,
-            'has_access_to_add_members': has_access_to_add_members,
-            'has_access_to_edit_aim': has_access_to_edit_aim,
-            'has_access_to_activate_theme': has_access_to_activate_theme,
-            'has_access_to_add_key_thoughts': has_access_to_add_key_thoughts,
-            'has_access_to_add_parked_thoughts': has_access_to_add_parked_thoughts,
-            'has_access_to_add_expression': has_access_to_add_expression,
-            'has_access_to_add_theme': has_access_to_add_theme,
-            'has_access_to_add_agreement': has_access_to_add_agreement,
-            'has_access_to_start_and_stop_meeting': has_access_to_start_and_stop_meeting,
+        context['faci'] = {
+            'id': faci.pk,
+            'dt_meeting': faci.dt_meeting.strftime('%Y-%m-%dT%H:%M') if faci.dt_meeting else None,
+            'duration': faci.duration,
+            'place': faci.place.strip(),
+            'meeting_status': faci.meeting_status,
+            'aim': faci.aim,
+            'aim_type': faci.aim_type,
+            'if_not_reached': faci.if_not_reached,
+            'solutions': faci.solutions,
+            'form_of_feedback': faci.form_of_feedback,
+            'step': faci.step,
+            'when_started': faci.when_started,
+            'when_finished': faci.when_finished,
         }
         return render(request, 'faci/faci_editor.html', context)
 
@@ -282,24 +273,22 @@ class FaciStartView(LoginRequiredMixin, APIView):
                 data=f'Сначала заполните подготовку',
             )
 
-        any_datetime = None
         if faci.meeting_status == faci.MEETING_STATUS_EDITING:
             faci.meeting_status = faci.MEETING_STATUS_STARTED
-            faci.when_started = datetime.datetime.utcnow()
+            faci.when_started = datetime.datetime.now(datetime.timezone.utc)
             if faci.step == faci.STEP_KEY_THOUGHTS:
                 faci.step = faci.STEP_AGREEMENTS
                 faci.save()
 
-            any_datetime = faci.when_started
         elif faci.meeting_status == faci.MEETING_STATUS_STARTED:
             faci.meeting_status = faci.MEETING_STATUS_FINISHED
-            faci.when_finished = datetime.datetime.utcnow()
+            faci.when_finished = datetime.datetime.now(datetime.timezone.utc)
             faci.save()
-            any_datetime = faci.when_finished
 
         data_for_return = {
             'meeting_status': faci.meeting_status,
-            'date': any_datetime,
+            'when_started': faci.when_started,
+            'when_finished': faci.when_finished,
             'step': faci.step,
         }
         return Response(status=status.HTTP_200_OK, data=data_for_return)

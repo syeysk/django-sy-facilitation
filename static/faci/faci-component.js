@@ -1,7 +1,10 @@
 FaciComponent = {
     data() {
+        faci = JSON.parse(document.getElementById('faci_json').textContent);
+        faci.when_started = faci.when_started ? new DateTime(faci.when_started) : null;
+        faci.when_finished = faci.when_finished ? new DateTime(faci.when_finished) : null;
         return {
-            faci: JSON.parse(document.getElementById('faci_json').textContent),
+            faci,
             themes: JSON.parse(document.getElementById('themes_json').textContent),
         }
     },
@@ -27,7 +30,7 @@ FaciComponent = {
             for (theme of this.themes) {
                 total_duration += theme.duration;
             }
-            return total_duration | 1;
+            return total_duration || 1;
         }
     },
     template: `

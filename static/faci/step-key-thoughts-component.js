@@ -18,14 +18,17 @@ StepKeyThoughtsComponent = {
         <div style="text-align: center; padding: 5px 0;" v-if="HAS_ACCESS_TO_START_AND_STOP_MEETING">
             <input type="button" v-if="faci.meeting_status == MEETING_STATUS_EDITING" value="Начать встречу" class="btn btn-outline-success" @click="start_meeting">
             <input type="button" v-if="faci.meeting_status == MEETING_STATUS_STARTED" value="Завершить встречу" class="btn btn-outline-success" @click="start_meeting">
-            <span v-if="faci.meeting_status == MEETING_STATUS_FINISHED">Встреча завершена</span>
+            <template v-if="faci.meeting_status == MEETING_STATUS_FINISHED">
+                <span>Встреча завершена. </span>
+                <span>Встреча прошла с [[faci.when_started.toFormat("yyyy-MM-dd HH:mm")]] по [[faci.when_finished.toFormat("yyyy-MM-dd HH:mm")]], продлилась [[faci.when_finished - faci.when_started]] минут</span>
+            </template>
         </div>
 
         <key-thoughts-chat-component v-if="themes.length > 0"></key-thoughts-chat-component>
         <span v-else>Чтобы фиксировать ключевые мысли, пожалуйста, добавьте в шаге 3 темы, планируемые к обсуждению </span>
 
         <div style="padding: 1rem;">
-						<div class="mb-3 input-group" v-if="HAS_ACCESS_TO_ADD_PARKED_THOUGHTS & faci.meeting_status == MEETING_STATUS_STARTED">
+						<div class="mb-3 input-group" v-if="HAS_ACCESS_TO_ADD_PARKED_THOUGHTS && faci.meeting_status == MEETING_STATUS_STARTED">
 								<input name="parked_thought" id="parked_thought-field" class="form-control" v-model="parked_thought" placeholder="Парковка" title="Полезные мысли, не относящиеся к теме встречи"  @keyup.enter="add_parked_thought" type="text">
 								<button type="button" @click="add_parked_thought" class="btn btn-outline-primary"> >>> </button>
 						</div>
@@ -102,6 +105,8 @@ StepKeyThoughtsComponent = {
                 success: function(result) {
                     self.faci.meeting_status = result.meeting_status;
                     self.faci.step = result.step;
+                    self.faci.when_started = result.when_started ? new DateTime(result.when_started) : null;
+                    self.faci.when_finished = result.when_finished ? new DateTime(result.when_finished) : null;
                 },
                 error: function(jqxhr, a, b) {
                     console.log('error');

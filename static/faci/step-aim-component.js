@@ -8,7 +8,7 @@ StepAimComponent = {
         }
     },
     template: `
-        <template v-if="HAS_ACCESS_TO_EDIT_AIM & faci.meeting_status == MEETING_STATUS_EDITING">
+        <template v-if="HAS_ACCESS_TO_EDIT_AIM && faci.meeting_status == MEETING_STATUS_EDITING">
 						<div class="mb-3 form-group" id="aim_type-group">
 								<div class="form-floating">
 										<select name="aim_type" class="form-select" id="aim_type-field">

@@ -21,7 +21,7 @@ StepAgreementsComponent = {
 							  </div>
             </div>
         </div>
-        <div class="mb-3 input-group" v-if="HAS_ACCESS_TO_ADD_AGREEMENT & faci.meeting_status == MEETING_STATUS_STARTED">
+        <div class="mb-3 input-group" v-if="HAS_ACCESS_TO_ADD_AGREEMENT && faci.meeting_status == MEETING_STATUS_STARTED">
 						<input name="agreement" id="agreement-field" class="form-control" v-model="agreement" placeholder="Итоговое соглашение" title="Напишите, о чём в итоге договорились"  @keyup.enter="add_agreement" type="text">
 						<button type="button" @click="add_agreement" class="btn btn-outline-primary"> >>> </button>
 				</div>

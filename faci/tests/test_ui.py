@@ -168,7 +168,7 @@ def test_ui(live_server, user, faker):
 
     # Go to add faci page
 
-    selenium.find_element('id', 'add_token_button').send_keys(Keys.ENTER)  # TODO: Удалить ID add_token_button  в шаблоне
+    selenium.find_element('id', 'add_token_button').send_keys(Keys.ENTER)
     time.sleep(2)
 
     form_sheet_members = selenium.find_element(By.CSS_SELECTOR, '#members_form .form_sheet')

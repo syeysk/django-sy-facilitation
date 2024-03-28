@@ -36,7 +36,7 @@
 
     {% if request.user.is_authenticated %}
         <p style="text-align: right;">
-            <a href="{% url 'faci_new' %}" style="text-decoration: none"><input type="button" value="Новая встреча" id="add_token_button" class="form-control" style="width: auto; display: inline;"></a>
+            <a href="{% url 'faci_new' %}" style="text-decoration: none"><input type="button" value="Новая встреча" class="form-control" style="width: auto; display: inline;"></a>
         </p>
     {% else %}
 <p>Пожалуйста, <a href="javascript:$('#btn_toggle_login_box').click();">авторизуйтесь</a>, чтобы добавлять и фасилитировать встречи</p>

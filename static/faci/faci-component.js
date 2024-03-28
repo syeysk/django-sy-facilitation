@@ -16,7 +16,9 @@ FaciComponent = {
             themes: this.themes,
             duration_of_all_themes: Vue.computed(() => this.duration_of_all_themes),
             when_finished_plan: Vue.computed(() => this.when_finished_plan),
-            duration_diff: Vue.computed(() => this.diff_actual_and_plan),
+            duration_diff: Vue.computed(() => this.duration_diff),
+            duration_actual_minutes: Vue.computed(() => this.duration_actual_minutes),
+            duration_actual_hours: Vue.computed(() => this.duration_actual_hours),
         };
     },
     components: {
@@ -35,6 +37,24 @@ FaciComponent = {
                 total_duration += theme.duration;
             }
             return total_duration || 1;
+        },
+        duration_diff() {
+            let faci = this.faci;
+            if (faci.duration_actual && faci.duration) {
+								return {
+										minutes: Math.abs(Math.floor(faci.duration.as('minutes') - faci.duration_actual.as('minutes'))),
+										hours: Math.abs(Math.floor(faci.duration.as('hours') - faci.duration_actual.as('hours'))),
+										is_exact: faci.duration_actual.as('minutes') == faci.duration.as('minutes'),
+										is_long: faci.duration_actual.as('minutes') > faci.duration.as('minutes'),
+								}
+						}
+						return null;
+        },
+        duration_actual_minutes() {
+            return this.faci.duration_actual ? this.faci.duration_actual.as('minutes') : null;
+        },
+        duration_actual_hours() {
+            return this.faci.duration_actual ? Math.floor(this.faci.duration_actual.as('hours')) : null;
         },
     },
     template: `

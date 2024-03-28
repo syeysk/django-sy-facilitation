@@ -12,7 +12,7 @@ StepKeyThoughtsComponent = {
             HAS_ACCESS_TO_START_AND_STOP_MEETING,
         }
     },
-    inject: ['themes', 'faci'],
+    inject: ['themes', 'faci', 'duration_diff', 'duration_actual_minutes', 'duration_actual_hours'],
     components: {WindowComponent, KeyThoughtsChatComponent},
     template: `
         <div style="text-align: center; padding: 5px 0;" v-if="HAS_ACCESS_TO_START_AND_STOP_MEETING">
@@ -20,11 +20,23 @@ StepKeyThoughtsComponent = {
             <input type="button" v-if="faci.meeting_status == MEETING_STATUS_STARTED" value="Завершить встречу" class="btn btn-outline-success" @click="start_meeting">
             <template v-if="faci.meeting_status == MEETING_STATUS_FINISHED">
                 <span>Встреча завершена. </span>
-                <br>
-                <span>Встреча прошла с [[faci.when_started.toFormat("yyyy-MM-dd HH:mm")]] по [[faci.when_finished.toFormat("yyyy-MM-dd HH:mm")]], продлилась [[Math.floor(faci.duration_actual.as('hours'))]] часов [[faci.duration_actual.as('minutes')]] минут, что </span>
-                <span v-if="faci.duration_actual.as('minutes') == faci.duration.as('minutes')">совпадает с запланированной длительностью</span>
-                <span v-else-if="faci.duration_actual.as('minutes') > faci.duration.as('minutes')">дольше запланированного на [[Math.floor(faci.duration_actual.as('hours') - faci.duration.as('hours'))]] часов [[faci.duration_actual.as('minutes') - faci.duration.as('minutes')]] минут</span>
-                <span v-else>меньше запланированного на [[Math.floor(faci.duration.as('hours') - faci.duration_actual.as('hours'))]] часов [[faci.duration.as('minutes') - faci.duration_actual.as('minutes')]] минут</span>
+                <p>
+										Встреча прошла с [[faci.when_started.toFormat("yyyy-MM-dd HH:mm")]] по [[faci.when_finished.toFormat("yyyy-MM-dd HH:mm")]],
+										продлилась <template v-if="duration_actual_hours">[[duration_actual_hours]] часов</template> [[duration_actual_minutes]] минут, что
+										<template v-if="duration_diff.is_exact">
+										    совпадает с запланированной длительностью
+										</template>
+										<template v-else>
+										    на <template v-if="duration_diff.hours">[[duration_diff.hours]] часов</template> [[duration_diff.minutes]] минут
+												<template v-if="duration_diff.is_long">
+														меньше
+												</template>
+												<template v-else>
+														меньше
+												</template>
+												запланированного
+										</template>
+							  </p>
             </template>
         </div>
 

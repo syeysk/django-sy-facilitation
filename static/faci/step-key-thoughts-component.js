@@ -20,7 +20,7 @@ StepKeyThoughtsComponent = {
             <input type="button" v-if="faci.meeting_status == MEETING_STATUS_STARTED" value="Завершить встречу" class="btn btn-outline-success" @click="start_meeting">
             <template v-if="faci.meeting_status == MEETING_STATUS_FINISHED">
                 <span>Встреча завершена. </span>
-                <p>
+                <p v-if="duration_diff">
 										Встреча прошла с [[faci.when_started.toFormat("yyyy-MM-dd HH:mm")]] по [[faci.when_finished.toFormat("yyyy-MM-dd HH:mm")]],
 										продлилась <template v-if="duration_actual_hours">[[duration_actual_hours]] часов</template> [[duration_actual_minutes]] минут, что
 										<template v-if="duration_diff.is_exact">

@@ -119,7 +119,7 @@ FaciComponent = {
 										</div>
 										<form id="key_thoughts_form" class="card-body accordion-collapse collapse show" style="padding: 0 0 0 0;" @submit.prevent>
 												<step-key-thoughts-component></step-key-thoughts-component>
-												<div v-if="faci.step < 5" class="form_sheet">Станет доступно во время встречи (после шага 4)</div>
+												<div v-if="faci.step < 5" class="form_sheet">Станет доступно после заполнения шага 4</div>
 										</form>
 								</div>
 						</div>
